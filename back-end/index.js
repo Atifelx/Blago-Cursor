@@ -1,13 +1,13 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-
+import {getUsers} from './routes/user.route.js';
 
 
 dotenv.config();
 
 const app = express()
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
 
 
@@ -23,10 +23,12 @@ mongoose.connect(process.env.MONGOURI)
   .catch(err => console.error('MongoDB connection error:', err));
 
   
-  app.get('/test',(req,res)=>{
+  app.get('/', (req, res) => {
+    res.send('Hello World, how the API')
+  })
 
-    res.send({message:'Api is working in index js code!'});
-});
+
+  app.get('/api', getUsers);
 
 app.listen(PORT ,() => {
   console.log(`Server running at http://localhost:${PORT}`);
