@@ -1,7 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import {getUsers} from './routes/user.route.js';
+import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
 
 
 dotenv.config();
@@ -28,7 +29,9 @@ mongoose.connect(process.env.MONGOURI)
   })
 
 
-  app.get('/api', getUsers);
+  app.use('/api', userRoutes);
+  app.use('/api', authRoutes);
+
 
 app.listen(PORT ,() => {
   console.log(`Server running at http://localhost:${PORT}`);
