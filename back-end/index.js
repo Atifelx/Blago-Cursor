@@ -33,6 +33,24 @@ mongoose.connect(process.env.MONGOURI)
   app.use('/api', authRoutes);
 
 
+ 
+
+  app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500; // Set status code from error or default to 500
+    const message = err.message || "Internal Server Error"; // Set message from error or default message
+   
+
+    res.status(statusCode).json({ // Send JSON response
+        success: false,
+        statusCode,
+        message,
+      
+    });
+});
+
+
+
+
 app.listen(PORT ,() => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
