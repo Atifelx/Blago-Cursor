@@ -1,5 +1,5 @@
 import { Navbar , Button} from "flowbite-react";
-import { Link } from 'react-router-dom';
+import { Link  } from 'react-router-dom';
 
 
 export default function Header() {
@@ -8,16 +8,15 @@ export default function Header() {
 
   return (
     <div>
-      <Navbar className="border-b-2 ">
+      <Navbar className="border-b-2 m-4">
       <Navbar.Brand href="/">
-      <img src="/public/blago.svg" className="mr-3 h-8 sm:h-14" alt="blago Logo" />
-        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Blago</span>
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white text-emerald-500 ">Blago</span>
       </Navbar.Brand>
       
 
 
       <form>
-      <input type="search" id="default-search" className="flex sm:hidden w-full p-2 ps-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50" placeholder="Search ..."  />
+      <input type="search" id="default-search" className="hidden md:flex w-full p-2 ps-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 m-2" placeholder="Search ..."  />
       </form>
 
 
