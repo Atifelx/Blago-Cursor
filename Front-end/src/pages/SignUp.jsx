@@ -3,6 +3,8 @@ import Signupform from '../components/signupform';
 
 function SignUp() {
   return (
+
+
     <div className="min-h-screen mt-20 flex flex-col md:flex-row">
 
 
@@ -11,16 +13,10 @@ function SignUp() {
         <p className='text-sm text-gray-400 left-5 hover:text-emerald-500 '>Create your own Blog and share with Others, Start here!</p>
       </div> {/* Logo span */}
 
-      <div className="basis-1/2 ml-10 mr-10 mb-5"> {/* signup input */}
+      <div className="basis-1/2 ml-10 mr-10 mb-5 items-center "> {/* signup input */}
        <Signupform/>
                  </div>
-    
-    
-    
-    
-    
-    
-    
+
     </div>
   );
 }
