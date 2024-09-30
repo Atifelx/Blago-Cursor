@@ -23,6 +23,8 @@ export const signup = async (req, res, next) => {
     }
 };
 
+
+
 export const signin = async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -46,7 +48,20 @@ export const signin = async (req, res, next) => {
         res
             .status(200)
             .cookie('access_token', token, { httpOnly: true, secure: true, sameSite: 'Strict' }) // Added security options
-            .json({ message: 'Sign in successful' });
+            .json({ 
+                
+                message: 'Sign in successful' ,
+
+                user: {
+                    id: validUser._id,
+                    username: validUser.username,
+                    email: validUser.email,
+                    createdAt:validUser.createdAt,
+                   
+                    // Include other user properties as needed
+                }
+
+            });
     } catch (error) {
         next(error);
     }

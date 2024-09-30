@@ -1,7 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import cors from 'cors';
 
@@ -25,11 +24,11 @@ mongoose.connect(process.env.MONGOURI)
 
   
   app.get('/', (req, res) => {
-    res.send('Hello World, how the API')
+    res.send('Expressjs server is running with mongoDB database "BLAGO , this out from index.js backend')
   })
 
 
-  app.use('/api', userRoutes);
+ 
   app.use('/api', authRoutes);
 
 

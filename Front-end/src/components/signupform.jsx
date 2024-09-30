@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-
+import { useSelector, useDispatch } from 'react-redux';
+import { signinStart, signinSuccess, signinFailure } from '../app/user/userSlice';
 
 const SignupForm = () => {
-  const [errorMessage, setErrorMessage] = useState(null); 
-  const [loading, setLoading] = useState(false); 
+  // const [errorMessage, setErrorMessage] = useState(null); 
+  // const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const currentUser = useSelector((state) => state.user.currentUser);
+  const error = useSelector((state) => state.user.error);
+  const loading = useSelector((state) => state.user.loading);
+
+
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -26,12 +35,16 @@ const SignupForm = () => {
 
     // Check if all fields are filled before proceeding
     if (!formData.username || !formData.email || !formData.password) {
-      return setErrorMessage('Please fill all the fields.');
+      dispatch(signinFailure({ message: 'Please fill all the fields.' }));
+      return;
     }
 
+    
+    dispatch(signinStart());
+
+
     try {
-      setLoading(true);
-      setErrorMessage(null);
+    
 
       const response = await fetch('http://localhost:3000/api/signup', {
         method: 'POST',
@@ -45,16 +58,21 @@ const SignupForm = () => {
       console.log('Success:', result);
 
       if (result.success === false) {
-        setErrorMessage(result.message);
-      } else {
+        
+        dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
+    
+                       return;
+                               } 
+
+
+      else {
+        dispatch(signinSuccess(result.user));
         navigate("/signin");
       }
     } catch (error) {
      
-      setErrorMessage(error.message);
-    } finally {
-      setLoading(false); // Ensure loading state is reset
-    }
+      dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
+    } 
   };
 
   return (
@@ -93,7 +111,7 @@ const SignupForm = () => {
           id="password"
           value={formData.password}
           onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
           required 
           autoComplete="current-password" 
         />
@@ -119,9 +137,9 @@ const SignupForm = () => {
         </a>
       </label>
       
-      {errorMessage && (
+      {error && (
         <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-          {errorMessage}
+          {error.message}
         </div>
       )}
     </form>
