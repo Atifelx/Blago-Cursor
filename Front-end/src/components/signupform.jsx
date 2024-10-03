@@ -3,6 +3,8 @@ import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { signinStart, signinSuccess, signinFailure } from '../app/user/userSlice';
+import OAuth from "../components/OAuth.jsx";
+
 
 const SignupForm = () => {
   // const [errorMessage, setErrorMessage] = useState(null); 
@@ -39,7 +41,7 @@ const SignupForm = () => {
       return;
     }
 
-    
+
     dispatch(signinStart());
 
 
@@ -66,8 +68,8 @@ const SignupForm = () => {
 
 
       else {
-        dispatch(signinSuccess(result.user));
-        navigate("/signin");
+        dispatch(signinSuccess(result));
+        navigate("/");
       }
     } catch (error) {
      
@@ -129,6 +131,8 @@ const SignupForm = () => {
           </>
         ) : 'SignUp'}
       </button>
+
+    <OAuth/>
 
       <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
         Have an account?

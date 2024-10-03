@@ -7,17 +7,44 @@ import jwt from "jsonwebtoken";
 
 // Moved signup export to the top for clarity
 export const signup = async (req, res, next) => {
-    const { username, email, password } = req.body;
+    const { username , email, password } = req.body;
 
-    if (!username || !email || !password) {
+    if (!username  || !email || (req.body.source !== 'google' && !password)) {
         return next(errorHandler(400, 'All fields are required'));
     }
 
     try {
-        const hashedPassword = await bcryptjs.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
+
+        let hashedPassword;
+
+        // Hash password only if it's provided and the signup is not from Google Auth
+        if (password) {
+            hashedPassword = await bcryptjs.hash(password, 10);
+        }
+
+
+
+       // const hashedPassword = await bcryptjs.hash(password, 10);
+
+
+       // const newUser = new User({ username , email, password: hashedPassword });
+       
+       const newUser = new User({
+        username,
+        email,
+        password: hashedPassword || undefined, // set to undefined if no password
+        photoUrl: req.body.photoUrl || "User-URL_for_profile", // Handle photo URL for Google Auth
+    });
+
+
         await newUser.save();
         res.json({ message: 'Signup Successful...' });
+
+
+
+
+
+
     } catch (error) {
         next(error);
     }
@@ -54,10 +81,10 @@ export const signin = async (req, res, next) => {
 
                 user: {
                     id: validUser._id,
-                    username: validUser.username,
+                    username : validUser.username ,
                     email: validUser.email,
                     createdAt:validUser.createdAt,
-                   
+                    photoUrl:validUser.photoUrl,
                     // Include other user properties as needed
                 }
 

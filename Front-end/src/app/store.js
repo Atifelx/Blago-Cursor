@@ -1,40 +1,33 @@
-import { configureStore } from '@reduxjs/toolkit'
-import userReducer from '../app/user/userSlice'
+import { configureStore } from '@reduxjs/toolkit';
+import userReducer from '../app/user/userSlice';
 import storage from 'redux-persist/lib/storage'; // Use localStorage for web
 import { persistStore, persistReducer } from 'redux-persist';
 
-
-
+// Configuration for redux-persist
 const persistConfig = {
-    key: 'root',
-    storage,
-    version: 1,
-  };
+  key: 'root',
+  storage,
+  version: 1,
+};
 
-  const persistedUserReducer = persistReducer(persistConfig, userReducer); // Persisted reducer
+// Create a persisted reducer for the user slice
+const persistedUserReducer = persistReducer(persistConfig, userReducer);
 
-
-
-export const store = configureStore({
+// Configure the Redux store
+const store = configureStore({
   reducer: {
-    user: persistedUserReducer, // Use persisted reducer
+    user: persistedUserReducer, // Use the persisted user reducer
   },
-
-      middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: false, // Disable serializable check for persist
-      }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'], // Ignore persist actions for serialization
+      },
+    }),
 });
 
-export const persistor = persistStore(store); // Create a persistor
+// Create a persistor for persisting the Redux store
+const persistor = persistStore(store);
 
-
-// export const store = configureStore({
-//     reducer: {
-//       user: persistedUserReducer, // Use persisted reducer
-//     },
-//     middleware: (getDefaultMiddleware) =>
-//       getDefaultMiddleware({
-//         serializableCheck: false, // Disable serializable check for persist
-//       }),
-//   });
+// Export store and persistor together
+export { store, persistor };

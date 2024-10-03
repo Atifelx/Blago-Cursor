@@ -12,8 +12,11 @@ const initialState = {
 }
 
  const userSlice = createSlice({
+  
   name: 'user',
   initialState,
+
+
   reducers: {
 
 signinStart:(state)=>{
@@ -35,5 +38,7 @@ signinFailure:(state,action)=>{
 });
 
 export const { signinStart, signinSuccess, signinFailure } = userSlice.actions;
+
+export const selectCurrentUser = (state) => state.user.currentUser; 
 
 export default userSlice.reducer;

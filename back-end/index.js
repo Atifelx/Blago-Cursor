@@ -32,7 +32,10 @@ mongoose.connect(process.env.MONGOURI)
   app.use('/api', authRoutes);
 
 
- 
+  app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');    /// setting for ignoring console error 
+    next();
+  });
 
   app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500; // Set status code from error or default to 500

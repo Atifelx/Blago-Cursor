@@ -3,6 +3,8 @@ import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { signinStart, signinSuccess, signinFailure } from '../app/user/userSlice';
+import OAuth from "../components/OAuth.jsx";
+
 
 const SigninForm = () => {
   const navigate = useNavigate();
@@ -38,11 +40,13 @@ const SigninForm = () => {
     dispatch(signinStart());
 
 
-    setFormData({ email: '', password: '' });  // clear form data after submission in UI
+ 
 
 
     try {
-      const response = await fetch('http://localhost:3000/api/signin', {
+      const response = await fetch('http://localhost:3000/api/signin', 
+        
+        {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -52,19 +56,30 @@ const SigninForm = () => {
 
       const result = await response.json();
 
-
-
-
-
+    
       if (result.success === false) {
         dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' })
     );                               } 
       
       else {
 
-        dispatch(signinSuccess(result.user)); 
+
+
+
+   
+
+        dispatch(signinSuccess(result)); // sending data to redux tool kit 
+
+        setFormData({ email: '', password: '' });  // clear form data after submission in UI  
+
         navigate("/");
+
+
+
            }
+
+
+      
 
 
     } catch (error) {
@@ -108,7 +123,7 @@ const SigninForm = () => {
       <button
         type="submit"
         disabled={loading}
-        className={`text-white ${loading ? 'bg-gray-500' : 'bg-emerald-500 hover:bg-emerald-700'} focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800`}
+        className={`text-white ${loading ? 'bg-gray-500' : 'bg-emerald-500 hover:bg-emerald-700'} focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 `}
       >
         {loading ? (
           <>
@@ -117,6 +132,10 @@ const SigninForm = () => {
           </>
         ) : 'Sign In'}
       </button>
+   
+
+
+   
 
       <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
         Don't have an account?
