@@ -5,11 +5,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { signinStart, signinSuccess, signinFailure } from '../app/user/userSlice';
 import OAuth from "../components/OAuth.jsx";
 
-
 const SigninForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [attempts, setAttempts] = React.useState(0);
   const currentUser = useSelector((state) => state.user.currentUser);
   const error = useSelector((state) => state.user.error);
   const loading = useSelector((state) => state.user.loading);
@@ -32,21 +31,12 @@ const SigninForm = () => {
     if (!formData.email || !formData.password) {
       dispatch(signinFailure({ message: 'Please fill all the fields.' }));
       return;
-      
     }
 
-    
-    
     dispatch(signinStart());
 
-
- 
-
-
     try {
-      const response = await fetch('http://localhost:3000/api/signin', 
-        
-        {
+      const response = await fetch('http://localhost:3000/api/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -56,41 +46,32 @@ const SigninForm = () => {
 
       const result = await response.json();
 
-    
       if (result.success === false) {
-        dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' })
-    );                               } 
-      
-      else {
+        dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
+        
+        // Handle specific invalid password case
+        if (result.message && result.message.includes("invalid password")) {
+          setAttempts(prevAttempts => prevAttempts + 1); // Increment attempts
 
-
-
-
-   
-
-        dispatch(signinSuccess(result)); // sending data to redux tool kit 
-
-        setFormData({ email: '', password: '' });  // clear form data after submission in UI  
-
+          // Navigate to reset password after 3 attempts
+          if (attempts + 1 >= 3) {
+            navigate("/resetpassword");
+            return; // Prevent further processing
+          }
+        }
+        return; // Prevent dispatching success on failure
+      } else {
+        dispatch(signinSuccess(result));
         navigate("/");
-
-
-
-           }
-
-
-      
-
-
+        setFormData({ email: '', password: '' }); // clear form data after submission in UI
+      }
     } catch (error) {
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
-      
-    } 
+    }
   };
 
-
   return (
-    <form className="mx-auto" onSubmit={handleSubmit}>
+    <form className="mx-w-full max-w-sm p-6 bg-white rounded-md shadow-sm" onSubmit={handleSubmit}>
       <label className="text-2xl subpixel-antialiased text-gray-400 text-center block">Sign In</label>
 
       <div className="mb-5">
@@ -106,6 +87,7 @@ const SigninForm = () => {
           required
         />
       </div>
+
       <div className="mb-5">
         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
         <input
@@ -123,7 +105,7 @@ const SigninForm = () => {
       <button
         type="submit"
         disabled={loading}
-        className={`text-white ${loading ? 'bg-gray-500' : 'bg-emerald-500 hover:bg-emerald-700'} focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 `}
+        className={`text-white ${loading ? 'bg-gray-500' : 'bg-emerald-500 hover:bg-emerald-700'} focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800`}
       >
         {loading ? (
           <>
@@ -132,10 +114,6 @@ const SigninForm = () => {
           </>
         ) : 'Sign In'}
       </button>
-   
-
-
-   
 
       <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
         Don't have an account?
@@ -144,13 +122,18 @@ const SigninForm = () => {
         </a>
       </label>
 
+      <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
+        Forgot password?
+        <a href="/resetpassword" className="text-blue-600 hover:underline">
+          <span> Reset </span>
+        </a>
+      </label>
+
       {error && (
         <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
           {error.message}
         </div>
       )}
-
-    
     </form>
   );
 };

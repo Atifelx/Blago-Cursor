@@ -59,18 +59,37 @@ const SignupForm = () => {
       const result = await response.json();
       console.log('Success:', result);
 
+
       if (result.success === false) {
-        
         dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
-    
-                       return;
-                               } 
 
-
-      else {
+        // Nested condition to check for duplicate error
+        if (result.message && result.message.includes("duplicate")) {
+          navigate("/signin");
+        }
+        
+        return;
+      } else {
         dispatch(signinSuccess(result));
         navigate("/");
       }
+
+
+
+
+
+      // if (result.success === false) {
+        
+      //   dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
+    
+      //                  return;
+      //                          } 
+
+
+      // else {
+      //   dispatch(signinSuccess(result));
+      //   navigate("/");
+      // }
     } catch (error) {
      
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
@@ -78,7 +97,7 @@ const SignupForm = () => {
   };
 
   return (
-    <form className="mx-auto" onSubmit={handleSubmit}>
+    <form className="mx-w-full max-w-sm p-6 bg-white rounded-sm shadow-sm" onSubmit={handleSubmit}>
  <div className="mb-5">
   <label htmlFor="username" className="mr-4 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Username</label>
   <input

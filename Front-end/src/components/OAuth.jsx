@@ -24,24 +24,27 @@ function OAuth() {
             console.log("User Info from Google:", Guser);
 
             const userData = {
-                username: Guser.displayName || "User_" + Guser.uid, // Fallback if displayName is null
+                username: Guser.displayName , // Fallback if displayName is null
                 email: Guser.email,
                 photoUrl: Guser.photoURL,
-                source: 'google' // Indicate that this user signed up with Google
+                source: 'google',
+                
             };
 
             // Dispatch to Redux Toolkit
             dispatch(signinSuccess(userData));
 
             navigate('/createpassword');
+
+
         } catch (error) {
             console.error("Error signing in with Google:", error);
         }
     };
 
     return (
-        <Button className="flex items-center mt-2 mb-2 px-4 py-2 bg-gray-400 text-white rounded cursor-pointer text-center" onClick={handleGoogleClick}>
-            <FaGoogle className="mr-1.5 text-gray-500 text-xl" />
+        <Button className="flex items-center mt-2 mb-2 px-4 py-2 bg-gray-400 text-white rounded-xl  cursor-pointer text-center" onClick={handleGoogleClick}>
+            <FaGoogle className="mr-1.5 text-white text-xl" />
             Sign Up with Google
         </Button>
     );

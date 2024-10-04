@@ -5,7 +5,7 @@ function SignUp() {
   return (
 
 
-    <div className="min-h-screen mt-20 flex flex-col md:flex-row">
+    <div className="min-h-screen mt-20 flex flex-col md:flex-row ">
 
 
       <div className="basis-1/2 ml-10 mr-10 mb-5 items-center h-screen"> {/* Logo span */}
