@@ -20,7 +20,7 @@ export default function Header() {
 
   return (
     <div>
-      <Navbar className="border-b-2 m-4">
+      <Navbar className="border-b-2 w-screen ">
         <Navbar.Brand href="/">
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white text-emerald-500">Blago</span>
         </Navbar.Brand>

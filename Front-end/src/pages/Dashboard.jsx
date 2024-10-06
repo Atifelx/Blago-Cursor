@@ -1,5 +1,7 @@
-import React from 'react'
+import react from 'react';
 import { useSelector } from 'react-redux'; 
+import DashboardUIO from '../components/LoggedinComponents/DashboardUIO';
+import DashboardUI from '../components/LoggedinComponents/dashboardUI';
 
 
 function Dashboard() {
@@ -7,8 +9,16 @@ function Dashboard() {
   const currentUser = useSelector(state => state.user.currentUser);
 
   return (
-    <div className='ml-5 font-extralight '>
+    <div>
+
+    {/* <div className='ml-5 font-extralight '>
       Welcome , {currentUser?.user?.username} {" "} !
+    </div> */}
+    
+    
+    <DashboardUIO />
+    {/* <DashboardUI/> */}
+
     </div>
   )
 }
