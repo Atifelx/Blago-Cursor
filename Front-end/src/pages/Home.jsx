@@ -1,9 +1,12 @@
 import React from 'react'
 
+import Test3 from "./Test3"
+
 function Home() {
   return (
    <div>
-Home
+
+<Test3/>
     </div>
   )
 }

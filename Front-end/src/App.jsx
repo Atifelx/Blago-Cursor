@@ -1,6 +1,11 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route , Navigate} from 'react-router-dom';
+import { useSelector } from 'react-redux'; 
+
+
+
+
 import Home from './pages/Home';
 import About from './pages/About';
 import Dashboard from './pages/Dashboard';
@@ -14,16 +19,41 @@ import Resetpassword from './pages/resetPassword';
 
 
 const App = () => {
+
+
+  const currentUser = useSelector(state => state.user.currentUser);
+
+  // const initialState = {
+  //   currentUser:null,
+  //   error:null,
+  //   loading:false
+  // }
+  //------------------------------------
+  //  const userSlice = createSlice({
+    
+  //   name: 'user',
+  //   initialState,
+
+  //-----------------------------------------
+  // signinSuccess:(state,action)=>{
+  //   state.currentUser = action.payload;
+  //   state.loading=false;
+  //   state.error=null;
+
+
+
+
   return (
     <Router>
   <Header/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={currentUser? <Dashboard /> : <Navigate to="/signin" />} />
+
         <Route path="/projects" element={<Projects />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={!currentUser? <SignIn /> : <Navigate to="/dashboard"  />} />
+        <Route path="/signup" element={!currentUser? <SignUp /> : <Navigate to="/dashboard"  />} />
         <Route path="/createpassword" element={<Createpassword />} />
         <Route path="/resetpassword" element={<Resetpassword />} />
       </Routes>

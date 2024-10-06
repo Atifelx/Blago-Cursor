@@ -6,5 +6,5 @@ const authRoutes = express.Router();
 authRoutes.post('/signup', signup);
 authRoutes.put('/update', update);
 authRoutes.post('/signin', signin);
-authRoutes.post('/verifyemail', verifyemail);
+authRoutes.get('/verifyemail', verifyemail);
 export default authRoutes; 

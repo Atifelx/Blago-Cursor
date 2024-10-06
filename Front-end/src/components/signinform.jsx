@@ -3,12 +3,12 @@ import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { signinStart, signinSuccess, signinFailure } from '../app/user/userSlice';
-import OAuth from "../components/OAuth.jsx";
+
 
 const SigninForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [attempts, setAttempts] = React.useState(0);
+ 
   const currentUser = useSelector((state) => state.user.currentUser);
   const error = useSelector((state) => state.user.error);
   const loading = useSelector((state) => state.user.loading);
@@ -48,27 +48,32 @@ const SigninForm = () => {
 
       if (result.success === false) {
         dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
-        
-        // Handle specific invalid password case
-        if (result.message && result.message.includes("invalid password")) {
-          setAttempts(prevAttempts => prevAttempts + 1); // Increment attempts
-
-          // Navigate to reset password after 3 attempts
-          if (attempts + 1 >= 3) {
-            navigate("/resetpassword");
-            return; // Prevent further processing
-          }
+      
+          
         }
-        return; // Prevent dispatching success on failure
-      } else {
-        dispatch(signinSuccess(result));
-        navigate("/");
+      
+       else {
+
+        dispatch(signinSuccess(result));  // update redux state
+
+ 
+        setTimeout(() => { if (currentUser) navigate('/dashboard'); }, 2000);
+
+ 
+
+   
+
         setFormData({ email: '', password: '' }); // clear form data after submission in UI
       }
     } catch (error) {
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
     }
   };
+
+
+
+
+
 
   return (
     <form className="mx-w-full max-w-sm p-6 bg-white rounded-md shadow-sm" onSubmit={handleSubmit}>

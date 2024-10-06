@@ -15,6 +15,8 @@ function Test() {
             }
             const data = await response.json();
             setPeople(data.results);
+
+            
         } catch (error) {
             setError(error.message);
         } finally {

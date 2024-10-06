@@ -71,7 +71,7 @@ const SignupForm = () => {
         return;
       } else {
         dispatch(signinSuccess(result));
-        navigate("/");
+        navigate("/dashboard");
       }
 
 

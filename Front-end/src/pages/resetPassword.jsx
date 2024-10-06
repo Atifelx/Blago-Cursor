@@ -34,7 +34,7 @@ function CreatePassword() {
 
     try {
       const response = await fetch('http://localhost:3000/api/verifyemail', {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         },
