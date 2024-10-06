@@ -12,7 +12,7 @@ const initialState = {
 }
 
  const userSlice = createSlice({
-  
+
   name: 'user',
   initialState,
 
@@ -33,11 +33,15 @@ signinFailure:(state,action)=>{
     state.loading = false;
     state.error=action.payload;
 },
-
+ signout: (state) => {
+      state.currentUser = null;
+      state.loading = false;
+      state.error = null;
+    },
   }
 });
 
-export const { signinStart, signinSuccess, signinFailure } = userSlice.actions;
+export const { signinStart, signinSuccess, signinFailure ,signout} = userSlice.actions;
 
 export const selectCurrentUser = (state) => state.user.currentUser; 
 
