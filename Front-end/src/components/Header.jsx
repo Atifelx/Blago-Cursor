@@ -39,6 +39,7 @@ export default function Header() {
           </Link>
         )}
 
+
         {currentUser && (
           <div>
             <img 
@@ -47,6 +48,7 @@ export default function Header() {
               alt="Rounded avatar" 
               onClick={toggleDropdown} 
             />
+
             {isOpen && (
               <div className="absolute right-0 z-10 mt-2 w-48 bg-white border rounded shadow-lg">
                 <div className="py-2 px-4 text-gray-800 text-sm">

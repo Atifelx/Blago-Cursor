@@ -8,7 +8,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   currentUser:null,
   error:null,
-  loading:false
+  loading:false,
+  userExist: false,
 }
 
  const userSlice = createSlice({
@@ -38,11 +39,21 @@ signinFailure:(state,action)=>{
       state.loading = false;
       state.error = null;
     },
+
+    GuserExist: (state,action) => {
+      state.userExist = action.payload;;
+    
+    },
+   
   }
 });
 
-export const { signinStart, signinSuccess, signinFailure ,signout} = userSlice.actions;
+export const { signinStart, signinSuccess, signinFailure ,signout, GuserExist} = userSlice.actions;
 
 export const selectCurrentUser = (state) => state.user.currentUser; 
 
 export default userSlice.reducer;
+
+// userExist: (state, action) => {
+//   state.userExist = action.payload; // Accept a payload
+// },

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+
 const Spinner = () => <div className="loader">Loading...</div>;
 
 function CreatePassword() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(''); // To handle success messages
+  const [status, setStatus] = useState(''); // To handle success messages
   const [passwordState, setPasswordState] = useState(false); // To handle password state
 
   const navigate = useNavigate();
@@ -24,21 +25,25 @@ function CreatePassword() {
     }
   };
 
-  const verifyUser = async () => {                       // Verify User ----------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>
+  const verifyUser = async () => {         
+    
+
+
     setLoading(true);
-    setSuccess(''); // Clear previous success messages
+
+    setStatus(''); // Clear previous status messages
 
     const useremail = {
       email: formData.email // Collect email from formData
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/verifyemail', {
-        method: 'GET',
+      const response = await fetch('http://localhost:3000/verifyemail', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(useremail)
+        body: JSON.stringify(useremail) // GET requests should not have a body
       });
 
       const result = await response.json(); // Get the response as JSON
@@ -48,28 +53,26 @@ function CreatePassword() {
       }
 
       // Set success message from the result
-      setSuccess(result.message); // Assuming API returns a message property
+      setStatus(result.message); // Assuming API returns a message property
       setPasswordState(true);
 
-
-
     } catch (error) {
-      console.error('Error:', error);
+      setStatus(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const passwordChange = async () => {            // passwordChange ----------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>
-    
+  const passwordChange = async () => {           
     
     const passwrddata = {
-        email:formData.email,
+      email: formData.email,
       password: formData.password,
-      
     };
 
     setLoading(true); // Set loading to true
+
+    setStatus(''); // Clear previous status messages
 
     try {
       const response = await fetch('http://localhost:3000/api/update', {
@@ -87,20 +90,12 @@ function CreatePassword() {
       }
 
       // Set success message from the result
-      setSuccess(update.message); // Assuming API returns a message property
+      setStatus(update.message); // Assuming API returns a message property
 
-
-
-
-
-
-       navigate('/signin'); // Navigate to the main program
-
-
-
+      navigate('/signin'); // Navigate to the main program
 
     } catch (error) {
-      console.error("Error during password change:", error);
+      setStatus(error.message); 
     } finally {
       setLoading(false);
     }
@@ -166,16 +161,12 @@ function CreatePassword() {
             ) : (passwordState ? 'Update' : 'Verify')}
           </button>
 
-          {success && (
-          <div className="mt-5 p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-            {success}
-          </div>
-        )}
-
-
+          {status && (
+            <div className="mt-5 p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+              {status}
+            </div>
+          )}
         </form>
-
-       
       </div>
     </div>
   );

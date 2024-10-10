@@ -48,7 +48,7 @@ const SignupForm = () => {
     try {
     
 
-      const response = await fetch('http://localhost:3000/api/signup', {
+      const response = await fetch('http://localhost:3000/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ const SignupForm = () => {
 
         // Nested condition to check for duplicate error
         if (result.message && result.message.includes("duplicate")) {
-          navigate("/signin");
+          // navigate("/signin");
         }
         
         return;

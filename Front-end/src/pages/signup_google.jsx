@@ -45,13 +45,16 @@ function CreatePassword() {
       if (response.ok) {
         console.log("User data sent successfully!");
 
-        dispatch(signinSuccess(userData));
+       dispatch(signinSuccess(userData));
         
-        navigate('/'); // Navigate to the main program
+        navigate('/signin'); // Navigate to the main program
 
       } else {
+
         const errorData = await response.json();
         console.error("Failed to send user data:", response.statusText, errorData);
+
+        // need add error in below form if user password has any error
       }
     } catch (error) {
       console.error("Error during signup:", error);

@@ -2,13 +2,17 @@ import React from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { signinStart, signinSuccess, signinFailure } from '../app/user/userSlice';
+import { signinStart, signinSuccess, signinFailure , GuserExist} from '../app/user/userSlice';
+
+
+
 
 
 const SigninForm = () => {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
- 
+  
   const currentUser = useSelector((state) => state.user.currentUser);
   const error = useSelector((state) => state.user.error);
   const loading = useSelector((state) => state.user.loading);
@@ -28,6 +32,7 @@ const SigninForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (!formData.email || !formData.password) {
       dispatch(signinFailure({ message: 'Please fill all the fields.' }));
       return;
@@ -36,7 +41,7 @@ const SigninForm = () => {
     dispatch(signinStart());
 
     try {
-      const response = await fetch('http://localhost:3000/api/signin', {
+      const response = await fetch(`http://localhost:3000/api/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -46,25 +51,19 @@ const SigninForm = () => {
 
       const result = await response.json();
 
-      if (result.success === false) {
+       if (!response.ok) {
         dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
-      
-          
-        }
-      
-       else {
+        return;
+        
+      } else {
 
-        dispatch(signinSuccess(result));  // update redux state
+      dispatch(signinSuccess(result));// Update redux state
 
- 
-        setTimeout(() => { if (currentUser) navigate('/dashboard'); }, 2000);
+navigate('/dashboard');
 
- 
+setFormData({ email: '', password: '' }); // Clear form data after submission
 
-   
-
-        setFormData({ email: '', password: '' }); // clear form data after submission in UI
-      }
+   }
     } catch (error) {
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
     }
@@ -74,19 +73,18 @@ const SigninForm = () => {
 
 
 
-
   return (
-    <form className="mx-w-full max-w-sm p-6 bg-white rounded-md shadow-sm" onSubmit={handleSubmit}>
-      <label className="text-2xl subpixel-antialiased text-gray-400 text-center block">Sign In</label>
+    <form className="max-w-sm mx-auto p-6 bg-white rounded-md shadow-sm" onSubmit={handleSubmit}>
+      <h2 className="text-2xl text-gray-400 text-center mb-5">Sign In</h2>
 
       <div className="mb-5">
-        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
         <input
           type="email"
           id="email"
           value={formData.email}
           onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full max-w-85"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           placeholder="Enter Your Email"
           autoComplete="email"
           required
@@ -94,14 +92,14 @@ const SigninForm = () => {
       </div>
 
       <div className="mb-5">
-        <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+        <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Password</label>
         <input
           type="password"
           id="password"
           value={formData.password}
-          placeholder="Enter Your Password"
           onChange={handleChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-85"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          placeholder="Enter Your Password"
           required
           autoComplete="current-password"
         />
@@ -110,7 +108,7 @@ const SigninForm = () => {
       <button
         type="submit"
         disabled={loading}
-        className={`text-white ${loading ? 'bg-gray-500' : 'bg-emerald-500 hover:bg-emerald-700'} focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800`}
+        className={`text-white ${loading ? 'bg-gray-500' : 'bg-emerald-500 hover:bg-emerald-700'} focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5`}
       >
         {loading ? (
           <>
@@ -120,22 +118,19 @@ const SigninForm = () => {
         ) : 'Sign In'}
       </button>
 
-      <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
-        Don't have an account?
-        <a href="/signup" className="text-blue-600 hover:underline">
-          <span> SignUp</span>
-        </a>
-      </label>
-
-      <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
-        Forgot password?
-        <a href="/resetpassword" className="text-blue-600 hover:underline">
-          <span> Reset </span>
-        </a>
-      </label>
+      <div className="mt-5 text-center">
+        <p className="text-sm font-medium text-gray-400">
+          Don't have an account? 
+          <a href="/signup" className="text-blue-600 hover:underline"> SignUp</a>
+        </p>
+        <p className="text-sm font-medium text-gray-400">
+          Forgot password? 
+          <a href="/resetpassword" className="text-blue-600 hover:underline"> Reset</a>
+        </p>
+      </div>
 
       {error && (
-        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
           {error.message}
         </div>
       )}

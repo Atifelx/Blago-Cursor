@@ -16,7 +16,7 @@ import Header from './components/Header';
 import Footer from './components/footer.jsx';
 import Createpassword from './pages/signup_google';
 import Resetpassword from './pages/resetPassword';
-
+import Profile from './components/LoggedinComponents/profile.jsx'
 
 const App = () => {
 
@@ -49,11 +49,11 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/dashboard" element={currentUser? <Dashboard /> : <Navigate to="/signin" />} />
-
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/signin" element={!currentUser? <SignIn /> : <Navigate to="/dashboard"  />} />
-        <Route path="/signup" element={!currentUser? <SignUp /> : <Navigate to="/dashboard"  />} />
+        <Route path="/dashboard" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
+        <Route path="/profile" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
+        <Route path="/Chat-AI" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
+        <Route path="/signin" element={<SignIn /> } />
+        <Route path="/signup" element={<SignUp />  }/>
         <Route path="/createpassword" element={<Createpassword />} />
         <Route path="/resetpassword" element={<Resetpassword />} />
       </Routes>

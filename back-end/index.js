@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
+import AIRoutes from './routes/openAiChat.js';
 import cors from 'cors';
 
 dotenv.config();
@@ -13,7 +14,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use(cors()); 
+const corsOptions = {
+  origin: 'http://localhost:5173', // Ensure no trailing slash
+  methods: 'POST, OPTIONS',
+  allowedHeaders: ['Content-Type'],
+};
+
+app.use(cors(corsOptions));
+
 
 
 
@@ -30,7 +38,7 @@ mongoose.connect(process.env.MONGOURI)
 
  
   app.use('/api', authRoutes);
-
+  app.use('/api', AIRoutes);
 
   app.use((req, res, next) => {
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');    /// setting for ignoring console error 

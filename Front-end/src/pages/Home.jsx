@@ -1,14 +1,21 @@
 import React from 'react'
 
-import Test3 from "./Test3"
-
+import ChatComponent from "../components/LoggedinComponents/AiChatDefault";
+// import DesignChat from "../components/LoggedinComponents/designChat";
 function Home() {
   return (
    <div>
 
-<Test3/>
+ <ChatComponent/>  
+
+ {/* <DesignChat/> */}
     </div>
   )
 }
 
 export default Home
+
+
+
+
+

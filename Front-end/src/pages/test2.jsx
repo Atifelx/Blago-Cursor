@@ -34,11 +34,7 @@ function Test2() {
 
 export default Test2;
 
-<div>
-    {
-      people.map((person)=>(<div>person.name</div>)  )
-    }
-</div>
+
 
 
 

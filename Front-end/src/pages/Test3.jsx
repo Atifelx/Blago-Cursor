@@ -18,6 +18,7 @@ try {
     
 
 const response = await fetch("https://swapi.dev/api/people/");
+
 const data = await response.json();
 
 SetPeople(data.results);
@@ -36,6 +37,7 @@ SetPeople(data.results);
       <p >Get list of data from an API</p>
       <button classNameName='bg-orange-500 border-x-2' onClick={handleAPi}>Click</button>
       <div>{
+        
         people.map((person)=>(<div>{person.name}</div>))
         }
         </div>
