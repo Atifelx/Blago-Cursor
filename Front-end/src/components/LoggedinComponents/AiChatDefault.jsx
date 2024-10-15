@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 
 
 
+
+
 const ChatComponent = () => {
     const [input, setInput] = useState('');
     const [response, setResponse] = useState('');
@@ -61,8 +63,10 @@ const ChatComponent = () => {
 
             //----------------------------------------------- for editer.js only 
            
-   
-        //     console.log('Full API Response:', data); 
+  
+
+
+           console.log('Full API Response:', data); 
           dispatch(loadData(data));
      
             

@@ -4,8 +4,8 @@ import EditorComponent2 from '../components/LoggedinComponents/Intial.editer'
 function About() {
   return (
     <div >
-    <Editer/>
     <EditorComponent2/>
+
     </div>
   )
 }
