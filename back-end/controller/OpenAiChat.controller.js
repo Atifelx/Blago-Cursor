@@ -29,7 +29,7 @@ const chatController = async (req, res) => {
     
 
         if (!response.ok) {
-            throw new Error('Network response was not ok openAi..');
+            throw new Error('Network response was not ok openAi-backend');
            
         }
 
@@ -38,8 +38,10 @@ const chatController = async (req, res) => {
 
 
 
+
+
        
-        console.log(res.json())
+    
 
     } catch (error) {
         console.error(error);

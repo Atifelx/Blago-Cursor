@@ -1,12 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button , Spinner } from 'flowbite-react'; 
+import { useDispatch } from 'react-redux';
+ import {loadData} from '../../app/user/userDataSlice';
+
+
+
 
 const ChatComponent = () => {
     const [input, setInput] = useState('');
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const dispatch = useDispatch();
+
+
+
+
+
+    const codeBlockStyle = {
+        backgroundColor: '#282c34', // Dark background
+        borderRadius: '10px', // More rounded corners
+        padding: '15px', // Padding inside the code block
+        overflow: 'auto', // Scrollbar for overflow
+        color: '#abb2bf', // Lighter grey text color
+        fontFamily: 'Consolas, monospace', // Monospace font
+        fontSize: '12px', // Smaller font size
+        lineHeight: '1.4', // Slightly increased line height for readability
+        textShadow: 'none', // Remove text shadow
+    };
+    
+
+
+
+
 
     const handleInputChange = (e) => {
         setInput(e.target.value);
@@ -23,11 +51,24 @@ const ChatComponent = () => {
             });
 
             if (!res.ok) {
-                throw new Error('Network response was not ok');
+               // throw new Error('Network response was not ok');
+                throw new Error(`api error! status: ${res.status}`);
             }
 
             const data = await res.json();
+
             setResponse(data);
+
+            //----------------------------------------------- for editer.js only 
+           
+   
+        //     console.log('Full API Response:', data); 
+          dispatch(loadData(data));
+     
+            
+
+
+
         } catch (error) {
             console.error('Error fetching data:', error);
             setResponse('Error fetching data. Please try again.');
@@ -37,6 +78,9 @@ const ChatComponent = () => {
           
         }
     };
+
+
+
 
     const parseResponse = (text) => {
         const lines = text.split('\n');
@@ -60,13 +104,14 @@ const ChatComponent = () => {
                 result.push(<h1 key={index}>{line.slice(2)}</h1>);
             }
             // Bold and italic parsing
-            else if (line.includes('**') && line.includes('**')) {
+            else if (line.includes('**')) {
                 const parts = line.split(/\*\*(.*?)\*\*/g);
                 result.push(
                     <p key={index}>
                         {parts.map((part, i) => (i % 2 === 1 ? <strong key={i}>{part}</strong> : part))}
                     </p>
                 );
+                // result.push(<br key={index + lines.length} />); // Add empty row after paragraph
             } else if (line.includes('*') && line.includes('*')) {
                 const parts = line.split(/\*(.*?)\*/g);
                 result.push(
@@ -74,6 +119,7 @@ const ChatComponent = () => {
                         {parts.map((part, i) => (i % 2 === 1 ? <em key={i}>{part}</em> : part))}
                     </p>
                 );
+                // result.push(<br key={index + lines.length} />); // Add empty row after paragraph
             }
             // List and ordered list parsing
             else if (/^\d+\./.test(line)) {
@@ -86,9 +132,11 @@ const ChatComponent = () => {
                 if (inCodeBlock) {
                     result.push(
                         <SyntaxHighlighter 
-                            key={index} 
+                            key={index}
                             language="javascript"
-                            style={prism}
+                             customStyle={codeBlockStyle} // Apply inline styles
+                            style={atomDark}
+                          
                         >
                             {codeBlockContent.trim()}
                         </SyntaxHighlighter>
@@ -104,38 +152,57 @@ const ChatComponent = () => {
             // Blockquote parsing
             else if (line.startsWith('> ')) {
                 result.push(<blockquote key={index} className="border-l-4 pl-4 italic">{line.slice(2).trim()}</blockquote>);
+                // result.push(<br key={index + lines.length} />); // Add empty row after blockquote
             } else {
                 result.push(<p key={index}>{line}</p>);
+                result.push(<br key={index + lines.length} />); // Add empty row after paragraph
             }
         });
       
         return result;
+
+     
+     
+       
     };
 
+
+
+
     return (
-        <div className="flex flex-col flex-1 bg-gray-100 p-4 rounded-lg  lg:h-screen md:h-auto w-full sm:w-auto">
+        <div className="flex flex-col flex-1 bg-gray-100 p-4 rounded-lg h-screen  w-full sm:w-auto  overflow-y-auto">
+            <span className='from-neutral-300 font-extralight text-sm mb-1'>OpenAI's GPT-4</span>
             <div className='flex items-center bg-gray-100 border border-slate-200 rounded-md p-5'>
-                <input 
+                <input
+                
                     value={input}
                     onChange={handleInputChange}
                     placeholder="Type your question here."
                     className='flex-1 p-2 border  bg-gray-200 rounded-xl font-normal from-neutral-700'
+                    
+
                 />
+
+
+
+
                 <Button Button color="light" 
                 
                     onClick={fetchData} 
                     disabled={loading}
                     className="bg-slate-600 text-neutral-600 ml-2 rounded-xl bg-transparent hover:text-neutral-900 border-solid " pill
                 >
-                    {loading ? <Spinner aria-label="Medium sized spinner example" size="md" /> : 'Get Response'}
+                    {loading ? <Spinner aria-label="Medium sized spinner example" size="xl" /> : 'Get Response'}
                     
                 </Button>
             </div>
-            <div className='mt-4 flex  font-normal text-neutral-800 '>
+            <div className='mt-4 flex flex-col font-normal text-neutral-800 '>
                 {parseResponse(response)}
+          
             </div>
         </div>
     );
 };
+
 
 export default ChatComponent;

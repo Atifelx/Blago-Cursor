@@ -18,6 +18,8 @@ export default function Header() {
 
   const currentUser = useSelector(state => state.user.currentUser);
 
+  console.log("Current User Data:", currentUser?.user?.photoUrl );
+
   return (
     <div>
       <Navbar className="border-b-2 w-screen ">
@@ -44,7 +46,7 @@ export default function Header() {
           <div>
             <img 
               className="w-10 h-10 rounded-full" 
-              src={currentUser?.user?.photoUrl || '/public/avatar.jpg'} 
+              src={currentUser?.user?.photoUrl || "Front-end/public/male-avatar.png"} 
               alt="Rounded avatar" 
               onClick={toggleDropdown} 
             />

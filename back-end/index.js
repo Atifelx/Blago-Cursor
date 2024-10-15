@@ -14,13 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-const corsOptions = {
-  origin: 'http://localhost:5173', // Ensure no trailing slash
-  methods: 'POST, OPTIONS',
-  allowedHeaders: ['Content-Type'],
-};
-
-app.use(cors(corsOptions));
+app.use(cors({ origin: 'http://localhost:5173' }));
 
 
 

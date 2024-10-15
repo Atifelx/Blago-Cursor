@@ -1,9 +1,11 @@
 import React from 'react'
-
+import Editer from '../components/LoggedinComponents/Editer.jsx'
+import EditorComponent2 from '../components/LoggedinComponents/Intial.editer'
 function About() {
   return (
-    <div className='text-lime-300'>
-    About  
+    <div >
+    <Editer/>
+    <EditorComponent2/>
     </div>
   )
 }
