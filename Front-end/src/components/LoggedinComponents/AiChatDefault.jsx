@@ -12,8 +12,9 @@ import { useDispatch } from 'react-redux';
 
 const ChatComponent = () => {
     const [input, setInput] = useState('');
-    const [response, setResponse] = useState('');
+    const [response, setResponse] = useState(localStorage.getItem('response') || ''); // Retrieve response from localStorage
     const [loading, setLoading] = useState(false);
+    const [combineString, setCombineString] = useState('');
 
     const dispatch = useDispatch();
 
@@ -60,6 +61,7 @@ const ChatComponent = () => {
             const data = await res.json();
 
             setResponse(data);
+            localStorage.setItem('response', data); // Save response to localStorage prevent data delte from page reresh
 
             //----------------------------------------------- for editer.js only 
            
@@ -67,7 +69,7 @@ const ChatComponent = () => {
 
 
            console.log('Full API Response:', data); 
-          dispatch(loadData(data));
+         // dispatch(loadData(data));
      
             
 
@@ -171,6 +173,24 @@ const ChatComponent = () => {
     };
 
 
+    const handleClick = () => {
+     
+            setCombineString((prev) => prev + response + '\n\n');
+
+     
+                dispatch(loadData(combineString));
+        
+        }
+    
+ // Save response to localStorage every time it changes
+ useEffect(() => {
+    if (response && response.trim() !== '') {
+        localStorage.setItem('response', response);
+    }
+}, [response]);
+
+
+  
 
 
     return (
@@ -190,7 +210,7 @@ const ChatComponent = () => {
 
 
 
-                <Button Button color="light" 
+                <Button  color="light" 
                 
                     onClick={fetchData} 
                     disabled={loading}
@@ -198,7 +218,8 @@ const ChatComponent = () => {
                 >
                     {loading ? <Spinner aria-label="Medium sized spinner example" size="xl" /> : 'Get Response'}
                     
-                </Button>
+                </Button >
+                <Button  color="grey"  onClick={handleClick} className='text-neutral-600 ml-2 rounded-xl border border-s hover:bg-slate-400 '>Fetch to editor</Button>
             </div>
             <div className='mt-4 flex flex-col font-normal text-neutral-800 '>
                 {parseResponse(response)}

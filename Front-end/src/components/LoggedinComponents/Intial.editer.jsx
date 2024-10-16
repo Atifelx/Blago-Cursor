@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
@@ -13,13 +14,26 @@ import { useSelector } from 'react-redux';
 import { selectEditorData } from '../../app/user/userDataSlice';
 import { convertApiResponseToEditorBlocks } from '../../util/ApitoEditot'; // Adjust import path as necessary
 
+
+
+
+
 const EditorComponent = () => {
   const editorInstance = useRef(null);
-  const blocksData = useSelector(selectEditorData);
+
+
+  const blocksData = useSelector(selectEditorData);  // actual data from redux 
+
+  const editorData = convertApiResponseToEditorBlocks(blocksData) || [];
+
+
+
+
+
 
   const initializeEditor = (data) => {
     if (!editorInstance.current) {
-      // Initialize the Editor.js instance only if it hasn't been created yet
+      // Initialize the Editor.js instance
       editorInstance.current = new EditorJS({
         holder: 'editorjs',
         tools: {
@@ -39,55 +53,59 @@ const EditorComponent = () => {
           marker: Marker,
           inlineCode: InlineCode,
         },
-        data: data,
+        data: data || [],
         onReady: () => {
           console.log('Editor is ready');
-
-          editorInstance.current.blocks.render(data);
         },
         onChange: () => {
           console.log('Editor content changed!');
         },
       });
-    } else {
-      // Get the current blocks and the new blocks
-      editorInstance.current.save().then((savedData) => {
-        const existingBlocks = savedData.blocks || [];
-        const newBlocks = data.blocks || [];
-  
-        // Append new blocks to the existing blocks
-        const combinedBlocks = [...existingBlocks, ...newBlocks];
-  
-        // Instead of clearing, render the new blocks
-        editorInstance.current.blocks.render(combinedBlocks);
-      }).catch((error) => {
-        console.error('Error saving editor data:', error);
-      });
+    }
+  };
+
+  const updateEditorData = (data) => {
+    if (editorInstance.current) {
+      editorInstance.current.render(data);
+    }
+  };
+
+
+
+
+  const destroyEditor = () => {
+    if (editorInstance.current) {
+      editorInstance.current.destroy();
+      editorInstance.current = null; // Reset reference after destroying the editor
+      console.log('Editor instance destroyed');
     }
   };
   
-  
+
 
   useEffect(() => {
-    // Convert blocksData to the format required by Editor.js
-    const editorData = convertApiResponseToEditorBlocks(blocksData);
-    
-    console.log("edit-kdata data ", editorData);
+ 
 
-      initializeEditor(editorData); // Pass editorData to initializeEditor
-  
+    // Initialize the editor only if it hasn't been initialized
+    if (!editorInstance.current) {
+      initializeEditor(editorData);
+    } else {
+      updateEditorData(editorData); // Update the content if the editor is already initialized
+    }
 
     return () => {
+      // Clean up Editor.js instance when the component unmounts
       destroyEditor();
     };
-
-
   }, [blocksData]); // Only re-run if blocksData changes
+
+
+
 
   return (
     <div className="flex flex-1 flex-col w-screen">
       <div
-        id="editorjs"  
+        id="editorjs"
         className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-5 mt-5 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly"
       ></div>
     </div>
