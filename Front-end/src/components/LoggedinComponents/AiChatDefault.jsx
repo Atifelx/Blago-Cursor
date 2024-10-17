@@ -173,24 +173,21 @@ const ChatComponent = () => {
     };
 
 
-    const handleClick = () => {
-     
-            setCombineString((prev) => prev + response + '\n\n');
 
-     
-                dispatch(loadData(combineString));
-        
-        }
+
+    
+
+
     
  // Save response to localStorage every time it changes
  useEffect(() => {
     if (response && response.trim() !== '') {
         localStorage.setItem('response', response);
     }
+    dispatch(loadData(response));
 }, [response]);
 
 
-  
 
 
     return (
@@ -219,7 +216,7 @@ const ChatComponent = () => {
                     {loading ? <Spinner aria-label="Medium sized spinner example" size="xl" /> : 'Get Response'}
                     
                 </Button >
-                <Button  color="grey"  onClick={handleClick} className='text-neutral-600 ml-2 rounded-xl border border-s hover:bg-slate-400 '>Fetch to editor</Button>
+
             </div>
             <div className='mt-4 flex flex-col font-normal text-neutral-800 '>
                 {parseResponse(response)}

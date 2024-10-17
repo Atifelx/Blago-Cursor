@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
@@ -12,103 +11,167 @@ import Marker from '@editorjs/marker';
 import InlineCode from '@editorjs/inline-code';
 import { useSelector } from 'react-redux';
 import { selectEditorData } from '../../app/user/userDataSlice';
-import { convertApiResponseToEditorBlocks } from '../../util/ApitoEditot'; // Adjust import path as necessary
-
-
-
-
+import { converttoToEditor } from '../../util/userApi.js';
+import { Button } from 'flowbite-react';
 
 const EditorComponent = () => {
   const editorInstance = useRef(null);
-
-
-  const blocksData = useSelector(selectEditorData);  // actual data from redux 
-
-  const editorData = convertApiResponseToEditorBlocks(blocksData) || [];
-
-
-
-
-
+  const blocksData = useSelector(selectEditorData); // Get Redux data
 
   const initializeEditor = (data) => {
-    if (!editorInstance.current) {
-      // Initialize the Editor.js instance
-      editorInstance.current = new EditorJS({
-        holder: 'editorjs',
-        tools: {
-          header: Header,
-          list: List,
-          paragraph: {
-            class: Paragraph,
-            inlineToolbar: true,
-          },
-          table: Table,
-          embed: Embed,
-          quote: {
-            class: Quote,
-            inlineToolbar: true,
-          },
-          delimiter: Delimiter,
-          marker: Marker,
-          inlineCode: InlineCode,
+    editorInstance.current = new EditorJS({
+      holder: 'editorjs',
+      tools: {
+        header: {
+          class: Header,
+          inlineToolbar: true,
         },
-        data: data || [],
-        onReady: () => {
-          console.log('Editor is ready');
+        list: {
+          class: List,
+          inlineToolbar: true,
         },
-        onChange: () => {
-          console.log('Editor content changed!');
+        paragraph: {
+          class: Paragraph,
+          inlineToolbar: ['bold', 'italic', 'marker', 'inlineCode'],
         },
+        table: {
+          class: Table,
+          inlineToolbar: true,
+        },
+        embed: Embed,
+        quote: {
+          class: Quote,
+          inlineToolbar: true,
+        },
+        delimiter: Delimiter,
+        marker: Marker,
+        inlineCode: InlineCode,
+      },
+      data: data || { blocks: [] }, // Use provided data or empty
+      onReady: () => {
+        console.log('Editor is ready');
+        // Render initial data if available
+  
+      },
+      onChange: () => {
+        editorInstance.current.save().then((outputData) => {
+          console.log('Data saved: ', outputData);
+          // Save the current editor data to localStorage
+          localStorage.setItem('editorData', JSON.stringify(outputData));
+        }).catch((error) => {
+          console.log('Saving failed: ', error);
+        });
+      },
+    });
+  };
+
+  const updateEditorData = (newData) => {
+    if (editorInstance.current) {
+      editorInstance.current.save().then((currentData) => {
+        const currentBlocks = currentData.blocks || [];
+        const newBlocks = newData.blocks || [];
+
+        // Merge current data with new data from Redux
+        const mergedData = {
+          blocks: [
+            ...currentBlocks,
+            ...newBlocks,
+          ],
+        };
+
+        // Update Editor.js with the merged data
+        editorInstance.current.render(mergedData).catch((error) => {
+          console.error('Error merging data:', error);
+        });
+      }).catch((error) => {
+        console.error('Error saving current data:', error);
       });
     }
   };
 
-  const updateEditorData = (data) => {
-    if (editorInstance.current) {
-      editorInstance.current.render(data);
-    }
-  };
-
-
-
-
-  const destroyEditor = () => {
-    if (editorInstance.current) {
-      editorInstance.current.destroy();
-      editorInstance.current = null; // Reset reference after destroying the editor
-      console.log('Editor instance destroyed');
-    }
-  };
-  
-
-
   useEffect(() => {
- 
+    // Retrieve saved data from localStorage
+    const savedData = localStorage.getItem('editorData');
+    const parsedData = savedData ? JSON.parse(savedData) : null;
 
-    // Initialize the editor only if it hasn't been initialized
     if (!editorInstance.current) {
-      initializeEditor(editorData);
+      // First time initializing the editor
+      initializeEditor(parsedData);
     } else {
-      updateEditorData(editorData); // Update the content if the editor is already initialized
+      // When blocksData changes, update the editor
+      const updatedEditorData = converttoToEditor(blocksData) || { blocks: [] };
+      // Merge saved data with Redux data before updating
+      if (parsedData) {
+        const mergedData = {
+          blocks: [
+            ...(parsedData.blocks || []),
+            ...(updatedEditorData.blocks || []),
+          ],
+        };
+        updateEditorData(mergedData); // Check and update if necessary
+      } else {
+        updateEditorData(updatedEditorData); // Only update with Redux data if no saved data
+      }
     }
 
     return () => {
-      // Clean up Editor.js instance when the component unmounts
-      destroyEditor();
+      // Cleanup on unmount
+      if (editorInstance.current) {
+        editorInstance.current.destroy();
+        editorInstance.current = null;
+      }
     };
-  }, [blocksData]); // Only re-run if blocksData changes
+  }, [blocksData]); // Effect runs when blocksData (Redux data) changes
 
+  const handleClick = () => {
+    const newData = converttoToEditor(blocksData) || { blocks: [] };
 
+    // Merge with current data in the editor
+    if (editorInstance.current) {
+      editorInstance.current.save().then((currentData) => {
+        const currentBlocks = currentData.blocks || [];
 
+        // Combine the current blocks with the new data
+        const mergedData = {
+          blocks: [
+            ...currentBlocks,
+            ...newData.blocks,
+          ],
+        };
+
+        // Render the merged data
+        editorInstance.current.render(mergedData).catch((error) => {
+          console.error('Error merging data on button click:', error);
+        });
+      }).catch((error) => {
+        console.error('Error saving current data on button click:', error);
+      });
+    }
+  };
+  
+  
 
   return (
     <div className="flex flex-1 flex-col w-screen">
+    
       <div
         id="editorjs"
         className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-5 mt-5 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly"
       ></div>
+     
+     <Button
+      id="editorjs"
+      
+      onClick={handleClick}
+      className="border border-gray-200 rounded-xl shadow-xl p-2 ml-10 mr-10 mb-5 mt-5 w-36"
+    >fetch</Button>
+
+
     </div>
+    
+
+      
+     
   );
 };
 

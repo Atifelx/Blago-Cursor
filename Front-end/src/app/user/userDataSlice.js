@@ -35,9 +35,10 @@ const userArticleSlice = createSlice({
     clearData: (state) => {
    
         state.editorData = {
-            // time: 0,
+            //  time: 0,
             blocks: [],  // Reset blocks to an empty array
             // version: "2.22.2",  // Keep the version
+           
           };
   },
 
