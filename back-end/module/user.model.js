@@ -8,7 +8,7 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false ,default:"12345678" },
   createdAt: { type: Date, default: Date.now },
-  photoUrl: { type: String, required: false , default:"need profile URL"},
+  photoUrl: { type: String, required: false },
 
 });
 

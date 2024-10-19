@@ -13,6 +13,9 @@ import { useSelector } from 'react-redux';
 import { selectEditorData } from '../../app/user/userDataSlice';
 import { converttoToEditor } from '../../util/userApi.js';
 import { Button } from 'flowbite-react';
+// import AIWriteTool from './customtool/AIWriteTool'; // Adjust the path as necessary
+
+
 
 const EditorComponent = () => {
   const editorInstance = useRef(null);
@@ -25,23 +28,30 @@ const EditorComponent = () => {
         header: {
           class: Header,
           inlineToolbar: true,
-        },
+           },
+
         list: {
           class: List,
           inlineToolbar: true,
         },
         paragraph: {
           class: Paragraph,
-          inlineToolbar: ['bold', 'italic', 'marker', 'inlineCode'],
+          inlineToolbar: true,
         },
+
+        // aiWrite: {
+        //   class: AIWriteTool, // Add your custom AI Write tool here
+        // inlineToolbar: true,
+
+        // },
+
         table: {
           class: Table,
-          inlineToolbar: true,
         },
         embed: Embed,
         quote: {
           class: Quote,
-          inlineToolbar: true,
+    
         },
         delimiter: Delimiter,
         marker: Marker,
@@ -50,6 +60,8 @@ const EditorComponent = () => {
       data: data || { blocks: [] }, // Use provided data or empty
       onReady: () => {
         console.log('Editor is ready');
+        // this.api = editorInstance.current.api; // Store API after editor is ready
+        // Now you can create your tools here or call functions to initialize them
         // Render initial data if available
   
       },
@@ -152,27 +164,28 @@ const EditorComponent = () => {
   
 
   return (
-    <div className="flex flex-1 flex-col w-screen">
-    
-      <div
-        id="editorjs"
-        className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-5 mt-5 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly"
-      ></div>
-     
-     <Button
+    <div className="flex flex-col-reverse  w-screen">
+
+
+    <div
       id="editorjs"
+      className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-2 mt-2 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly relative" // Added 'relative' class
+    > </div>
+
+    <div>
+
+    <Button
+    color="gray"
+        onClick={handleClick}
+        className="border border-gray-50 rounded-xl shadow-sm p-0 mr-10 mb-2 ml-10 mt-5 justify-evenly relative text-neutral-500" // Positioned the button
+      >
       
-      onClick={handleClick}
-      className="border border-gray-200 rounded-xl shadow-xl p-2 ml-10 mr-10 mb-5 mt-5 w-36"
-    >fetch</Button>
+        Import from Chat
+      </Button>
 
+      </div>
 
-    </div>
-    
-
-      
-     
-  );
+  </div>
+);
 };
-
 export default EditorComponent;

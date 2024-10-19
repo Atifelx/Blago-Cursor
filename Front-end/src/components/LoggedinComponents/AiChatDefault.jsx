@@ -1,7 +1,7 @@
 import React, { useState , useEffect} from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Button , Spinner } from 'flowbite-react'; 
+import { Button , Spinner , Clipboard} from 'flowbite-react'; 
 import { useDispatch } from 'react-redux';
  import {loadData} from '../../app/user/userDataSlice';
 
@@ -222,6 +222,8 @@ const ChatComponent = () => {
                 {parseResponse(response)}
           
             </div>
+            {/* <Clipboard.WithIconText valueToCopy={(response.json)} /> */}
+
         </div>
     );
 };

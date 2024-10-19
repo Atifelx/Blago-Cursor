@@ -6,7 +6,7 @@ function Home() {
   return (
    <div>
 
- <ChatComponent/>  
+ {/* <ChatComponent/>   */}
 
  {/* <DesignChat/> */}
     </div>

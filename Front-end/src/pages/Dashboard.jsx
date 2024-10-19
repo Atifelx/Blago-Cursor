@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import DashboardFlowbit from '../components/LoggedinComponents/DashboardFlowbit';
 import Profile from '../components/LoggedinComponents/profile';
 import ChatComponent from '../components/LoggedinComponents/AiChatDefault';
+import EditorComponent from '../components/LoggedinComponents/Intial.editer'
 
 function Dashboard() {
   const location = useLocation();
@@ -20,7 +21,7 @@ function Dashboard() {
         <div > {/* Adjusted for more space for profile */}
         {location.pathname === '/Chat-AI'? <ChatComponent/>: null} {/* Render Profile if path matches */}
       </div>
-
+      {location.pathname === '/Blog-Writer'? <EditorComponent/>: null} {/* Render Profile if path matches */}
       </div>
 
       

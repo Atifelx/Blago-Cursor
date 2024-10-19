@@ -8,6 +8,8 @@ function Profile() {
   const [success, setSuccess] = React.useState(''); // To handle success messages
   const [formData, setFormData] = React.useState({ password: '' });
   const [error, setError] = React.useState(null);
+  const [showPassword, setShowPassword] = React.useState(false); // New state for showing password
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,17 +46,19 @@ function Profile() {
   };
 
   return (
-    <div className="flex  flex-grow justify-items-center p-4 bg-white">
+    <div className="flex  flex-grow flex-col justify-evenly p-4 bg-white">
       {/* User Image Placeholder */}
       <div className="mb-5 ml-28">
         <img 
-          src={currentUser?.user?.photoUrl || 'path/to/default/image.jpg'} 
+         src={`https://eu.ui-avatars.com/api/?size=64&name=${currentUser?.user?.username}`}
+
           alt="User"
           className="w-24 h-24 rounded-full border-2 border-gray-300 object-cover"
         />
       </div>
 
-      {/* Form */}
+     
+     <div>
       <form className="w-full max-w-sm p-6 bg-white rounded-md shadow-sm" onSubmit={handleSubmit}>
         <div className="mb-5">
           <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
@@ -70,9 +74,9 @@ function Profile() {
         </div>
 
         <div className="mb-5">
-          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Change Password</label>
           <input
-            type="password"
+             type={showPassword ? 'text' : 'password'} // Toggle between text and password
             id="password"
             value={formData.password}
             placeholder="Enter Your Password"
@@ -83,6 +87,21 @@ function Profile() {
           />
         </div>
 
+<div className='mb-5'>
+        <input
+        
+                type="checkbox"
+                id="showPassword"
+                checked={showPassword}
+                onChange={() => setShowPassword(!showPassword)} // Toggle the state
+                className="mr-2"
+              />
+              <label htmlFor="showPassword" className="text-sm text-neutral-700">Show Password</label>
+
+
+              </div>
+
+
         <Button type="submit">Update</Button>
 
         {success && (
@@ -91,6 +110,8 @@ function Profile() {
           </div>
         )}
       </form>
+
+      </div>
     </div>
   );
 }

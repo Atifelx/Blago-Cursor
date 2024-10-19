@@ -1,10 +1,10 @@
 import React from 'react'
 import Editer from '../components/LoggedinComponents/Editer.jsx'
-import EditorComponent2 from '../components/LoggedinComponents/Intial.editer'
+import Test3 from '../pages/test2.jsx';
 function About() {
   return (
     <div >
-    <EditorComponent2/>
+    <Test3/>
 
     </div>
   )

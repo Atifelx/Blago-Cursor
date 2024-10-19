@@ -40,7 +40,7 @@ const App = () => {
   //   state.loading=false;
   //   state.error=null;
 
-
+  //<EditorComponent />
 
 
   return (
@@ -52,6 +52,7 @@ const App = () => {
         <Route path="/dashboard" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
         <Route path="/profile" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
         <Route path="/Chat-AI" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
+        <Route path="/Blog-Writer" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
         <Route path="/signin" element={<SignIn /> } />
         <Route path="/signup" element={<SignUp />  }/>
         <Route path="/createpassword" element={<Createpassword />} />

@@ -1,4 +1,4 @@
-import { Navbar, Button } from "flowbite-react";
+import { Navbar, Button , Avatar} from "flowbite-react";
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'; 
 import { signout } from '../app/user/userSlice.js';
@@ -18,7 +18,9 @@ export default function Header() {
 
   const currentUser = useSelector(state => state.user.currentUser);
 
-  console.log("Current User Data:", currentUser?.user?.photoUrl );
+  // console.log("Current User image:", currentUser?.user?.photoUrl );
+  // console.log("Current Username:", currentUser?.user?.username );
+
 
   return (
     <div>
@@ -44,12 +46,21 @@ export default function Header() {
 
         {currentUser && (
           <div>
-            <img 
-              className="w-10 h-10 rounded-full" 
-              src={currentUser?.user?.photoUrl || "Front-end/public/male-avatar.png"} 
-              alt="Rounded avatar" 
-              onClick={toggleDropdown} 
-            />
+    
+
+<Avatar 
+//img={currentUser?.user?.photoUrl ? currentUser.user.photoUrl : `https://eu.ui-avatars.com/api/?size=64&name=${currentUser?.user?.username || 'Doe'}`}
+
+
+
+img={`https://eu.ui-avatars.com/api/size=64/?name=${currentUser?.user?.username}`}
+  status="online" 
+  alt="Rounded avatar" 
+  onClick={toggleDropdown} 
+  className="w-10 h-10 rounded-full right-2"
+/>
+
+
 
             {isOpen && (
               <div className="absolute right-0 z-10 mt-2 w-48 bg-white border rounded shadow-lg">
