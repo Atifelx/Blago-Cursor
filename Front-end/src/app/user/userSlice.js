@@ -10,6 +10,7 @@ const initialState = {
   error:null,
   loading:false,
   userExist: false,
+  editordata:null,
 }
 
  const userSlice = createSlice({
@@ -40,20 +41,32 @@ signinFailure:(state,action)=>{
       state.error = null;
     },
 
-    GuserExist: (state,action) => {
+
+GuserExist: (state,action) => {
       state.userExist = action.payload;;
     
     },
+
+FetchData: (state,action) => {
+      state.editordata = action.payload;
+ },
    
+
   }
 });
+// Export actions
+export const { 
+  signinStart, 
+  signinSuccess, 
+  signinFailure, 
+  signout, 
+  GuserExist, 
+  FetchData 
+} = userSlice.actions;
 
-export const { signinStart, signinSuccess, signinFailure ,signout, GuserExist} = userSlice.actions;
 
 export const selectCurrentUser = (state) => state.user.currentUser; 
+export const selectFetchData = (state) => state.user.editordata; 
 
 export default userSlice.reducer;
 
-// userExist: (state, action) => {
-//   state.userExist = action.payload; // Accept a payload
-// },

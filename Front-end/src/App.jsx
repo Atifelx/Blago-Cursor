@@ -47,8 +47,8 @@ const App = () => {
     <Router>
   <Header/>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
+        {/* <Route path="/about" element={<About />} /> */}
         <Route path="/dashboard" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
         <Route path="/profile" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
         <Route path="/Chat-AI" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />

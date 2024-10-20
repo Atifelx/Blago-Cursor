@@ -211,9 +211,9 @@ const ChatComponent = () => {
                 
                     onClick={fetchData} 
                     disabled={loading}
-                    className="bg-slate-600 text-neutral-600 ml-2 rounded-xl bg-transparent hover:text-neutral-900 border-solid " pill
+                    className="bg-slate-600 text-neutral-600 ml-2 rounded-xl bg-transparent hover:text-neutral-900" pill
                 >
-                    {loading ? <Spinner aria-label="Medium sized spinner example" size="xl" /> : 'Get Response'}
+                    {loading ? <Spinner aria-label="Medium sized spinner example" size="md" /> : 'Get Response'}
                     
                 </Button >
 

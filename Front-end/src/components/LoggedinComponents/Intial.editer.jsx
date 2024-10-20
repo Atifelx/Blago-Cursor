@@ -1,3 +1,4 @@
+//100% working with redux save functions.
 import React, { useRef, useEffect } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
@@ -9,17 +10,20 @@ import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
 import Marker from '@editorjs/marker';
 import InlineCode from '@editorjs/inline-code';
-import { useSelector } from 'react-redux';
 import { selectEditorData } from '../../app/user/userDataSlice';
 import { converttoToEditor } from '../../util/userApi.js';
 import { Button } from 'flowbite-react';
-// import AIWriteTool from './customtool/AIWriteTool'; // Adjust the path as necessary
-
-
+import { useDispatch ,useSelector } from 'react-redux';
+ import {FetchData } from '../../app/user/userSlice';
+ import {selectFetchData} from '../../app/user/userSlice';
+ import ConsoleTool from '../LoggedinComponents/customtool/consoletool';
 
 const EditorComponent = () => {
   const editorInstance = useRef(null);
   const blocksData = useSelector(selectEditorData); // Get Redux data
+  const dispatch = useDispatch();
+
+  const editorData = useSelector(selectFetchData);
 
   const initializeEditor = (data) => {
     editorInstance.current = new EditorJS({
@@ -28,22 +32,25 @@ const EditorComponent = () => {
         header: {
           class: Header,
           inlineToolbar: true,
+          config: {
+            placeholder: 'Enter a header',
+            levels: [2, 3, 4],
+            defaultLevel: 3
+          },
+
+
            },
 
         list: {
           class: List,
-          inlineToolbar: true,
         },
         paragraph: {
           class: Paragraph,
-          inlineToolbar: true,
+          inlineToolbar: ['bold', 'italic', 'console'], // Add the custom tool here
+          config: {
+            preserveBlank: true, 
         },
-
-        // aiWrite: {
-        //   class: AIWriteTool, // Add your custom AI Write tool here
-        // inlineToolbar: true,
-
-        // },
+      },
 
         table: {
           class: Table,
@@ -56,20 +63,21 @@ const EditorComponent = () => {
         delimiter: Delimiter,
         marker: Marker,
         inlineCode: InlineCode,
+        console: ConsoleTool, // Register the custom tool
       },
       data: data || { blocks: [] }, // Use provided data or empty
       onReady: () => {
-        console.log('Editor is ready');
-        // this.api = editorInstance.current.api; // Store API after editor is ready
-        // Now you can create your tools here or call functions to initialize them
-        // Render initial data if available
+     
   
       },
       onChange: () => {
         editorInstance.current.save().then((outputData) => {
-          console.log('Data saved: ', outputData);
-          // Save the current editor data to localStorage
-          localStorage.setItem('editorData', JSON.stringify(outputData));
+
+
+          dispatch(FetchData(outputData));
+
+          console.log(outputData);
+
         }).catch((error) => {
           console.log('Saving failed: ', error);
         });
@@ -102,21 +110,19 @@ const EditorComponent = () => {
   };
 
   useEffect(() => {
-    // Retrieve saved data from localStorage
-    const savedData = localStorage.getItem('editorData');
-    const parsedData = savedData ? JSON.parse(savedData) : null;
+
 
     if (!editorInstance.current) {
-      // First time initializing the editor
-      initializeEditor(parsedData);
+
+      initializeEditor(editorData);
     } else {
       // When blocksData changes, update the editor
       const updatedEditorData = converttoToEditor(blocksData) || { blocks: [] };
       // Merge saved data with Redux data before updating
-      if (parsedData) {
+      if (editorData) {
         const mergedData = {
           blocks: [
-            ...(parsedData.blocks || []),
+            ...(editorData.blocks || []),
             ...(updatedEditorData.blocks || []),
           ],
         };
