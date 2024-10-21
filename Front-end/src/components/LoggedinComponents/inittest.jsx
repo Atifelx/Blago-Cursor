@@ -41,7 +41,7 @@ const EditorComponent2 = ({ initialData }) => {
 
   return (
     <div>
-      <div id="editorjs"></div> {/* The container for the editor */}
+      <div id="editorjs"></div> 
     </div>
   );
 };

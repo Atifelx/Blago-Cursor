@@ -46,7 +46,8 @@ const EditorComponent = () => {
         },
         paragraph: {
           class: Paragraph,
-          inlineToolbar: ['bold', 'italic', 'console'], // Add the custom tool here
+          inlineToolbar: ['bold', 'italic', 'AIWrite'], // Add the custom tool here
+
           config: {
             preserveBlank: true, 
         },
@@ -63,7 +64,8 @@ const EditorComponent = () => {
         delimiter: Delimiter,
         marker: Marker,
         inlineCode: InlineCode,
-        console: ConsoleTool, // Register the custom tool
+        AIWrite: ConsoleTool, // Register the custom tool
+
       },
       data: data || { blocks: [] }, // Use provided data or empty
       onReady: () => {
