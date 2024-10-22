@@ -18,7 +18,12 @@ app.use(express.json());
 
 //app.use(cors({ origin: 'http://localhost:5173' }));
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://blago-tau.vercel.app', // Replace with your frontend URL
+  credentials: true,
+}));
+
+
 
 
 // app.use('/api', createProxyMiddleware({
