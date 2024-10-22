@@ -54,11 +54,17 @@ export default class ConsoleTool {
         if (selectedText) {
           try {
 
-            const prompt = `You are an advanced text rephraser. 
-            Your task is to take the provided input text, correct any grammatical or structural errors, and return a rephrased version. 
-            If you encounter any text that appears unstructured, nonsensical, or gibberish (such as random characters or words that do not form coherent sentences), return the original text without any alterations or questions.
+            const prompt = `You are an advanced text rephraser.
+            1. For a single word, return a synonym or fix if incorrect.
+            2. For a sentence, rephrase it clearly and correctly in standard English, as if written by a human.
+            Important: Do not ask questions or seek clarification. Return only the corrected text.
             
-            Input text: ${selectedText}`;
+            Input: ${selectedText}`;
+            
+            
+            
+            
+            
             
 
             // Call the OpenAI API

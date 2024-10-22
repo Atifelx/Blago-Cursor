@@ -12,7 +12,14 @@ module.exports = {
   plugins: [
     // ...
     flowbite.plugin(),
+    require('daisyui'),
   ],
+
+
+  daisyui: {
+    darkTheme: "light",
+   },
+   
   theme: {
     fontSize: {
       sm: '0.8rem',
@@ -25,3 +32,4 @@ module.exports = {
     }
   }
 };
+

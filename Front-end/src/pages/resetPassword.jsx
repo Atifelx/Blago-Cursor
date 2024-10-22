@@ -9,6 +9,11 @@ function CreatePassword() {
   const [status, setStatus] = useState(''); // To handle success messages
   const [passwordState, setPasswordState] = useState(false); // To handle password state
 
+  const apiUrlR = import.meta.env.VITE_API_BASE_URL;
+
+
+
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -38,7 +43,8 @@ function CreatePassword() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/verifyemail', {
+
+      const response = await fetch(`${apiUrlR}/verifyemail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -75,7 +81,7 @@ function CreatePassword() {
     setStatus(''); // Clear previous status messages
 
     try {
-      const response = await fetch('http://localhost:3000/api/update', {
+      const response = await fetch(`${apiUrlR}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

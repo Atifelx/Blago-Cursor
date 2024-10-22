@@ -14,7 +14,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Header from './components/Header';
 import Footer from './components/footer.jsx';
-import Createpassword from './pages/signup_google';
+import Createpassword from './pages/createpassword.jsx';
 import Resetpassword from './pages/resetPassword';
 import Profile from './components/LoggedinComponents/profile.jsx'
 
@@ -44,22 +44,38 @@ const App = () => {
 
 
   return (
-    <Router>
-  <Header/>
-      <Routes>
-        <Route path="/" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
-        {/* <Route path="/about" element={<About />} /> */}
-        <Route path="/dashboard" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
-        <Route path="/profile" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
-        <Route path="/Chat-AI" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
-        <Route path="/Blog-Writer" element={currentUser ? <Dashboard /> : <Navigate to="/signin" />} />
-        <Route path="/signin" element={<SignIn /> } />
-        <Route path="/signup" element={<SignUp />  }/>
-        <Route path="/createpassword" element={<Createpassword />} />
+<Router>
+  <Header />
+  <Routes>
+
+     
+  {/* {!currentUser && (  */}
+      <>
+        <Route path="/" element={<Home />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+     
         <Route path="/resetpassword" element={<Resetpassword />} />
-      </Routes>
-      <Footer/>
-    </Router>
+        <Route path="*" element={<Navigate to="/signin" />} /> 
+      </>
+  
+ {/* )}  */}
+
+     {currentUser && ( 
+      <>
+      <Route path= "/createpassword" element={<Createpassword />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Dashboard />} />
+        <Route path="/Chat-AI" element={<Dashboard />} />
+        <Route path="/Blog-Writer" element={<Dashboard />} />
+        {/* <Route path="*" element={<Navigate to="/dashboard" />} /> Redirect all other routes to /dashboard */}
+      </>
+     )}
+
+  </Routes>
+  <Footer />
+</Router>
+
   );
 };
 

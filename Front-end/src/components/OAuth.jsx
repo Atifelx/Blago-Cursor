@@ -4,11 +4,11 @@ import { FaGoogle } from "react-icons/fa6";
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { app } from "../firebase";
 import { useSelector, useDispatch } from 'react-redux';
-import { signinSuccess , GuserExist} from '../app/user/userSlice';
+import { signinSuccess , GuserExist,signinFailure,signout} from '../app/user/userSlice';
 import { useNavigate } from "react-router-dom";
 import Pop_Component from "../components/Google_popup";
 
-
+const apiUrlG = import.meta.env.VITE_API_BASE_URL;
 
 function OAuth() {
     const navigate = useNavigate();
@@ -19,10 +19,18 @@ function OAuth() {
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        provider.setCustomParameters({ prompt: 'select_account' });
+
+
+  provider.setCustomParameters({ prompt: 'select_account' });
 
         try {
-            const gResult = await signInWithPopup(auth, provider);
+
+         // const gResult = await signInWithPopup(auth, new GoogleAuthProvider());
+           const gResult = await signInWithPopup(auth, provider);
+
+
+
+
             const Guser = gResult.user;
             console.log("User Info from Google:", Guser);
 
@@ -34,7 +42,8 @@ function OAuth() {
             };
 
             try {
-                const response = await fetch('http://localhost:3000/api/verifyemail', {
+
+                const response = await fetch(`${apiUrlG }/verifyemail`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -44,15 +53,41 @@ function OAuth() {
 
                 const result = await response.json(); // Get the response as JSON
 
-                if (!result.ok) {
-                    dispatch(GuserExist(true));
-                    navigate('/signin');
-                    
+                if (result.ok) {
+                 // dispatch(signinSuccess(userData));
+                   //dispatch(signinFailure); ///user already found so route user to sign in page
+         
 
-                } else {
+                
+                
+                setTimeout(() => {
+    
+                    dispatch(signout());
+                }, 1000); // 5000 ms = 5 seconds
+                 
+                    navigate("/signin");  
                     dispatch(GuserExist(false));
-                    dispatch(signinSuccess(userData));
-                    navigate('/createpassword');
+                } 
+                
+                else {
+
+
+                    dispatch(GuserExist(true));
+                  
+                    setTimeout(() => {
+                       
+                        dispatch(signout());
+                    }, 1000); // 5000 ms = 5 seconds
+
+          
+
+                  
+                        dispatch(signinSuccess(userData)); 
+                        navigate('/createpassword');  
+                 
+                        
+
+      
                 }
 
             } catch (error) {

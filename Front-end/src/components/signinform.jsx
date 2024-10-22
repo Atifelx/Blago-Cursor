@@ -3,7 +3,7 @@ import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { signinStart, signinSuccess, signinFailure , GuserExist} from '../app/user/userSlice';
-
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 
 
@@ -40,8 +40,12 @@ const SigninForm = () => {
 
     dispatch(signinStart());
 
+
+
+
+
     try {
-      const response = await fetch(`http://localhost:3000/api/signin`, {
+      const response = await fetch(`${apiUrl}/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -58,6 +62,7 @@ const SigninForm = () => {
       } else {
 
       dispatch(signinSuccess(result));// Update redux state
+
 
 navigate('/dashboard');
 
@@ -130,7 +135,7 @@ setFormData({ email: '', password: '' }); // Clear form data after submission
       </div>
 
       {error && (
-        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 mt-5" role="alert">
           {error.message}
         </div>
       )}

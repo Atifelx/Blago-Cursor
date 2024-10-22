@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { signinStart, signinSuccess, signinFailure } from '../app/user/userSlice';
+import { signinStart, signinSuccess, signinFailure ,signout} from '../app/user/userSlice';
 import OAuth from "../components/OAuth.jsx";
 
+
+const apiUrlS = import.meta.env.VITE_API_BASE_URL;
 
 const SignupForm = () => {
   // const [errorMessage, setErrorMessage] = useState(null); 
   // const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
 
   const currentUser = useSelector((state) => state.user.currentUser);
   const error = useSelector((state) => state.user.error);
@@ -48,7 +52,10 @@ const SignupForm = () => {
     try {
     
 
-      const response = await fetch('http://localhost:3000/signup', {
+
+const response = await fetch(`${apiUrlS }/signup`, {
+
+   
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -65,31 +72,36 @@ const SignupForm = () => {
 
         // Nested condition to check for duplicate error
         if (result.message && result.message.includes("duplicate")) {
-          // navigate("/signin");
+          dispatch(signinFailure({ message: 'You have an account with US, Please Signin!' }));
+          navigate("/signin");
         }
         
         return;
       } else {
-        dispatch(signinSuccess(result));
-        navigate("/dashboard");
+       // dispatch(signinSuccess(result));
+
+       dispatch(signout);
+        // navigate("/signin");
+
+        setTimeout(() => {
+         // dispatch(signout);
+          navigate("/signin");
+      }, 3000); // 5000 ms = 5 seconds
+
+
+
       }
 
 
 
 
 
-      // if (result.success === false) {
-        
-      //   dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
-    
-      //                  return;
-      //                          } 
+  
 
 
-      // else {
-      //   dispatch(signinSuccess(result));
-      //   navigate("/");
-      // }
+
+
+   
     } catch (error) {
      
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
@@ -129,6 +141,7 @@ const SignupForm = () => {
         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
         <input
           type="password"
+          placeholder="*********"
           id="password"
           value={formData.password}
           onChange={handleChange}
@@ -161,7 +174,7 @@ const SignupForm = () => {
       </label>
       
       {error && (
-        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 mt-5" role="alert">
           {error.message}
         </div>
       )}

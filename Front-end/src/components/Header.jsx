@@ -31,7 +31,7 @@ export default function Header() {
 
         <Navbar.Collapse>
           <Navbar.Link as={Link} to="/" style={{ display: currentUser ? 'none' : 'block' }}>Home</Navbar.Link>
-          <Navbar.Link as={Link} to="/about" style={{ display: currentUser ? 'none' : 'block' }}>About</Navbar.Link>
+          {/* <Navbar.Link as={Link} to="/about" style={{ display: currentUser ? 'none' : 'block' }}>About</Navbar.Link> */}
           {/* <Navbar.Link as={Link} to="/dashboard">Dashboard</Navbar.Link> */}
           {/* <Navbar.Link as={Link} to="/projects">Projects</Navbar.Link> */}
           <Navbar.Link as={Link} to="/signup" style={{ display: currentUser ? 'none' : 'block' }}> Sign Up</Navbar.Link>

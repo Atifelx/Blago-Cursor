@@ -1,11 +1,11 @@
 import React, { useState , useEffect} from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Button , Spinner , Clipboard} from 'flowbite-react'; 
+import { Button , Spinner , Clipboard,Textarea} from 'flowbite-react'; 
 import { useDispatch } from 'react-redux';
  import {loadData} from '../../app/user/userDataSlice';
 
-
+//  import Text_Component from "./extareaComponent";
 
 
 
@@ -191,10 +191,14 @@ const ChatComponent = () => {
 
 
     return (
-        <div className="flex flex-col flex-1 bg-gray-100 p-4 rounded-lg h-screen  w-full sm:w-auto  overflow-y-auto">
-            <span className='from-neutral-300 font-extralight text-sm mb-1'>OpenAI's GPT-4</span>
-            <div className='flex items-center bg-gray-100 border border-slate-200 rounded-md p-5'>
-                <input
+
+       
+        <div className="flex flex-col flex-1 bg-gray-100 p-4 rounded-lg lg:h-auto sm:w-auto ">
+
+{/* <Text_Component/> */}
+        
+            <div className='flex items-center bg-gray-100  rounded-md p-5'>
+                {/* <input
                 
                     value={input}
                     onChange={handleInputChange}
@@ -202,29 +206,62 @@ const ChatComponent = () => {
                     className='flex-1 p-2 border  bg-gray-200 rounded-xl font-normal from-neutral-700'
                     
 
-                />
+                /> */}
+
+
+<textarea
+    value={input}
+    onChange={handleInputChange}
+    placeholder="Type your question here."
+    className='flex-1 p-2 bg-gray-200 rounded-xl font-normal from-neutral-700 border-none resize-none outline-none'
+    rows={1}
+    style={{ minHeight: '40px', overflow: 'hidden' }}
+    onInput={(e) => {
+      e.target.style.height = 'auto';  // Reset the height
+      e.target.style.height = `${e.target.scrollHeight}px`;  // Set new height based on scroll height
+    }}
+  />
 
 
 
 
-                <Button  color="light" 
+
+
+
+
+
+
+
+
+
+
+
+                <button  color="light" 
                 
                     onClick={fetchData} 
                     disabled={loading}
-                    className="bg-slate-600 text-neutral-600 ml-2 rounded-xl bg-transparent hover:text-neutral-900" pill
+                    className=" text-neutral-600 ml-2 rounded-xl p-2 bg-gray-200 hover:text-neutral-900 text-base" pill
                 >
-                    {loading ? <Spinner aria-label="Medium sized spinner example" size="md" /> : 'Get Response'}
+                    {/* {loading ? <Spinner aria-label="Medium sized spinner example" size="md" /> : 'Get Response'} */}
+                    {loading ? <span className="loading loading-dots loading-lg bg-slate-950"></span>: 'Get Response'}
+
                     
-                </Button >
+                    
+                </button >
+
+                {/* <  MainComponent/> */}
 
             </div>
             <div className='mt-4 flex flex-col font-normal text-neutral-800 '>
                 {parseResponse(response)}
           
             </div>
-            {/* <Clipboard.WithIconText valueToCopy={(response.json)} /> */}
+        
 
         </div>
+
+
+
     );
 };
 

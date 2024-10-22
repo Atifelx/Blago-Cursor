@@ -14,9 +14,15 @@ import { selectEditorData } from '../../app/user/userDataSlice';
 import { converttoToEditor } from '../../util/userApi.js';
 import { Button } from 'flowbite-react';
 import { useDispatch ,useSelector } from 'react-redux';
- import {FetchData } from '../../app/user/userSlice';
+ import {FetchData ,ClearData} from '../../app/user/userSlice';
  import {selectFetchData} from '../../app/user/userSlice';
  import ConsoleTool from '../LoggedinComponents/customtool/consoletool';
+ import { generateWordFromReduxData } from '../../util/generateWordDoc';
+ import { AiOutlineClear } from "react-icons/ai";
+ import { FaTrash , FaFileImport , FaCopy ,FaFileWord} from 'react-icons/fa';
+
+
+
 
 const EditorComponent = () => {
   const editorInstance = useRef(null);
@@ -113,7 +119,7 @@ const EditorComponent = () => {
 
   useEffect(() => {
 
-
+console.log("editer data",editorData)
     if (!editorInstance.current) {
 
       initializeEditor(editorData);
@@ -169,6 +175,61 @@ const EditorComponent = () => {
     }
   };
   
+
+  const copyContentToClipboard = async () => {
+    if (editorInstance.current) {
+        try {
+            const outputData = await editorInstance.current.save();
+            const content = outputData.blocks
+                .map(block => {
+                    // Check for meaningful content before creating HTML
+                    if (block.type === 'paragraph' && block.data.text.trim()) {
+                        return block.data.text; // Get the text without wrapping in <p> tags
+                    }
+                    // Add more conditions for other block types as needed
+                    return ''; // Return empty for unhandled types or blocks without content
+                })
+                .filter(Boolean) // Filter out empty strings
+                .join('\n\n'); // Join the remaining content with line breaks
+
+            // Use the Clipboard API to copy content
+            await navigator.clipboard.writeText(content); // Copy the content to clipboard
+
+            console.log('Content copied to clipboard!');
+        } catch (error) {
+            console.error('Failed to copy content:', error);
+        }
+    } else {
+        console.warn('Editor instance is not available.');
+    }
+};
+
+
+
+
+
+const GenerateDoc = () => {
+
+
+  generateWordFromReduxData(editorData);
+
+}
+
+
+const ClearEditer = (event) => {
+  // Prevent the default action (if this function is triggered by an event)
+  event.preventDefault();
+
+  dispatch(ClearData(editorData));
+  editorInstance.current.destroy();
+  // editorInstance.current = null;
+  initializeEditor(editorData);
+};
+
+
+
+
+
   
 
   return (
@@ -180,18 +241,80 @@ const EditorComponent = () => {
       className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-2 mt-2 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly relative" // Added 'relative' class
     > </div>
 
-    <div>
+    <div className='flex flex-row'>
+
+      <div>
 
     <Button
     color="gray"
         onClick={handleClick}
         className="border border-gray-50 rounded-xl shadow-sm p-0 mr-10 mb-2 ml-10 mt-5 justify-evenly relative text-neutral-500" // Positioned the button
       >
-      
+       <FaFileImport className="mr-2 text-base" style={{ verticalAlign: 'middle' }} /> {/* Adjust icon size and vertical alignment */}
+
         Import from Chat
       </Button>
 
       </div>
+
+
+<div>
+      <Button
+    color="gray"
+    onClick={copyContentToClipboard}
+    className="border border-gray-50 rounded-xl shadow-sm p-0 mr-10 mb-2 ml-10 mt-5 justify-evenly relative text-neutral-500"
+>
+<FaCopy className="mr-2 text-base" style={{ verticalAlign: 'middle' }} /> {/* Adjust icon size and vertical alignment */}
+    Copy to Clipboard
+</Button>
+</div>
+
+
+
+<div>
+      <Button
+    color="gray"
+    onClick={GenerateDoc}
+    className="border border-gray-50 rounded-xl shadow-sm p-0 mr-10 mb-2 ml-10 mt-5 justify-evenly relative text-neutral-500"
+>
+<FaFileWord className="mr-2 text-base" style={{ verticalAlign: 'middle' }} /> {/* Adjust icon size and vertical alignment */}
+    Generate Doc file
+</Button>
+</div>
+
+
+
+{/* <div>
+      <Button
+    color="gray"
+    onClick={ClearEditer}
+    Label="Press 2 times to clear"
+    className="border border-gray-50 rounded-xl shadow-sm p-0 mr-10 mb-2 ml-10 mt-5 justify-evenly relative text-neutral-500 "
+>
+    Clear the Editer
+</Button>
+</div> */}
+
+
+
+
+<Button
+    color="gray"
+    onClick={ClearEditer}
+    label="Press 2 times to clear"
+    className="border border-gray-50 rounded-xl shadow-sm p-1 mr-10 mb-2 ml-10 mt-5 flex items-center text-sm h-10 text-neutral-500" // Fixed height for better alignment
+>
+    <AiOutlineClear className="mr-2 text-base" style={{ verticalAlign: 'middle' }} /> {/* Adjust icon size and vertical alignment */}
+    Clear the Editor
+</Button>
+
+
+
+
+
+
+
+</div>
 
   </div>
 );

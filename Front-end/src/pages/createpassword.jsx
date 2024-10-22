@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentUser } from '../app/user/userSlice'; // Adjust the import path
 import { useNavigate } from "react-router-dom";
-import { signinSuccess} from '../app/user/userSlice';
+import { signinSuccess,signout} from '../app/user/userSlice';
+const apiUrlC = import.meta.env.VITE_API_BASE_URL;
+
 
 const Spinner = () => (
   <div className="loader">Loading...</div>
@@ -15,6 +17,10 @@ function CreatePassword() {
   const currentUser = useSelector(selectCurrentUser); // Get user data from Redux
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+
+
+  dispatch(signout);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,10 +37,13 @@ function CreatePassword() {
     const userData = {
       ...currentUser, // Spread currentUser data
       password: formData.password, // Add password
+      // email:formData.email,
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/signup', {
+
+
+      const response = await fetch(`${apiUrlC}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +54,12 @@ function CreatePassword() {
       if (response.ok) {
         console.log("User data sent successfully!");
 
-       dispatch(signinSuccess(userData));
+     
+        setTimeout(() => {
+          dispatch(signout);
+      }, 2000); // 5000 ms = 5 seconds
+
+
         
         navigate('/signin'); // Navigate to the main program
 
@@ -69,7 +83,7 @@ function CreatePassword() {
       <div className="flex-1 flex items-center justify-center ">
         <div className="p-6">
           <span className='text-[100px] font-extrabold text-gray-400 hover:text-emerald-500 '>Blago</span>
-          <p className='text-sm text-gray-400 left-5 hover:text-emerald-500 '>Create your own Blog and share with Others, Start here!</p>
+          <p className='text-sm text-gray-400 left-5 hover:text-emerald-500 '>"Meet Blago: Your go-to AI writing assistant! Get instant answers, seamlessly transfer search results, and effortlessly rewrite sentences. Create and export documents in seconds—perfect for eBooks, research, and interviews. Streamline your resumes and cover letters with ease. Experience writing like never before with Blago!"</p>
         </div>
       </div>
 

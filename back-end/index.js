@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
 import AIRoutes from './routes/openAiChat.js';
 import cors from 'cors';
+// import { createProxyMiddleware } from 'http-proxy-middleware';
+
 
 dotenv.config();
 
@@ -14,7 +16,26 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+//app.use(cors({ origin: 'http://localhost:5173' }));
+
+app.use(cors());
+
+
+// app.use('/api', createProxyMiddleware({
+//   target: 'https://firebaseapp.com',
+//   changeOrigin: true,
+//   pathRewrite: {
+//       '^/api': '', // Remove '/api' from the forwarded request
+//   },
+//   onProxyReq: (proxyReq, req, res) => {
+//       // Add authentication headers here if needed
+//       // proxyReq.setHeader('Authorization', 'Bearer YOUR_TOKEN');
+//   },
+// }));
+
+
+
+
 
 
 

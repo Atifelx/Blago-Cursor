@@ -34,12 +34,15 @@ signinSuccess:(state,action)=>{
 signinFailure:(state,action)=>{
     state.loading = false;
     state.error=action.payload;
+    state.currentUser = null;
 },
+
  signout: (state) => {
       state.currentUser = null;
       state.loading = false;
       state.error = null;
     },
+    
 
 
 GuserExist: (state,action) => {
@@ -51,6 +54,9 @@ FetchData: (state,action) => {
       state.editordata = action.payload;
  },
    
+ ClearData: (state) => {
+  state.editordata = null;
+},
 
   }
 });
@@ -61,7 +67,8 @@ export const {
   signinFailure, 
   signout, 
   GuserExist, 
-  FetchData 
+  FetchData ,
+  ClearData
 } = userSlice.actions;
 
 
