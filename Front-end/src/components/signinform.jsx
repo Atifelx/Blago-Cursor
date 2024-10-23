@@ -2,9 +2,9 @@ import React from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { signinStart, signinSuccess, signinFailure , GuserExist} from '../app/user/userSlice';
+import { signinStart, signinSuccess, signinFailure , GuserExist,errorClear} from '../app/user/userSlice';
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
+import { Link } from 'react-router-dom';
 
 
 
@@ -67,6 +67,7 @@ const SigninForm = () => {
 navigate('/dashboard');
 
 setFormData({ email: '', password: '' }); // Clear form data after submission
+dispatch(errorClear());
 
    }
     } catch (error) {
@@ -126,13 +127,13 @@ setFormData({ email: '', password: '' }); // Clear form data after submission
       <div className="mt-5 text-center">
         <p className="text-sm font-medium text-gray-400">
           Don't have an account? 
-          <a href="/signup" className="text-blue-600 hover:underline"> SignUp</a>
+          <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
+
         </p>
         <p className="text-sm font-medium text-gray-400">
           Forgot password? 
-          <a href="/resetpassword" className="text-blue-600 hover:underline">
-  Reset
-</a>
+          <Link to="/resetpassword" className="text-blue-600 hover:underline">Reset</Link>
+
 
         </p>
       </div>

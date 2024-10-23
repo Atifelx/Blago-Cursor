@@ -58,6 +58,10 @@ FetchData: (state,action) => {
   state.editordata = null;
 },
 
+errorClear: (state) => {
+  state.error = null;
+},
+
   }
 });
 // Export actions
@@ -68,7 +72,8 @@ export const {
   signout, 
   GuserExist, 
   FetchData ,
-  ClearData
+  ClearData,
+  errorClear
 } = userSlice.actions;
 
 

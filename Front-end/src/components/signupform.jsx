@@ -89,7 +89,7 @@ const response = await fetch(`${apiUrlS }/signup`, {
          // dispatch(signout);
          dispatch(signinSuccess());
           navigate("/signin");
-      }, 2000); // 5000 ms = 5 seconds
+      }, 1000); // 5000 ms = 5 seconds
 
 
 
