@@ -19,26 +19,8 @@ app.use(express.json());
 
 
 
-const corsOptions = {
-  origin: ['https://blago.fun', 'https://blago-backend.vercel.app'], // Frontend and Backend origins
-  credentials: true, // Allow credentials (cookies, etc.) to be sent
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers in requests
-  optionsSuccessStatus: 204 // Default status for preflight checks (No Content)
-};
 
-// Use CORS with specified options
-app.use(cors(corsOptions));
-
-// Handle preflight requests (OPTIONS) for all routes
-app.options('*', cors(corsOptions));
-
-
-
-
-
-
-//app.use(cors());
+app.use(cors());
 
 
 mongoose.connect(process.env.MONGOURI)
