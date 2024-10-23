@@ -1,6 +1,6 @@
 import React from 'react'
 import hero from '../assets/blago.webp';
-
+import { Link } from 'react-router-dom';
 
 //backgroundImage: `url(${hero})`,
 
