@@ -12,14 +12,28 @@ dotenv.config();
 const app = express()
 const PORT = process.env.PORT || 3000;
 
+app.options('*', cors()); // Handles preflight requests for all routes
 
 
 app.use(express.json());
 
-app.use(cors({
-  origin: ['https://blago-backend.vercel.app/', 'https://blago.fun/'], // Replace with your frontend URLs
-  credentials: true,
-}));
+
+
+const corsOptions = {
+  origin: ['https://blago.fun', 'https://blago-backend.vercel.app'], // Frontend and Backend origins
+  credentials: true, // Allow credentials (cookies, etc.) to be sent
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers in requests
+  optionsSuccessStatus: 204 // Default status for preflight checks (No Content)
+};
+
+// Use CORS with specified options
+app.use(cors(corsOptions));
+
+// Handle preflight requests (OPTIONS) for all routes
+app.options('*', cors(corsOptions));
+
+
 
 
 
