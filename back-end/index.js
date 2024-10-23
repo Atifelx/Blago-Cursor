@@ -16,7 +16,15 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 
-app.use(cors());
+// app.use(cors());
+
+app.use(cors({
+  origin: 'https://blago.fun', // Change this to your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true, // Allow cookies to be sent
+}));
+
+
 
 
 mongoose.connect(process.env.MONGOURI)

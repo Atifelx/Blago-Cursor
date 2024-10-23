@@ -125,14 +125,14 @@ dispatch(errorClear());
       </button>
 
       <div className="mt-5 text-center">
-        <p className="text-sm font-medium text-gray-400">
+        <p className="text-sm font-medium text-gray-300">
           Don't have an account? 
-          <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
+          <Link to="/signup" className="text-blue-500 hover:underline text-sm">Sign Up</Link>
 
         </p>
-        <p className="text-sm font-medium text-gray-400">
+        <p className="text-sm font-medium text-gray-300">
           Forgot password? 
-          <Link to="/resetpassword" className="text-blue-600 hover:underline">Reset</Link>
+          <Link to="/resetpassword" className="text-blue-500 hover:underline text-sm ">Reset</Link>
 
 
         </p>

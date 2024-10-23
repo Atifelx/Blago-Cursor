@@ -167,7 +167,7 @@ function CreatePassword() {
             ) : (passwordState ? 'Update' : 'Verify')}
           </button>
 
-          <Link to="/signup" className="text-blue-600 hover:underline">
+          <Link to="/signup" className="text-blue-500 hover:underline text-sm font-thin">
         <span> Sign In</span>
 </Link>
 
