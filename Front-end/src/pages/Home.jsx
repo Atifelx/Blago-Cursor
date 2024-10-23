@@ -22,9 +22,10 @@ function Home() {
       Transform your thoughts into words effortlessly. Our tool harnesses AI to search and generate any content you need, allowing you to convert it into DOC format or copy it directly to your clipboard. Whether it’s for eBooks, articles, or personal projects, get ready to elevate your writing game!
       </p>
 
-<Link to="/signup">
-            <Button >Get Started!</Button>
-          </Link>
+      <a href="/signup" className="btn border-t-green-500">
+  Get Started
+</a>
+
 
     </div>
   </div>
