@@ -24,10 +24,8 @@ app.use(express.json());
 
 
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
+app.use(cors());
+
 
 mongoose.connect(process.env.MONGOURI)
   .then(() => console.log('MongoDB connected!'))

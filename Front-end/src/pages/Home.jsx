@@ -9,16 +9,22 @@ function Home() {
  
  
 
-<div className="hero bg-base-200 min-h-screen flex flex-row">
-  <div className="flex-1 hidden md:block"></div> {/* Empty space on the left, hidden on small screens */}
-  
-  <div className="hero-content flex-1 flex justify-center items-center text-left max-w-md mx-auto">
-    <div className="text-center"> {/* Center text within the content */}
-      <h1 className="text-5xl font-bold">Blago</h1>
-      <p className="py-6">
-        "Meet Blago: Your go-to AI writing assistant! Get instant answers, seamlessly transfer search results, and effortlessly rewrite sentences. Create and export documents in seconds—perfect for eBooks, research, and interviews. Streamline your resumes and cover letters with ease. Experience writing like never before with Blago!"
+<div
+  className="hero min-h-screen"
+  style={{
+  backgroundImage: `url(${hero})`,
+  }}>
+  <div className="hero-overlay bg-opacity-20"></div>
+  <div className="hero-content text-neutral-content text-center">
+    <div className="max-w-md">
+      <h1 className="mb-5 text-5xl font-bold">Blago</h1>
+      <p className="mb-5">
+      Transform your thoughts into words effortlessly. Our tool harnesses AI to search and generate any content you need, allowing you to convert it into DOC format or copy it directly to your clipboard. Whether it’s for eBooks, articles, or personal projects, get ready to elevate your writing game!
       </p>
-      <a href="/signup" className="btn bg-emerald-500">Get Started</a>
+      <button onClick={() => window.location.href = '/signup'} className="btn bg-emerald-500">
+  Get Started
+</button>
+
     </div>
   </div>
 </div>
