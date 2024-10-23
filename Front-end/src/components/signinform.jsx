@@ -130,7 +130,10 @@ setFormData({ email: '', password: '' }); // Clear form data after submission
         </p>
         <p className="text-sm font-medium text-gray-400">
           Forgot password? 
-          <a href="/resetpassword" className="text-blue-600 hover:underline"> Reset</a>
+          <a href="/resetpassword" className="text-blue-600 hover:underline">
+  Reset Password
+</a>
+
         </p>
       </div>
 

@@ -21,9 +21,11 @@ function Home() {
       <p className="mb-5">
       Transform your thoughts into words effortlessly. Our tool harnesses AI to search and generate any content you need, allowing you to convert it into DOC format or copy it directly to your clipboard. Whether it’s for eBooks, articles, or personal projects, get ready to elevate your writing game!
       </p>
-      <button onClick={() => window.location.href = '/signup'} className="btn bg-emerald-500">
-  Get Started
-</button>
+      
+      <a href="/signup" className="btn bg-emerald-500">
+  Sign Up
+</a>
+
 
     </div>
   </div>

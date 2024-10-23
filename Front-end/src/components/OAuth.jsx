@@ -53,7 +53,7 @@ function OAuth() {
 
                 const result = await response.json(); // Get the response as JSON
 
-                if (result.ok) {
+                if (result.success) {
                  // dispatch(signinSuccess(userData));
                    //dispatch(signinFailure); ///user already found so route user to sign in page
          
