@@ -9,8 +9,8 @@ import OAuth from "../components/OAuth.jsx";
 const apiUrlS = import.meta.env.VITE_API_BASE_URL;
 
 const SignupForm = () => {
-  // const [errorMessage, setErrorMessage] = useState(null); 
-  // const [loading, setLoading] = useState(false); 
+  //const [errorMessage, setErrorMessage] = useState(null); 
+// const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -47,6 +47,8 @@ const SignupForm = () => {
 
 
     dispatch(signinStart());
+  
+
 
 
     try {
@@ -85,8 +87,9 @@ const response = await fetch(`${apiUrlS }/signup`, {
 
         setTimeout(() => {
          // dispatch(signout);
+         dispatch(signinSuccess());
           navigate("/signin");
-      }, 3000); // 5000 ms = 5 seconds
+      }, 2000); // 5000 ms = 5 seconds
 
 
 

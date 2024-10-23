@@ -19,9 +19,9 @@ function Home() {
     <div className="max-w-md">
       <h1 className="mb-5 text-5xl font-bold text-neutral-50">Blago</h1>
       <p className="mb-5 text-xl text-neutral-50">
-      "Meet Blago: Your go-to AI writing assistant! Get instant answers, seamlessly transfer search results, and effortlessly rewrite sentences. Create and export documents in seconds—perfect for eBooks, research, and interviews. Streamline your resumes and cover letters with ease. Experience writing like never before with Blago!"
+      "Meet <></>Blago: Your go-to AI writing assistant! Get instant answers, seamlessly transfer search results, and effortlessly rewrite sentences. Create and export documents in seconds—perfect for eBooks, research, and interviews. Streamline your resumes and cover letters with ease. Experience writing like never before with Blago!"
       </p>
-      <a href="/signup" className="btn bg-emerald-500 ">Get Started</a>
+      <a href="/signup" className="btn bg-emerald-500 ">Get Starte</a>
 
     </div>
   </div>

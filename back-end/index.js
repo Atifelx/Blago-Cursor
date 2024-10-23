@@ -16,34 +16,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-//app.use(cors({ origin: 'http://localhost:5173' }));
-
-app.use(cors({
-  origin: 'https://blago-tau.vercel.app', // Replace with your frontend URL
-  credentials: true,
-}));
-
-
-
-
-// app.use('/api', createProxyMiddleware({
-//   target: 'https://firebaseapp.com',
-//   changeOrigin: true,
-//   pathRewrite: {
-//       '^/api': '', // Remove '/api' from the forwarded request
-//   },
-//   onProxyReq: (proxyReq, req, res) => {
-//       // Add authentication headers here if needed
-//       // proxyReq.setHeader('Authorization', 'Bearer YOUR_TOKEN');
-//   },
+// app.use(cors({
+//   origin: ['https://blago-tau.vercel.app', 'http://localhost:5173'], // Replace with your frontend URLs
+//   credentials: true,
 // }));
 
 
-
-
-
-
-
+app.use(cors()); // This will allow all CORS requests
 
 
 mongoose.connect(process.env.MONGOURI)
