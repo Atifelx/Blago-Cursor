@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { signinStart, signinSuccess, signinFailure ,signout} from '../app/user/userSlice';
 import OAuth from "../components/OAuth.jsx";
-
+import { Link } from 'react-router-dom';
 
 const apiUrlS = import.meta.env.VITE_API_BASE_URL;
 
@@ -171,9 +171,11 @@ const response = await fetch(`${apiUrlS }/signup`, {
 
       <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
         Have an account?
-        <a href="/signin" className="text-blue-600 hover:underline">
-          <span> Sign In</span>
-        </a>
+        <Link to="/signin" className="text-blue-600 hover:underline">
+        <span> Sign In</span>
+</Link>
+
+        
       </label>
       
       {error && (

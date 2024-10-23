@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-
+import { Link } from 'react-router-dom';
 const Spinner = () => <div className="loader">Loading...</div>;
 
 function CreatePassword() {
@@ -166,6 +166,10 @@ function CreatePassword() {
               </>
             ) : (passwordState ? 'Update' : 'Verify')}
           </button>
+
+          <Link to="/signup" className="text-blue-600 hover:underline">
+        <span> Sign In</span>
+</Link>
 
           {status && (
             <div className="mt-5 p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">

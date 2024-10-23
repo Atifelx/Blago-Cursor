@@ -25,8 +25,8 @@ function OAuth() {
 
         try {
 
-         // const gResult = await signInWithPopup(auth, new GoogleAuthProvider());
-           const gResult = await signInWithPopup(auth, provider);
+          const gResult = await signInWithPopup(auth, new GoogleAuthProvider());
+          // const gResult = await signInWithPopup(auth, provider);
 
 
 
@@ -91,10 +91,10 @@ function OAuth() {
 
     return (
         <Button 
-            className="flex items-center mt-2 mb-2 px-4 py-2 bg-gray-100 border  text-white rounded-xl cursor-pointer text-center" 
+            className="flex items-center mt-2 mb-2 px-4 py-2 bg-gray-100 border  text-neutral-700 rounded-xl cursor-pointer text-center" 
             onClick={handleGoogleClick}
         >
-            <FcGoogle className="mr-1.5 text-white text-xl" />
+            <FcGoogle className="mr-1.5 text-xl text-neutral-700" />
             Sign Up with Google
         </Button>
     );
