@@ -22,8 +22,12 @@ app.use(express.json());
 // }));
 
 
-app.use(cors()); // This will allow all CORS requests
 
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 mongoose.connect(process.env.MONGOURI)
   .then(() => console.log('MongoDB connected!'))
@@ -31,7 +35,7 @@ mongoose.connect(process.env.MONGOURI)
 
   
   app.get('/', (req, res) => {
-    res.send('Expressjs server is running with mongoDB database "BLAGO , this out from index.js backend')
+    res.send('Welcome to Blago, its blago under the Hood! visit:blago.fun to access the app!')
   })
 
 
