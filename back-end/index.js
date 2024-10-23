@@ -26,11 +26,21 @@ app.use(express.json());
 
 
 
+// app.use(cors({
+//   origin: '*', // Adjust this to your frontend URL in production
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//   allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Content-Type', 'Accept']
+// }));
+
+
 app.use(cors({
-  origin: '*', // Adjust this to your frontend URL in production
+  origin: 'https://blago.fun', // Use your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Content-Type', 'Accept']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 
 mongoose.connect(process.env.MONGOURI)
