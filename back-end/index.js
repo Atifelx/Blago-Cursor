@@ -18,12 +18,17 @@ app.use(express.json());
 
 // app.use(cors());
 
-app.use(cors({
-  origin: 'https://blago.fun', // Change this to your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true, // Allow cookies to be sent
-}));
+// app.use(cors({
+//   origin: 'https://blago.fun', // Change this to your frontend URL
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   credentials: true, // Allow cookies to be sent
+// }));
 
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+}));
 
 
 
