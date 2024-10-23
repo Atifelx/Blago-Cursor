@@ -2,18 +2,18 @@
     "version": 2,
     "builds": [
       {
-        "src": "index.js", 
+        "src": "index.js",  
         "use": "@vercel/node"
       }
     ],
     "routes": [
       {
-      "src": "/api/(.*)", 
-        "methods": ["GET", "POST", "PUT", "DELETE"],  
-        "headers": {
-          "X-Custom-Header": "Blago API"  
-        },
-        "dest": "index.js"
+        "src": "/api/(.*)",  
+        "dest": "index.js"   
+      },
+      {
+        "src": "/",          
+        "dest": "index.js"   
       }
     ]
   }

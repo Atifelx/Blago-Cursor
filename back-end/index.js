@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
 import AIRoutes from './routes/openAiChat.js';
 import cors from 'cors';
-// import { createProxyMiddleware } from 'http-proxy-middleware';
+
 
 
 dotenv.config();
@@ -12,26 +12,11 @@ dotenv.config();
 const app = express()
 const PORT = process.env.PORT || 3000;
 
-app.options('*', cors()); // Handles preflight requests for all routes
-
 
 app.use(express.json());
 
 
-
-
-//app.use(cors());
-
-const corsOptions = {
-  origin: 'http://blago.fun', // Replace with your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
-  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-
-app.use(cors(corsOptions)); // Use CORS middleware with the defined options
-app.options('*', cors()); // Optionally, keep this to handle preflight requests
-
+app.use(cors());
 
 
 mongoose.connect(process.env.MONGOURI)
