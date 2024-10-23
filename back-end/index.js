@@ -20,7 +20,24 @@ app.use(express.json());
 
 
 
-app.use(cors());
+// app.use(cors());
+
+const corsOptions = {
+  origin: 'http://blago.fun', // Replace with your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+};
+
+app.use(cors(corsOptions)); // Use CORS middleware with the defined options
+app.options('*', cors()); // Optionally, keep this to handle preflight requests
+
+
+
+
+
+
+
 
 
 mongoose.connect(process.env.MONGOURI)
