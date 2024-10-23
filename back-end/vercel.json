@@ -8,10 +8,10 @@
     ],
     "routes": [
       {
-        "src": "/(.*)",
+      "src": "/api/(.*)", 
         "methods": ["GET", "POST", "PUT", "DELETE"],  
         "headers": {
-          "X-Custom-Header": "YourValue"  
+          "X-Custom-Header": "Blago API"  
         },
         "dest": "index.js"
       }

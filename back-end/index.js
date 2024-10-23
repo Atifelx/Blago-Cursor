@@ -20,7 +20,7 @@ app.use(express.json());
 
 
 
-app.use(cors());
+//app.use(cors());
 
 // const corsOptions = {
 //   origin: 'http://blago.fun', // Replace with your frontend URL
