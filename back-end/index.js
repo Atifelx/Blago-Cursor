@@ -16,15 +16,15 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// app.use(cors({
-//   origin: ['https://blago-tau.vercel.app', 'http://localhost:5173'], // Replace with your frontend URLs
-//   credentials: true,
-// }));
+app.use(cors({
+  origin: ['https://blago-backend.vercel.app/', 'https://blago.fun/'], // Replace with your frontend URLs
+  credentials: true,
+}));
 
 
 
 
-app.use(cors());
+//app.use(cors());
 
 
 mongoose.connect(process.env.MONGOURI)
