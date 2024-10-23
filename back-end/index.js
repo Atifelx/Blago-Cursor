@@ -24,12 +24,13 @@ app.use(express.json());
 //   credentials: true, // Allow cookies to be sent
 // }));
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-}));
 
+
+app.use(cors({
+  origin: '*', // Adjust this to your frontend URL in production
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Content-Type', 'Accept']
+}));
 
 
 mongoose.connect(process.env.MONGOURI)
