@@ -33,18 +33,6 @@ app.use(cors(corsOptions)); // Use CORS middleware with the defined options
 app.options('*', cors()); // Optionally, keep this to handle preflight requests
 
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://blago.fun');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
-
-
-
-
-
-
 
 mongoose.connect(process.env.MONGOURI)
   .then(() => console.log('MongoDB connected!'))
