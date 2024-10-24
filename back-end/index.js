@@ -16,16 +16,16 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 
-// app.use(cors());
+app.use(cors());
 
-app.use(cors({
-  origin: 'https://blago.fun', // Specify your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Content-Type', 'Accept']
-}));
+// app.use(cors({
+//   origin: 'https://blago.fun', // Specify your frontend URL
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//   allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Content-Type', 'Accept']
+// }));
 
-// Handle preflight OPTIONS requests
-app.options('*', cors()); // This handles all OPTIONS requests
+// // Handle preflight OPTIONS requests
+// app.options('*', cors()); // This handles all OPTIONS requests
 
 
 
