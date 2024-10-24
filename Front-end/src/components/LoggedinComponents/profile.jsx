@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux'; 
 import { Button } from "flowbite-react";
+const apiUrlP = import.meta.env.VITE_API_BASE_URL;
 
 function Profile() {
   const currentUser = useSelector(state => state.user.currentUser);
@@ -20,7 +21,7 @@ function Profile() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/update', {
+      const response = await fetch(`${apiUrlP}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

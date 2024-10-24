@@ -16,13 +16,13 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 
-// app.use(cors());
+//  app.use(cors());
 
 
 const allowedOrigins = [
   'https://blago-nine.vercel.app',
-  'http://localhost:3000/api',  // Add for local testing
-  'http://localhost:3000',
+  'http://localhost:3000/api',
+  'http://localhost:4173/api',
 ];
 
 app.use(cors({

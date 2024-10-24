@@ -49,16 +49,16 @@ const App = () => {
   <Routes>
 
      
-  {/* {!currentUser && (  */}
+  {!currentUser && ( 
       <>
         <Route path="/" element={<Home />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/resetpassword" element={<Resetpassword />} />
-        <Route path="*" element={<Navigate to="/signin" />} /> 
+        {/* <Route path="*" element={<Navigate to="/signin" />} />  */}
       </>
   
- {/* )}  */}
+  )}  
 
      {currentUser && ( 
       <>
@@ -67,7 +67,7 @@ const App = () => {
         <Route path="/profile" element={<Dashboard />} />
         <Route path="/Chat-AI" element={<Dashboard />} />
         <Route path="/Blog-Writer" element={<Dashboard />} />
-        {/* <Route path="*" element={<Navigate to="/dashboard" />} /> Redirect all other routes to /dashboard */}
+        <Route path="*" element={<Navigate to="/dashboard" />} /> Redirect all other routes to /dashboard
       </>
      )}
 

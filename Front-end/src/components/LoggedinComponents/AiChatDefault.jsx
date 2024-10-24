@@ -4,7 +4,7 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button , Spinner , Clipboard,Textarea} from 'flowbite-react'; 
 import { useDispatch } from 'react-redux';
  import {loadData} from '../../app/user/userDataSlice';
-
+ const apiUrlA = import.meta.env.VITE_API_BASE_URL;
 //  import Text_Component from "./extareaComponent";
 
 
@@ -45,9 +45,11 @@ const ChatComponent = () => {
 
     const fetchData = async () => {
         setLoading(true);
+
+
       
         try {
-            const res = await fetch('http://localhost:3000/api/askai', {
+            const response = await fetch(`${apiUrlA}/askai`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ input }),
