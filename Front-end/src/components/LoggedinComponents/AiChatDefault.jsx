@@ -56,7 +56,7 @@ const ChatComponent = () => {
             });
 
             if (!response.ok) {
-               // throw new Error('Network response was not ok');
+            
                 throw new Error(`api error! status: ${response.status}`);
             }
 
