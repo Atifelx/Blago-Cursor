@@ -1,6 +1,6 @@
 // src/components/LoggedinComponents/customtool/ConsoleTool.js
 import AIicon from "../../../assets/AIicon.svg"
-
+const apiUrRR = import.meta.env.VITE_API_BASE_URL;
 export default class ConsoleTool {
     static get isInline() {
         return true; // Mark this tool as inline
@@ -56,10 +56,11 @@ export default class ConsoleTool {
 
             const prompt = `You are an advanced text rephraser.
             1. For a single word, return a synonym or fix if incorrect.
-            2. For a sentence, rephrase it clearly and correctly in standard English, as if written by a human.
+            2. For longer text, rewrite it in simple English with a unique, human-like tone. Change every word while keeping the overall meaning intact.
             Important: Do not ask questions or seek clarification. Return only the corrected text.
             
             Input: ${selectedText}`;
+
             
             
             
@@ -67,8 +68,8 @@ export default class ConsoleTool {
             
             
 
-            // Call the OpenAI API
-            const res = await fetch('http://localhost:3000/api/Rewrite', {
+            const response = await fetch(`${apiUrRR}/Rewrite`, {
+           // const res = await fetch('http://localhost:3000/api/Rewrite', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ input: prompt }),
