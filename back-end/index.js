@@ -16,7 +16,23 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 
-app.use(cors());
+// app.use(cors());
+
+
+const allowedOrigins = ['https://blago-nine.vercel.app'];  // Add the URL of your frontend or trusted clients
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST','PUT'],  // Only allow methods that you use
+  credentials: true,  // Enable this if you use cookies or need to send credentials
+}));
 
 
 
