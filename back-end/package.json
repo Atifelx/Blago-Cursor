@@ -4,10 +4,10 @@
   "description": "blog app backend",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
-  },
+"scripts": {
+  "start": "node index.js",
+  "dev": "nodemon index.js"
+},
   "author": "",
   "license": "ISC",
   "dependencies": {
