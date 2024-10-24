@@ -21,7 +21,7 @@ app.use(express.json());
 
 const allowedOrigins = [
   'https://blago-nine.vercel.app',
-  'http://localhost:3000',  // Add for local testing
+  'http://localhost:3000/api',  // Add for local testing
 ];
 
 app.use(cors({
