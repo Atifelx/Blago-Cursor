@@ -19,7 +19,10 @@ app.use(express.json());
 // app.use(cors());
 
 
-const allowedOrigins = ['https://blago-nine.vercel.app'];  // Add the URL of your frontend or trusted clients
+const allowedOrigins = [
+  'https://blago-nine.vercel.app',
+  'http://localhost:3000',  // Add for local testing
+];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -30,8 +33,8 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST','PUT'],  // Only allow methods that you use
-  credentials: true,  // Enable this if you use cookies or need to send credentials
+  methods: ['GET', 'POST', 'PUT'],
+  credentials: true,
 }));
 
 
