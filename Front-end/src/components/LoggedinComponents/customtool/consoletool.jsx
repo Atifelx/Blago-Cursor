@@ -75,11 +75,11 @@ export default class ConsoleTool {
               body: JSON.stringify({ input: prompt }),
             });
       
-            if (!res.ok) {
-              throw new Error(`API error! Status: ${res.status}`);
+            if (!response.ok) {
+              throw new Error(`API error! Status: ${response.status}`);
             }
       
-            const data = await res.json();
+            const data = await response.json();
       
             const newText = data.modifiedText || selectedText; // Use modifiedText from API response
             
