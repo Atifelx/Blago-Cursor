@@ -55,12 +55,12 @@ const ChatComponent = () => {
                 body: JSON.stringify({ input }),
             });
 
-            if (!res.ok) {
+            if (!response.ok) {
                // throw new Error('Network response was not ok');
-                throw new Error(`api error! status: ${res.status}`);
+                throw new Error(`api error! status: ${response.status}`);
             }
 
-            const data = await res.json();
+            const data = await response.json();
 
             setResponse(data);
             localStorage.setItem('response', data); // Save response to localStorage prevent data delte from page reresh
