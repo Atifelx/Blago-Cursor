@@ -57,7 +57,7 @@ export default class ConsoleTool {
             const prompt = `You are an advanced text rephraser.
             1. For a single word, return a synonym or fix if incorrect.
             2. For longer text, rewrite it in simple English with a unique, human-like tone. Change every word while keeping the overall meaning intact.
-            Important: Do not ask questions or seek clarification. Return only the corrected text.
+            Return only the corrected text. Do not ask any questions or seek clarification under any circumstances.
             
             Input: ${selectedText}`;
 

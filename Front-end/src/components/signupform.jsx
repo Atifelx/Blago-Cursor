@@ -144,7 +144,7 @@ const response = await fetch(`${apiUrlS }/signup`, {
         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
         <input
           type="password"
-          placeholder="*********"
+          placeholder="Type your Password"
           id="password"
           value={formData.password}
           onChange={handleChange}
