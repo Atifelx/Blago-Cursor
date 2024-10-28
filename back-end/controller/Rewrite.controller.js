@@ -25,7 +25,7 @@ const Rewrite = async (req, res) => {
                         content: `${action}: ${input}`,
                     }
                 ],
-                max_tokens: 2000 // Adjust as needed
+                max_tokens: 4000 // Adjust as needed
             }),
         });
     
