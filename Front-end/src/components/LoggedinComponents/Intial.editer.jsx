@@ -21,6 +21,7 @@ import { useDispatch ,useSelector } from 'react-redux';
  import { AiOutlineClear } from "react-icons/ai";
  import { FaTrash , FaFileImport , FaCopy ,FaFileWord} from 'react-icons/fa';
 
+//  import '../../App.css'
 
 
 
@@ -233,12 +234,12 @@ const ClearEditer = (event) => {
   
 
   return (
-    <div className="flex flex-col-reverse  w-screen">
+    <div className="flex flex-1 flex-col-reverse">
 
 
     <div
       id="editorjs"
-      className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-2 mt-2 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly relative" // Added 'relative' class
+      className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-2 mt-2 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly relative sm:min-w-40" // Added 'relative' class
     > </div>
 
     <div className='flex flex-row'>

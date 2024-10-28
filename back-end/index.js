@@ -16,27 +16,27 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 
- app.use(cors());
+//  app.use(cors());
 
 
-// const allowedOrigins = [
-//   'https://blago-nine.vercel.app',
-//   'http://localhost:3000/api',
-//   'http://localhost:4173/api',
-// ];
+const allowedOrigins = [
+  'https://blago-nine.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:4173',
+];
 
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (like mobile apps or curl requests)
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ['GET', 'POST', 'PUT'],
-//   credentials: true,
-// }));
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT','DELETE', 'PATCH'],
+  credentials: true,
+}));
 
 
 
