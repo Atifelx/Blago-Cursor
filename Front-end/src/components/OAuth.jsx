@@ -10,84 +10,95 @@ import Pop_Component from "../components/Google_popup";
 import { FcGoogle } from "react-icons/fc";
 const apiUrlG = import.meta.env.VITE_API_BASE_URL;
 
+
+
+
 function OAuth() {
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.user.currentUser);
 
     const handleGoogleClick = async () => {
+
+
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-
-
-  provider.setCustomParameters({ prompt: 'select_account' });
-
-        try {
-
-          const gResult = await signInWithPopup(auth, new GoogleAuthProvider());
-          // const gResult = await signInWithPopup(auth, provider);
+        provider.setCustomParameters({ prompt: 'select_account' });
+        const gResult = await signInWithPopup(auth, new GoogleAuthProvider());
 
 
 
+          const Guser = gResult.user;
+   
+  const userData = {
+    username: Guser.displayName || 'User', // Fallback if displayName is null
+    email: Guser.email,
+    photoUrl: Guser.photoURL,
+    source: 'google',
+};         
 
-            const Guser = gResult.user;
-            console.log("User Info from Google:", Guser);
 
-            const userData = {
-                username: Guser.displayName || 'User', // Fallback if displayName is null
-                email: Guser.email,
-                photoUrl: Guser.photoURL,
-                source: 'google',
-            };
 
-            try {
-
-                const response = await fetch(`${apiUrlG }/verifyemail`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({email:Guser.email}) // Ensure the body is an object
-                });
-
-                const result = await response.json(); // Get the response as JSON
-
-                if (result.success) {
-                   
-                setTimeout(() => {
+try {
     
-                    dispatch(signout());
-                }, 1000); 
-                 
-                    navigate("/signin");  
-                    dispatch(GuserExist(false));
-                } 
-                
-                else {
+
+  const response = await fetch(`${apiUrlG }/verifyemail`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email:Guser.email}) // Ensure the body is an object
+    });
+
+    const result = await response.json(); // Get the response as JSON
 
 
-                    dispatch(GuserExist(true));
-                  
-                    setTimeout(() => {
-                       
-                        dispatch(signout());
-                    }, 1000); 
 
-                       
-                        dispatch(signinSuccess(userData)); 
-                        navigate('/createpassword');  
+    console.log("result.success>>>>", result.message);
+    console.log("result>>>>", result);
+
+
+
+//----------------------------------------------------------------------------------------------------
     
-                }
+    
+    
+    if (result.success) {
+        console.log("if is executed>>>>>");
+   dispatch(signinSuccess(result)); 
 
-            } catch (error) {
-                console.log("Error during email verification:", error);
-            }
+    } 
 
-        } catch (error) {
-            console.log("Error during Google sign-in:", error);
-        }
-    };
+    else
+    {
+
+        console.log("else is executed>>>>>");
+
+ const Mresponse = await fetch(`${apiUrlG }/Gsignup`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(userData) // Ensure the body is an object
+                    });
+    
+                    const Mresult = await Mresponse.json(); // Get the response as JSON
+
+                    dispatch(signinSuccess(Mresult)); 
+
+    }
+
+} catch (error) {
+    console.log("catch error:", error);
+    
+}
+
+  };
+
+
+
 
     return (
         <Button 
@@ -95,7 +106,7 @@ function OAuth() {
             onClick={handleGoogleClick}
         >
             <FcGoogle className="mr-1.5 text-xl text-neutral-700" />
-            Sign Up with Google
+            Continue with Google
         </Button>
     );
 }

@@ -167,11 +167,11 @@ const response = await fetch(`${apiUrlS }/signup`, {
         ) : 'SignUp'}
       </button>
 
-    {/* <OAuth/> */}
+    <OAuth/>
 
       <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
         Have an account?
-        <Link to="/signin" className="text-blue-600 hover:underline">
+        <Link to="/signin" className="text-blue-500 hover:underline">
         <span> Sign In</span>
 </Link>
 

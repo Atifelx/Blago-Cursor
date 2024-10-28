@@ -195,20 +195,12 @@ const ChatComponent = () => {
     return (
 
        
-        <div className="flex flex-col flex-1 bg-gray-100 p-4 rounded-lg lg:h-auto sm:w-auto ">
+        <div className="flex flex-col flex-1 bg-gray-100 p-4 rounded-lg lg:h-screen sm:h-auto sm:w-auto overflow-y-auto ml-1 mr-5">
 
-{/* <Text_Component/> */}
+
         
             <div className='flex items-center bg-gray-100  rounded-md p-5'>
-                {/* <input
-                
-                    value={input}
-                    onChange={handleInputChange}
-                    placeholder="Type your question here."
-                    className='flex-1 p-2 border  bg-gray-200 rounded-xl font-normal from-neutral-700'
-                    
-
-                /> */}
+ 
 
 
 <textarea

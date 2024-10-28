@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { signinStart, signinSuccess, signinFailure , GuserExist,errorClear} from '../app/user/userSlice';
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 import { Link } from 'react-router-dom';
-
+import OAuth from "../components/OAuth.jsx";
 
 
 const SigninForm = () => {
@@ -127,19 +127,20 @@ dispatch(errorClear());
       </button>
 
       <div className="mt-5 text-center">
-        <p className="text-sm font-medium text-gray-300">
+        <p className="text-sm font-medium text-gray-500 mr-2">
           Don't have an account? 
-          <Link to="/signup" className="text-blue-500 hover:underline text-sm">Sign Up</Link>
+          <Link to="/signup" className="text-blue-400 hover:underline text-sm ml-2">Sign Up</Link>
 
         </p>
-        <p className="text-sm font-medium text-gray-300">
+        <p className="text-sm font-medium text-gray-500 mr-2">
           Forgot password? 
-          <Link to="/resetpassword" className="text-blue-500 hover:underline text-sm ">Reset</Link>
-
+          <Link to="/resetpassword" className="text-blue-400 hover:underline text-sm ml-2 ">Reset</Link>
 
         </p>
-      </div>
 
+
+      </div>
+      <OAuth className="justify-center"/>
       {error && (
         <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 mt-5" role="alert">
           {error.message}

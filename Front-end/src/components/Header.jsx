@@ -5,12 +5,12 @@ import { signout } from '../app/user/userSlice.js';
 import React, { useState } from 'react';
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false); //creating dropdown
+  const [isOpen, setIsOpen] = useState(false); 
   const dispatch = useDispatch();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
-  }; // toggle button in profile
+  }; 
 
   const handleSignOut = () => {
     dispatch(signout());
@@ -18,24 +18,28 @@ export default function Header() {
 
   const currentUser = useSelector(state => state.user.currentUser);
 
-  // console.log("Current User image:", currentUser?.user?.photoUrl );
-  // console.log("Current Username:", currentUser?.user?.username );
 
 
+
+
+  
   return (
     <div>
-      <Navbar className="border-b-2 w-screen ">
-        <Navbar.Brand href="/">
-          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white text-emerald-500">Blago</span>
+      <Navbar fluid rounded className="justify-items-center shadow-sm mb-1">
+
+
+        <Navbar.Brand href="/" >
+        <span className="self-center whitespace-nowrap text-2xl font-semibold text-neutral-400">Blago</span>
+ 
         </Navbar.Brand>
 
-        <Navbar.Collapse>
+
+        <Navbar.Collapse >
           <Navbar.Link as={Link} to="/" style={{ display: currentUser ? 'none' : 'block' }}>Home</Navbar.Link>
-          {/* <Navbar.Link as={Link} to="/about" style={{ display: currentUser ? 'none' : 'block' }}>About</Navbar.Link> */}
-          {/* <Navbar.Link as={Link} to="/dashboard">Dashboard</Navbar.Link> */}
           {/* <Navbar.Link as={Link} to="/projects">Projects</Navbar.Link> */}
           <Navbar.Link as={Link} to="/signup" style={{ display: currentUser ? 'none' : 'block' }}> Sign Up</Navbar.Link>
         </Navbar.Collapse>
+
 
         {!currentUser && (
           <Link to="/signin">
@@ -48,16 +52,17 @@ export default function Header() {
           <div>
     
 
+
 <Avatar 
-//img={currentUser?.user?.photoUrl ? currentUser.user.photoUrl : `https://eu.ui-avatars.com/api/?size=64&name=${currentUser?.user?.username || 'Doe'}`}
-
-
-
-img={`https://eu.ui-avatars.com/api/size=64/?name=${currentUser?.user?.username}`}
+  img={
+    currentUser?.user?.photoUrl === "User-URL_for_profile"
+      ? `https://eu.ui-avatars.com/api/?size=64&name=${currentUser?.user?.username || 'User'}`
+      : currentUser?.user?.photoUrl
+  }
   status="online" 
   alt="Rounded avatar" 
   onClick={toggleDropdown} 
-  className="w-10 h-10 rounded-full right-2"
+  className="w-10 h-10 rounded-full"
 />
 
 

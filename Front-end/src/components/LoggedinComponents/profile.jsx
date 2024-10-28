@@ -50,12 +50,21 @@ function Profile() {
     <div className="flex  flex-grow flex-col justify-evenly p-4 bg-white">
       {/* User Image Placeholder */}
       <div className="mb-5 ml-28">
-        <img 
-         src={`https://eu.ui-avatars.com/api/?size=64&name=${currentUser?.user?.username}`}
 
-          alt="User"
-          className="w-24 h-24 rounded-full border-2 border-gray-300 object-cover"
-        />
+
+<img 
+  src={
+    currentUser?.user?.photoUrl && currentUser.user.photoUrl !== "User-URL_for_profile"
+      ? currentUser.user.photoUrl
+      : `https://eu.ui-avatars.com/api/?size=64&name=${currentUser?.user?.username || 'User'}`
+  }
+  alt="User"
+  className="w-24 h-24 rounded-full border-2 border-gray-300 object-cover"
+/>
+
+
+
+
       </div>
 
      

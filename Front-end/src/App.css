@@ -29,21 +29,16 @@ body, html {
 }
 
 #editorjs .inner {
-  background-color: #f3f4f6; /* bg-gray-100 in Tailwind */
-  padding: 10px; /* Optional inner padding */
+  background-color: #f3f4f6; /* Tailwind's bg-gray-100 */
+  padding: 5px; /* Optional inner padding */
   border-radius: inherit; /* Inherit the border radius from the parent */
+  width: 100%; /* Ensure the inner area takes full width */
 }
 
-/* Responsive Design: Shrink editor for smaller screens */
-@media (max-width: 768px) {
-  #editorjs {
-    max-width: 100%; /* Occupies full width on tablets or smaller devices */
-    padding: 10px;
-  }
-} 
 
- @media (max-width: 480px) {
-  #editorjs {
-    padding: 5px;
-  }
+
+
+.ce-block {
+  width: 100% !important; 
+
 }

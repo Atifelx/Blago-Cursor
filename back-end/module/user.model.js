@@ -9,6 +9,7 @@ const userSchema = new Schema({
   password: { type: String, required: false ,default:"12345678" },
   createdAt: { type: Date, default: Date.now },
   photoUrl: { type: String, required: false },
+  source: { type: String, required: false },
   // EditerData:{type: String, required: false },
 
 });

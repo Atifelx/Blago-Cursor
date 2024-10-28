@@ -34,6 +34,7 @@ export const signup = async (req, res, next) => {
         email,
         password: hashedPassword || undefined, // set to undefined if no password
         photoUrl: req.body.photoUrl || "User-URL_for_profile", // Handle photo URL for Google Auth
+        source: 'Blago'
     });
 
 
@@ -62,13 +63,23 @@ export const signin = async (req, res, next) => {
     try {
         const validUser = await User.findOne({ email });
         if (!validUser) {
-            return next(errorHandler(401, 'user not found')); // Changed to 401
+            return next(errorHandler(401, 'Account not found')); // Changed to 401
         }
 
+        if (validUser.source=="google") {
+            return next(errorHandler(401, 'Please Continue With Google!')); // Changed to 401
+        }
+
+
         const validPassword = bcryptjs.compareSync(password, validUser.password);
+
         if (!validPassword) {
             return next(errorHandler(401, 'Invalid password')); // Changed to 401
         }
+
+
+
+
 
         const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
@@ -143,8 +154,13 @@ export const verifyemail = async (req, res, next) => {
     try {
 
         const validUser = await User.findOne({ email });
+        
         if (!validUser) {
-            return next(errorHandler(401, 'user not found')); // Changed to 401
+            // Directly return the 400 response with "verify email failed" message
+            return res.status(400).json({ 
+                success: false,
+                message: 'User not found In Blgao',
+            });
         }
 
 
@@ -153,26 +169,55 @@ export const verifyemail = async (req, res, next) => {
             .status(200)
  
             .json({ 
-                
+                success: true,
                 message: 'verify email successful' ,
 
                 user: {
-                  
+                    id: validUser._id,
+                    username : validUser.username ,
                     email: validUser.email,
-                
+                    createdAt:validUser.createdAt,
+                    photoUrl:validUser.photoUrl,
+                    // Include other user properties as needed
                 }
-
             });
+
+
     } catch (error) {
         next(error);
     }
 
 
-
-
-
-
-
-
-
 };
+
+export const Gsignup = async (req, res, next) => {
+    const { username, email, photoUrl,  } = req.body;
+
+    try {
+        const newUser = new User({
+            username,
+            email,
+            password: '12345678', // Ensure the password is stored securely
+            photoUrl,
+            source: 'google',
+        });
+
+        await newUser.save();
+
+        // Return the saved user data in the response
+        res.json({
+            message: 'Signup Successful...',
+            user: {
+                id: newUser._id,
+                username: newUser.username,
+                email: newUser.email,
+                photoUrl: newUser.photoUrl,
+                createdAt: newUser.createdAt, // Include any other fields as needed
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
