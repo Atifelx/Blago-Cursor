@@ -5,11 +5,8 @@ Visit [Blago AI](https://blago.fun) for more information.
 ![blago](https://github.com/user-attachments/assets/49bbf55d-b6a1-41de-900a-3580aac20e00)
 
 
-<<<<<<< HEAD
-=======
 
 blago.fun
->>>>>>> 7eb5234 (Fixing Bugs #1.2)
 
 Welcome to the revolutionary AI Tool created by Atif.elx, designed to redefine how you interact with and generate text content. This tool streamlines the way you write, edit, and format text by leveraging the power of artificial intelligence to not only create content but also refine it to meet human-like writing standards. Below is a comprehensive overview of the tool's capabilities, making it an indispensable addition to your digital toolkit.
 
