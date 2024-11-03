@@ -24,7 +24,7 @@ function Home() {
       <Link
         to="/signup"
         title="Try Now"
-        className="inline-flex items-center justify-center w-full px-8 py-3 text-lg font-bold text-white transition-all duration-200 bg-gray-900 border-2 border-transparent sm:w-auto rounded-xl font-pj hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+        className="inline-flex items-center justify-center w-full px-8 py-3 text-lg font-bold text-white transition-all duration-200 bg-emerald-500 border-2 border-transparent sm:w-auto rounded-xl font-pj hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
         role="button"
       >
         Experience It for Yourself—Try Now!
@@ -42,7 +42,7 @@ function Home() {
               <div className="lg:max-w-6xl lg:mx-auto">
            
                 <div className="relative w-3/4 h-auto mx-auto"> 
-      <span className="bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] blur-lg filter opacity-50 w-full h-full absolute inset-0" /> {/* Increased opacity */}
+      <span className="bg-gradient-to-r from-[#50C878] via-[#FF44EC] to-[#FF675E] blur-lg filter opacity-50 w-full h-full absolute inset-0" /> {/* Increased opacity */}
       <video
         controls
         autoPlay

@@ -26,9 +26,9 @@ export default function Header() {
     <div>
       <Navbar fluid rounded className="justify-items-center bg-gray-50">
 
-
+      {/* bg-emerald-500 */}
         <Navbar.Brand href="/" >
-        <span className="self-center whitespace-nowrap text-2xl font-semibold text-neutral-800">Blago</span>
+        <span className="self-center whitespace-nowrap text-2xl font-semibold text-emerald-500">Blago</span>
  
         </Navbar.Brand>
 
