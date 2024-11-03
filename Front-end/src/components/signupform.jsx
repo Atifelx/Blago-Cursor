@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
@@ -110,6 +110,13 @@ const response = await fetch(`${apiUrlS }/signup`, {
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
     } 
   };
+
+
+
+  useEffect(() => {
+    setFormData({ email: '', password: '' });
+  }, []);
+
 
   return (
     <form className="mx-w-full max-w-sm p-6 bg-white rounded-sm shadow-sm" onSubmit={handleSubmit}>

@@ -62,8 +62,9 @@ function Home() {
         </div>
       </section>
 
-   {/* // <HeaderComponent/> */}
+
 </div>
+
 
 
 

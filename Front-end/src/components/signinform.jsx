@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
@@ -77,7 +77,9 @@ dispatch(errorClear());
     }
   };
 
-
+  useEffect(() => {
+    setFormData({ email: '', password: '' });
+  }, []);
 
 
 
