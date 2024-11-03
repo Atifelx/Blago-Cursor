@@ -20,8 +20,8 @@ function Signin() {
 
 
 <div className="basis-1/2 ml-10 mr-10 mb-5 items-center h-screen "> {/* Logo span */}
-  <span className='text-[100px] font-extrabold text-neutral-400 hover:text-emerald-500 '>Blago</span>
-  <p className='text-base text-neutral-400 left-5 hover:text-emerald-500 '>"Meet Blago: Your AI writing assistant for instant answers and effortless document creation. Transform search results, rewrite with ease, and streamline your resumes and eBooks in seconds!"
+  <span className='text-[100px] font-extrabold text-neutral-600 hover:text-emerald-500 '>Blago</span>
+  <p className='font-extralight text-neutral-600 left-5 hover:text-emerald-500 '>"Meet Blago: Your AI writing assistant for instant answers and effortless document creation. Transform search results, rewrite with ease, and streamline your resumes and eBooks in seconds!"
 </p>
 
 </div> {/* Logo span */}

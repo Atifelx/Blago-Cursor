@@ -21,29 +21,28 @@ export default function Header() {
 
 
 
-
   
   return (
     <div>
-      <Navbar fluid rounded className="justify-items-center shadow-sm mb-1">
+      <Navbar fluid rounded className="justify-items-center bg-gray-50">
 
 
         <Navbar.Brand href="/" >
-        <span className="self-center whitespace-nowrap text-2xl font-semibold text-neutral-400">Blago</span>
+        <span className="self-center whitespace-nowrap text-2xl font-semibold text-neutral-800">Blago</span>
  
         </Navbar.Brand>
 
 
         <Navbar.Collapse >
-          <Navbar.Link as={Link} to="/" style={{ display: currentUser ? 'none' : 'block' }}>Home</Navbar.Link>
+          <Navbar.Link as={Link} to="/" style={{ display: currentUser ? 'none' : 'block' }} className="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50 focus:ring-offset-2">Home</Navbar.Link>
           {/* <Navbar.Link as={Link} to="/projects">Projects</Navbar.Link> */}
-          <Navbar.Link as={Link} to="/signup" style={{ display: currentUser ? 'none' : 'block' }}> Sign Up</Navbar.Link>
+          <Navbar.Link as={Link} to="/signup" style={{ display: currentUser ? 'none' : 'block' }} className="text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none font-pj hover:text-opacity-50  focus:ring-offset-2"> Sign Up</Navbar.Link>
         </Navbar.Collapse>
 
 
         {!currentUser && (
           <Link to="/signin">
-            <Button outline>Sign In</Button>
+            <Button outline size="lg">Sign In</Button>
           </Link>
         )}
 
