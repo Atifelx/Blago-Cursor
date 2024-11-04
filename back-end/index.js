@@ -39,7 +39,11 @@ app.use(cors({
   credentials: true,
 }));
 
-
+app.use((req, res, next) => {
+  req.setTimeout(300000); // 300,000 milliseconds = 5 minutes
+  res.setTimeout(300000);
+  next();
+});
 
 
 

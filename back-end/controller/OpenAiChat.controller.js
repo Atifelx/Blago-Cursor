@@ -23,7 +23,7 @@ const chatController = async (req, res) => {
                         content: input // Use the 'input' variable for user content
                     }
                 ],
-                max_tokens: 2000 // Adjust as needed
+                max_tokens: 4000 // Adjust as needed
             }),
         });
     

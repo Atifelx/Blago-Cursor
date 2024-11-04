@@ -1,26 +1,30 @@
-// utils/generateWordDoc.js
+// utils/generateWordDoc.js updated
 
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, ShadingType } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, ShadingType } from "docx";
 import { saveAs } from 'file-saver'; // For downloading the document
 
 // Utility function to parse text for formatting
 const parseText = (text) => {
   const runs = [];
-  const boldRegex = /<b>(.*?)<\/b>/g; // Regex to find bold text
-  const italicRegex = /<i>(.*?)<\/i>/g; // Regex to find italic text
 
-  // Split text into segments for bold and italic
-  const segments = text.split(/(<b>.*?<\/b>|<i>.*?<\/i>)/g).filter(Boolean);
+  // Split text into segments based on <b>, <i>, and <br> tags
+  const segments = text.split(/(<b>.*?<\/b>|<i>.*?<\/i>|<br\s*\/?>)/g).filter(Boolean);
 
   segments.forEach(segment => {
     if (segment.startsWith("<b>")) {
+      // Handle bold text
       const boldText = segment.replace(/<b>|<\/b>/g, ""); // Remove <b> tags
       runs.push(new TextRun({ text: boldText, bold: true }));
     } else if (segment.startsWith("<i>")) {
+      // Handle italic text
       const italicText = segment.replace(/<i>|<\/i>/g, ""); // Remove <i> tags
       runs.push(new TextRun({ text: italicText, italics: true }));
+    } else if (segment === "<br>" || segment === "<br/>" || segment === "<br />") {
+      // Handle <br> tag by creating a new line
+      runs.push(new TextRun({ text: "\n" }));
     } else {
-      runs.push(new TextRun(segment)); // Regular text
+      // Handle regular text
+      runs.push(new TextRun(segment));
     }
   });
 
@@ -64,7 +68,7 @@ export const generateWordFromReduxData = (editerdata) => {
 
       // Handle paragraph blocks
       else if (block.type === 'paragraph') {
-        const runs = parseText(text); // Parse text to handle formatting
+        const runs = parseText(text); // Parse text to handle formatting (bold, italic, br)
         documentElements.push(new Paragraph({
           children: runs,
           shading: paragraphStyle.shading, // Apply shading if needed
@@ -114,7 +118,7 @@ export const generateWordFromReduxData = (editerdata) => {
 
   // Generate the Word document as a Blob in the browser
   Packer.toBlob(doc).then((blob) => {
-    saveAs(blob, "output.docx"); // File name "output.docx"
+    saveAs(blob, "Blago.docx"); // File name "output.docx"
     console.log("Word document generated and downloaded successfully!");
   }).catch(error => {
     console.error("Error generating Word document:", error);
