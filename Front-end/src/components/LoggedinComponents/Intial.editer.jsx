@@ -183,12 +183,24 @@ console.log("editer data",editorData)
             const outputData = await editorInstance.current.save();
             const content = outputData.blocks
                 .map(block => {
-                    // Check for meaningful content before creating HTML
+                    // Handle paragraph blocks
                     if (block.type === 'paragraph' && block.data.text.trim()) {
-                        return block.data.text; // Get the text without wrapping in <p> tags
+                        return block.data.text; // Get plain text from paragraph
                     }
-                    // Add more conditions for other block types as needed
-                    return ''; // Return empty for unhandled types or blocks without content
+                    // Handle unordered list blocks
+                    if (block.type === 'list' && block.data.style === 'unordered') {
+                        return block.data.items.map(item => `• ${getListItemText(item)}`).join('\n'); // Bullet points for unordered list
+                    }
+                    // Handle ordered list blocks
+                    if (block.type === 'list' && block.data.style === 'ordered') {
+                        return block.data.items.map((item, index) => `${index + 1}. ${getListItemText(item)}`).join('\n'); // Numbered list for ordered list
+                    }
+                    // Handle header blocks
+                    if (block.type === 'header' && block.data.text.trim()) {
+                        return block.data.text; // Get plain text for headers
+                    }
+                    // Return empty for unhandled types or blocks without content
+                    return ''; 
                 })
                 .filter(Boolean) // Filter out empty strings
                 .join('\n\n'); // Join the remaining content with line breaks
@@ -204,6 +216,13 @@ console.log("editer data",editorData)
         console.warn('Editor instance is not available.');
     }
 };
+
+// Function to get the text from a list item
+const getListItemText = (item) => {
+    // Directly return the item since it's already a string
+    return item; // Each item is a string in your structure
+};
+
 
 
 
