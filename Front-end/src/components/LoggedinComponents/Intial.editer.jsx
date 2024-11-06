@@ -5,10 +5,10 @@ import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Paragraph from '@editorjs/paragraph';
 import Table from '@editorjs/table';
-import Embed from '@editorjs/embed';
+import CodeTool from '@editorjs/code';
 import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
-import Marker from '@editorjs/marker';
+
 import InlineCode from '@editorjs/inline-code';
 import { selectEditorData } from '../../app/user/userDataSlice';
 import { converttoToEditor } from '../../util/userApi.js';
@@ -21,7 +21,8 @@ import { useDispatch ,useSelector } from 'react-redux';
  import { AiOutlineClear } from "react-icons/ai";
  import { FaTrash , FaFileImport , FaCopy ,FaFileWord} from 'react-icons/fa';
 
-//  import '../../App.css'
+
+ import '../../App.css'
 
 
 
@@ -42,7 +43,8 @@ const EditorComponent = () => {
           config: {
             placeholder: 'Enter a header',
             levels: [2, 3, 4],
-            defaultLevel: 3
+            defaultLevel: 3,
+            blockToolbar: [], 
           },
 
 
@@ -50,6 +52,9 @@ const EditorComponent = () => {
 
         list: {
           class: List,
+          config: {
+            blockToolbar: [],  // Disable the block toolbar for the list tool
+          },
         },
         paragraph: {
           class: Paragraph,
@@ -57,23 +62,35 @@ const EditorComponent = () => {
 
           config: {
             preserveBlank: true, 
+            blockToolbar: [],
         },
       },
 
         table: {
           class: Table,
+          config: {
+            blockToolbar: [],  // Disable the block toolbar for the list tool
+          },
         },
-        embed: Embed,
+      
         quote: {
           class: Quote,
+          config: {
+            blockToolbar: [],  // Disable the block toolbar for the list tool
+          },
     
         },
         delimiter: Delimiter,
-        marker: Marker,
+  
         inlineCode: InlineCode,
         AIWrite: ConsoleTool, // Register the custom tool
+      
+        code: CodeTool,
 
       },
+    
+
+
       data: data || { blocks: [] }, // Use provided data or empty
       onReady: () => {
      
@@ -258,7 +275,7 @@ const ClearEditer = (event) => {
 
     <div
       id="editorjs"
-      className="border border-gray-200 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-2 mt-2 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly relative sm:min-w-40" // Added 'relative' class
+      className="border border-gray-400 rounded-xl shadow-xl p-4 ml-10 mr-10 mb-2 mt-2 w-screen sm:w-auto max-w-3xl overflow-y-auto justify-evenly relative sm:min-w-40" // Added 'relative' class
     > </div>
 
     <div className='flex flex-row'>
@@ -304,16 +321,6 @@ const ClearEditer = (event) => {
 
 
 
-{/* <div>
-      <Button
-    color="gray"
-    onClick={ClearEditer}
-    Label="Press 2 times to clear"
-    className="border border-gray-50 rounded-xl shadow-sm p-0 mr-10 mb-2 ml-10 mt-5 justify-evenly relative text-neutral-500 "
->
-    Clear the Editer
-</Button>
-</div> */}
 
 
 

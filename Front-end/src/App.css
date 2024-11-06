@@ -47,3 +47,8 @@ body, html {
 strong {
   font-weight: bold !important;
 }
+
+
+.ce-block .ce-block__toolbar {
+  display: none !important;
+}

@@ -10,7 +10,7 @@ export const parseResponse = (text) => {
             remarkPlugins={[remarkGfm]} 
             components={{
                 // Custom styling for paragraphs to add space between them
-                p: ({ node, children }) => <p style={{ marginBottom: '20px', color: '#4a5568' }}>{children}</p>,
+                p: ({ node, children }) => <p style={{ marginBottom: '20px', color: '#1a202c' }}>{children}</p>,
 
                 // Custom styling for headers with different font sizes
                 h1: ({ node, children }) => (
@@ -126,12 +126,12 @@ export const parseResponse = (text) => {
 
                 // Styling for ordered and unordered lists to have the same font size and color
                 ul: ({ node, children }) => (
-                    <ul style={{ color: '#4a5568', fontSize: '1.125rem', marginBottom: '20px' }}>
+                    <ul style={{ color: '#1a202c', fontSize: '1.125rem', marginBottom: '20px' }}>
                         {children}
                     </ul>
                 ),
                 ol: ({ node, children }) => (
-                    <ol style={{ color: '#4a5568', fontSize: '1.125rem', marginBottom: '20px' }}>
+                    <ol style={{ color: '#1a202c', fontSize: '1.125rem', marginBottom: '20px' }}>
                         {children}
                     </ol>
                 ),

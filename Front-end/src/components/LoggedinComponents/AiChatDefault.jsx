@@ -113,11 +113,11 @@ const ChatComponent = () => {
     return (
 
        
-        <div className="flex flex-col flex-1 bg-gray-50 p-4 rounded-lg lg:h-screen sm:h-auto sm:w-auto overflow-y-auto ml-1 mr-5">
+        <div className="flex flex-col flex-1 bg-white p-4 rounded-lg lg:h-screen sm:h-auto sm:w-auto overflow-y-auto ml-5 mr-5">
 
 
         
-            <div className='flex items-center bg-gray-100  rounded-md p-5'>
+            <div className='flex items-center bg-gray-50  rounded-md p-5'>
  
 
 
@@ -164,7 +164,7 @@ const ChatComponent = () => {
                 {/* <  MainComponent/> */}
 
             </div>
-            <div className='mt-4 p-2 flex flex-col font-light text-neutral-800 '>
+            <div className='mt-4 p-2 flex flex-col font-light text-neutral-900 '>
                 {parseResponse(response)}
           
             </div>
