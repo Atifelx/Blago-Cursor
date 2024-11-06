@@ -42,3 +42,8 @@ body, html {
   width: 100% !important; 
 
 }
+
+
+strong {
+  font-weight: bold !important;
+}

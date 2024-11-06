@@ -16,7 +16,7 @@ function Editer() {
 
     <div className="flex flex-1" >
   
-    <div className="App flex flex-1 justify-center text-neutral-700">
+    <div className="App flex flex-1 justify-center">
       <EditorComponent />
     </div>
 
