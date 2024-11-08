@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -7,15 +7,9 @@ const chatController = async (req, res) => {
     const { input } = req.body;
 
     try {
-
-   
-        const response = await fetch(process.env.open_AI_API_URL, {
-            method: 'POST',
-            headers: {
-                'api-key': process.env.OPENAI_API_KEY,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        const response = await axios.post(
+            process.env.open_AI_API_URL,
+            {
                 model: 'gpt-4',
                 messages: [
                     {
@@ -23,29 +17,28 @@ const chatController = async (req, res) => {
                         content: input // Use the 'input' variable for user content
                     }
                 ],
-                max_tokens: 4000 // Adjust as needed
-            }),
-        });
-    
+                max_tokens: 5000 // Adjust as needed
+            },
+            {
+                headers: {
+                    'api-key': process.env.OPENAI_API_KEY,
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
 
-        if (!response.ok) {
+        // Axios will throw an error if the response status is not 2xx
+        if (response.status !== 200) {
             throw new Error('Network response was not ok openAi-backend');
-           
         }
 
-        const data = await response.json();
+        // Extracting the content of the response
+        const data = response.data;
         res.json(data.choices[0].message.content);
-
-
-
-
-
-       
-    
 
     } catch (error) {
         console.error(error);
-        res.status(900).send('OpenAI fetch Failed');
+        res.status(500).send('OpenAI request failed');
     }
 };
 

@@ -99,7 +99,7 @@ const EditorComponent = () => {
 
           dispatch(FetchData(outputData));
 
-          console.log(outputData);
+
 
         }).catch((error) => {
           console.log('Saving failed: ', error);
@@ -134,7 +134,7 @@ const EditorComponent = () => {
 
   useEffect(() => {
 
-console.log("editer data",editorData)
+
     if (!editorInstance.current) {
 
       initializeEditor(editorData);

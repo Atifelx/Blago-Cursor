@@ -28,13 +28,7 @@ function DashboardFlowbit() {
 
 <div className="flex flex-1 flex-col">
 
-<div className="flex flex-1 flex-col lg:hidden sm:block md:hidden text-sm font-light text-neutral-700">
 
-<div className='font-thin  text-sm  p-4 ml-2 mr-2 mb-96 mt-96 border rounded-md bg-gray-50'>
-<span>Please Use in the large screen Device , not optimised for Mobile !</span>
-  </div>
-
-</div>
 
 <div>
 <Sidebar
