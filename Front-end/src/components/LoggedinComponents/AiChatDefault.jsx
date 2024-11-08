@@ -117,7 +117,7 @@ const ChatComponent = () => {
 
 
         
-            <div className='flex items-center bg-gray-50  rounded-md p-5'>
+            <div className='flex items-center   rounded-md p-5'>  
  
 
 

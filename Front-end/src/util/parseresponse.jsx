@@ -71,11 +71,11 @@ export const parseResponse = (text) => {
                 // Styling for code blocks (inline and block-level)
                 code: ({ node, inline, children }) => (
                     <code style={{
-                        color: '#4a5568',             // Dark gray text color (text-700)
-                        borderRadius: '5px',          // Rounded corners
+                        color: '#ffffff',             // Dark gray text color (text-700)
+                        backgroundColor: '#333333',    // Dark grey background
                         padding: '0.2rem 0.4rem',     // Padding around the code
                         fontFamily: 'monospace',      // Monospace font for code
-                        fontSize: '1rem'              // Font size for inline code
+                        fontSize: '0.4rem'              // Font size for inline code
                     }}>
                         {children}
                     </code>
@@ -84,12 +84,13 @@ export const parseResponse = (text) => {
                 // Custom styling for preformatted code blocks (```)
                 pre: ({ node, children }) => (
                     <pre style={{
-                        color: '#edf2f7',            // Light gray text
+                        color: '#ffffff',             // White text
+                        backgroundColor: '#333333',    // Dark grey background
                         borderRadius: '8px',         // Rounded corners
                         padding: '20px',             // Padding for spacing inside the block
                         overflowX: 'auto',           // Enables horizontal scrolling if the content overflows
                         fontFamily: 'monospace',     // Monospace font for code blocks
-                        fontSize: '1rem',            // Font size of the code
+                        fontSize: '0.4rem',            // Font size of the code
                     }}>
                         {children}
                     </pre>

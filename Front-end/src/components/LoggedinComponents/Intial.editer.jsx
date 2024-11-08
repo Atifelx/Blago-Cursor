@@ -44,7 +44,7 @@ const EditorComponent = () => {
             placeholder: 'Enter a header',
             levels: [2, 3, 4],
             defaultLevel: 3,
-            blockToolbar: [], 
+           
           },
 
 
@@ -53,7 +53,8 @@ const EditorComponent = () => {
         list: {
           class: List,
           config: {
-            blockToolbar: [],  // Disable the block toolbar for the list tool
+     
+            inlineToolbar: ['bold', 'italic', 'AIWrite'], // Add the custom tool here
           },
         },
         paragraph: {
@@ -62,22 +63,18 @@ const EditorComponent = () => {
 
           config: {
             preserveBlank: true, 
-            blockToolbar: [],
+     
         },
       },
 
         table: {
           class: Table,
-          config: {
-            blockToolbar: [],  // Disable the block toolbar for the list tool
-          },
+          
         },
       
         quote: {
           class: Quote,
-          config: {
-            blockToolbar: [],  // Disable the block toolbar for the list tool
-          },
+    
     
         },
         delimiter: Delimiter,
