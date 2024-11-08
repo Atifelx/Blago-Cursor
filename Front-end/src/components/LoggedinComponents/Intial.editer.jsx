@@ -2,6 +2,7 @@
 import React, { useRef, useEffect } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
+
 import List from '@editorjs/list';
 import Paragraph from '@editorjs/paragraph';
 import Table from '@editorjs/table';
@@ -22,6 +23,7 @@ import { useDispatch ,useSelector } from 'react-redux';
  import { FaTrash , FaFileImport , FaCopy ,FaFileWord} from 'react-icons/fa';
 
 
+
  import '../../App.css'
 
 
@@ -37,15 +39,17 @@ const EditorComponent = () => {
     editorInstance.current = new EditorJS({
       holder: 'editorjs',
       tools: {
+
+
         header: {
           class: Header,
-          inlineToolbar: true,
+          inlineToolbar: ['bold', 'italic', 'AIWrite'], // Only show these options
           config: {
             placeholder: 'Enter a header',
-            levels: [2, 3, 4],
-            defaultLevel: 3,
-           
+            levels: [2, 3, 4], // H2, H3, H4 levels
+            defaultLevel: 3, // Default to H3
           },
+
 
 
            },
