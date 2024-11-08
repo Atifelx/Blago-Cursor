@@ -75,7 +75,7 @@ export const parseResponse = (text) => {
                         backgroundColor: '#333333',    // Dark grey background
                         padding: '0.2rem 0.4rem',     // Padding around the code
                         fontFamily: 'monospace',      // Monospace font for code
-                        fontSize: '0.4rem'              // Font size for inline code
+                        fontSize: '0.85rem'              // Font size for inline code
                     }}>
                         {children}
                     </code>
@@ -90,7 +90,7 @@ export const parseResponse = (text) => {
                         padding: '20px',             // Padding for spacing inside the block
                         overflowX: 'auto',           // Enables horizontal scrolling if the content overflows
                         fontFamily: 'monospace',     // Monospace font for code blocks
-                        fontSize: '0.4rem',            // Font size of the code
+                        fontSize: '0.85rem',            // Font size of the code
                     }}>
                         {children}
                     </pre>

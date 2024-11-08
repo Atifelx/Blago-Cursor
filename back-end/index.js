@@ -24,6 +24,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:4173',
  'https://blago-backend.vercel.app',
+ 'http://localhost:5173'
+ 
 ];
 
 app.use(cors({

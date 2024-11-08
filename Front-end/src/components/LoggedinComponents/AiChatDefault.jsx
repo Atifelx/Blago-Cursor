@@ -164,7 +164,7 @@ const ChatComponent = () => {
                 {/* <  MainComponent/> */}
 
             </div>
-            <div className='mt-4 p-2 flex flex-col font-light text-neutral-900 '>
+            <div className='mt-4 mb-4 p-4 flex flex-col font-light text-neutral-900 mr-5 ml-5 rounded-xl'>
                 {parseResponse(response)}
           
             </div>
