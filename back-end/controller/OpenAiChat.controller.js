@@ -62,8 +62,7 @@ const chatController = async (req, res) => {
     }
     
     try {
-        // Hard-coded API key (for development only - move to .env in production)
-        // const apiKey = 'AIzaSyDLc8JxIjctNJ8nnxHQKIggpMS_isl3k7E'; // Using the key from your example
+      
         const apiKey = process.env.GEMINI_API_KEY; // Uncomment this line to use the environment variable
 
    

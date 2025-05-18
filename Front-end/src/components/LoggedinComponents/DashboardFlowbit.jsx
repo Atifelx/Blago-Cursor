@@ -37,25 +37,7 @@ function DashboardFlowbit() {
 >
   <Sidebar.Items>
     <Sidebar.ItemGroup>
-      {/* <Sidebar.Item 
-        icon={HiChartPie} 
-        className="text-sm"
-        active={location.pathname === '/'}
-      >
-        Dashboard
-      </Sidebar.Item> */}
-
-      {/* <Sidebar.Item 
-        as={Link} 
-        to="/profile" 
-        icon={HiUserCircle} 
-        label="User" 
-        labelColor="dark" 
-        className="text-sm"
-        active={location.pathname === '/profile'}
-      >
-        Profile
-      </Sidebar.Item> */}
+  
 
       <Sidebar.Item 
         as={Link} 
@@ -82,7 +64,7 @@ function DashboardFlowbit() {
         className="text-sm"
         active={location.pathname === '/products'}
       >
-        Post online
+        Its free !
       </Sidebar.Item>
       
     </Sidebar.ItemGroup>

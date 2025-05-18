@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 
 
-// Moved signup export to the top for clarity
 export const signup = async (req, res, next) => {
     const { username , email, password } = req.body;
 
@@ -24,10 +23,6 @@ export const signup = async (req, res, next) => {
 
 
 
-       // const hashedPassword = await bcryptjs.hash(password, 10);
-
-
-       // const newUser = new User({ username , email, password: hashedPassword });
        
        const newUser = new User({
         username,

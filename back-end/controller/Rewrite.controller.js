@@ -69,7 +69,6 @@ const Rewrite = async (req, res) => {
     try {
         // Hardcoded API key (for development only - move to .env in production)
         const apiKey = process.env.GEMINI_API_KEY; // Uncomment this line to use the environment variable
-        // const apiKey = 'AIzaSyDLc8JxIjctNJ8nnxHQKIggpMS_isl3k7E';
         const modelName = "gemini-2.0-flash"; // Using Gemini 2.0 Flash model
         const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
