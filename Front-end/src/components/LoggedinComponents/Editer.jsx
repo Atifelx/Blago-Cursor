@@ -12,17 +12,17 @@ function Editer() {
 
 
   return (
-    <div>
 
-    <div className="flex flex-1" >
-  
-    <div className="App flex flex-1 justify-center">
+
+
+    <div>
+  <div className="flex w-full h-screen items-center justify-center">
+    <div className="App">
       <EditorComponent />
     </div>
+  </div>
+</div>
 
-    </div>
-
-    </div>
   )
 }
 

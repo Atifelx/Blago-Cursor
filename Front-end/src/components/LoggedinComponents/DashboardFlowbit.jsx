@@ -37,15 +37,15 @@ function DashboardFlowbit() {
 >
   <Sidebar.Items>
     <Sidebar.ItemGroup>
-      <Sidebar.Item 
+      {/* <Sidebar.Item 
         icon={HiChartPie} 
         className="text-sm"
         active={location.pathname === '/'}
       >
         Dashboard
-      </Sidebar.Item>
+      </Sidebar.Item> */}
 
-      <Sidebar.Item 
+      {/* <Sidebar.Item 
         as={Link} 
         to="/profile" 
         icon={HiUserCircle} 
@@ -55,7 +55,7 @@ function DashboardFlowbit() {
         active={location.pathname === '/profile'}
       >
         Profile
-      </Sidebar.Item>
+      </Sidebar.Item> */}
 
       <Sidebar.Item 
         as={Link} 
@@ -82,7 +82,7 @@ function DashboardFlowbit() {
         className="text-sm"
         active={location.pathname === '/products'}
       >
-        Plagiarism
+        Post online
       </Sidebar.Item>
       
     </Sidebar.ItemGroup>
