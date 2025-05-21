@@ -517,7 +517,7 @@ const ChatComponent = () => {
     // Function to prepare content prompt based on content type and keywords
     const prepareContentPrompt = (userInput, type, length, tone, primaryKw, secondaryKw) => {
         const promptPrefix = {
-            'blog-post': 'Write a detailed, engaging blog post about',
+            'blog-post': 'Craft a detailed and engaging blog post in a relaxed, conversational style—as if you are sharing your thoughts with a curious friend. Let the writing flow naturally with a mix of sentence lengths, a few casual phrases, and occasional imperfections. Include personal reflections, hypothetical situations, or relatable commentary to give the post a human touch. Avoid overly formal language or robotic structure. The final result should feel original, sincere, and indistinguishable from something written entirely by a human.',
             'essay': 'Write a comprehensive essay on the topic of',
             'legal-document': 'Draft a legal document regarding',
             'story': 'Create an engaging story about'
