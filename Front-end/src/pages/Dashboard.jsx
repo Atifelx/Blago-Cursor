@@ -4,29 +4,30 @@ import DashboardFlowbit from '../components/LoggedinComponents/DashboardFlowbit'
 import Profile from '../components/LoggedinComponents/profile';
 import ChatComponent from '../components/LoggedinComponents/AiChatDefault';
 import EditorComponent from '../components/LoggedinComponents/Intial.editer'
+import WebScrapper from '../components/LoggedinComponents/customtool/scrap';
 
 function Dashboard() {
   const location = useLocation();
   const currentUser = useSelector(state => state.user.currentUser);
 
   return (
-    <div className="flex flex-row sm:w-auto">  {/* Main container of dashboard */}
-      <div >
-        <DashboardFlowbit />
-      </div> 
+ 
 
-      <div className="flex-grow"> {/* Adjusted for more space for profile */}
-        {/* {location.pathname === '/profile' && <Profile />} Render Profile if path matches */}
-        {location.pathname === '/profile' ? <Profile /> : null}
-        <div > {/* Adjusted for more space for profile */}
-        {location.pathname === '/Chat-AI'? <ChatComponent/>: null} {/* Render Profile if path matches */}
-      </div>
-      {location.pathname === '/Blog-Writer'? <EditorComponent/>: null} {/* Render Profile if path matches */}
-      </div>
+<div className="flex flex-row sm:w-auto">  {/* Main container of dashboard */}
+  <div>
+    <DashboardFlowbit />
+  </div> 
 
-      
-      
-    </div>
+  <div className="flex-grow"> 
+    {location.pathname === '/profile' && <Profile />}
+    {location.pathname === '/Chat-AI' && <ChatComponent />}
+    {location.pathname === '/Blog-Writer' && <EditorComponent />}
+    {location.pathname === '/Web-Scrapper' && <WebScrapper />}
+  </div>
+</div>
+
+
+
   );
 }
 

@@ -4,7 +4,7 @@ import { HiChartPie, HiShoppingBag,HiClipboardList,HiChip ,HiUserCircle} from "r
 import { Link, useLocation } from 'react-router-dom';
 import {  useDispatch } from 'react-redux';
 import { HiAdjustments, HiCloudDownload } from "react-icons/hi";
-
+import { FaPersonDigging } from "react-icons/fa6";
 
 
 
@@ -49,6 +49,19 @@ function DashboardFlowbit() {
         Chat-AI
       </Sidebar.Item>
 
+   
+
+      <Sidebar.Item 
+      as={Link} 
+      to="/Web-Scrapper"
+        icon={FaPersonDigging } 
+        className="text-sm"
+        active={location.pathname === '/Web-Scrapper'}
+      >
+        Web Scrapping
+      </Sidebar.Item>
+
+
       <Sidebar.Item 
         as={Link} 
         to="/Blog-Writer" 
@@ -57,14 +70,6 @@ function DashboardFlowbit() {
         active={location.pathname === '/Blog-Writer'}
       >
         Blog Writer
-      </Sidebar.Item>
-
-      <Sidebar.Item 
-        icon={HiShoppingBag} 
-        className="text-sm"
-        active={location.pathname === '/products'}
-      >
-        Its free !
       </Sidebar.Item>
       
     </Sidebar.ItemGroup>
