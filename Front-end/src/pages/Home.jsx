@@ -7,7 +7,6 @@
 import EditorComponent from '../components/LoggedinComponents/Intial.editer';
 import testdemoSvg from '../assets/blago_vid/livepreviewgif.gif';
 import smartRewriterZoom from '../assets/blago_vid/rewritezoom.gif';
-import Webscrapping from '../assets/blago_vid/';
 import smartRewriterDOC from '../assets/blago_vid/smartRewriterDOC.gif';
 import smartPublished from '../assets/blago_vid/publishedW.gif';
 import { Link } from 'react-router-dom';
