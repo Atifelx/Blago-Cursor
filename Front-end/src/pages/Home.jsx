@@ -7,6 +7,7 @@
 import EditorComponent from '../components/LoggedinComponents/Intial.editer';
 import testdemoSvg from '../assets/blago_vid/livepreviewgif.gif';
 import smartRewriterZoom from '../assets/blago_vid/rewritezoom.gif';
+import Webscrapping from '../assets/blago_vid/';
 import smartRewriterDOC from '../assets/blago_vid/smartRewriterDOC.gif';
 import smartPublished from '../assets/blago_vid/publishedW.gif';
 import { Link } from 'react-router-dom';
@@ -296,11 +297,69 @@ function Home() {
   </div>
 </div>
 
-{/* <img 
-            src={testdemoSvg} 
+
+
+
+{/* Feature 3: Smart Text Rewriter */}
+<div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+
+  {/* GIF Container - 60% */}
+  <div className="flex-[0.6] w-full max-w-3xl">
+    <div className="relative">
+      <div className="w-full bg-gray-100 rounded-3xl border-gray-100 flex flex-col items-center justify-center shadow-2xl">
+        <span className="text-gray-400 text-sm">
+          <img 
+            src={smartPublished} 
             alt="Smart Text Rewriter Demo" 
-            className="flex items-center justify-center w-96 h-auto rounded-2xl mb-8 shadow-sm"
-          /> */}
+            className="w-full h-auto rounded-2xl mb-8 shadow-sm"
+          />
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {/* Content - 40% */}
+  <div className="flex-[0.4] max-w-xl">
+    <div className="text-center lg:text-left">
+      <h3 className="text-3xl lg:text-4xl font-light text-gray-800 mb-6 leading-tight" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+      Instant  <span className="bg-gradient-to-r from-emerald-400 to-cyan-800 bg-clip-text text-transparent font-light">WordPress Publishing</span>
+      </h3>
+      
+      <p className="text-gray-600 mb-8 text-lg lg:text-xl leading-relaxed font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+      Publish rewritten content to your WordPress blog in seconds—no copy-paste, no formatting issues. ,  <span className="font-medium text-yellow-500">saving you time</span> Blog smarter, not harder.
+      </p>
+
+      <ul className="space-y-4 text-base lg:text-lg text-gray-600">
+        <li className="flex items-center justify-center lg:justify-start">
+          <CheckCircle className="w-6 h-6 text-green-500 mr-4 flex-shrink-0" />
+          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Instant WordPress Integration</span>
+        </li>
+        <li className="flex items-center justify-center lg:justify-start">
+          <CheckCircle className="w-6 h-6 text-green-500 mr-4 flex-shrink-0" />
+          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>No Copy-Paste Needed</span>
+        </li>
+        <li className="flex items-center justify-center lg:justify-start">
+          <CheckCircle className="w-6 h-6 text-green-500 mr-4 flex-shrink-0" />
+          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Instant WordPress Integration</span>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+{/- demo sections*/}
 
 <div className="flex items-center justify-center">
   <img 
@@ -309,8 +368,6 @@ function Home() {
     className="w-96 h-auto rounded-2xl  shadow-sm"
   />
 </div>
-
-
 
 <EditorComponent />
 
