@@ -358,7 +358,7 @@ function Home() {
 
 
 
-{/- demo sections*/}
+
 
 <div className="flex items-center justify-center">
   <img 
