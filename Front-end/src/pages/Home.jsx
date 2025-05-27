@@ -9,6 +9,7 @@ import testdemoSvg from '../assets/blago_vid/livepreviewgif.gif';
 import smartRewriterZoom from '../assets/blago_vid/rewritezoom.gif';
 import smartRewriterDOC from '../assets/blago_vid/smartRewriterDOC.gif';
 import smartPublished from '../assets/blago_vid/publishedW.gif';
+import webscrap from '../assets/blago_vid/webscrap2.gif';
 import { Link } from 'react-router-dom';
 import { CheckCircle, FileText, Edit3, Globe, Download, Zap, Users, Shield, ArrowRight } from 'lucide-react';
 //import { Edit3, FileText, Globe, Download, CheckCircle } from 'lucide-react';
@@ -308,7 +309,7 @@ function Home() {
       <div className="w-full bg-gray-100 rounded-3xl border-gray-100 flex flex-col items-center justify-center shadow-2xl">
         <span className="text-gray-400 text-sm">
           <img 
-            src={smartPublished} 
+            src={webscrap} 
             alt="Smart Text Rewriter Demo" 
             className="w-full h-auto rounded-2xl mb-8 shadow-sm"
           />
@@ -321,25 +322,25 @@ function Home() {
   <div className="flex-[0.4] max-w-xl">
     <div className="text-center lg:text-left">
       <h3 className="text-3xl lg:text-4xl font-light text-gray-800 mb-6 leading-tight" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-      Instant  <span className="bg-gradient-to-r from-emerald-400 to-cyan-800 bg-clip-text text-transparent font-light">WordPress Publishing</span>
+      Effortless  <span className="bg-gradient-to-r from-emerald-400 to-cyan-800 bg-clip-text text-transparent font-light">Web Data Extraction</span>
       </h3>
       
       <p className="text-gray-600 mb-8 text-lg lg:text-xl leading-relaxed font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-      Publish rewritten content to your WordPress blog in seconds—no copy-paste, no formatting issues. ,  <span className="font-medium text-yellow-500">saving you time</span> Blog smarter, not harder.
+      Collects only publicly available content and structures it for <span className="font-medium text-yellow-500">research, analysis, or educational use </span>Helping you spark inspiration without copying.
       </p>
 
       <ul className="space-y-4 text-base lg:text-lg text-gray-600">
         <li className="flex items-center justify-center lg:justify-start">
           <CheckCircle className="w-6 h-6 text-green-500 mr-4 flex-shrink-0" />
-          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Instant WordPress Integration</span>
+          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>AI-rewritten for originality without copying.</span>
         </li>
         <li className="flex items-center justify-center lg:justify-start">
           <CheckCircle className="w-6 h-6 text-green-500 mr-4 flex-shrink-0" />
-          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>No Copy-Paste Needed</span>
+          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Grab Data with One Click</span>
         </li>
         <li className="flex items-center justify-center lg:justify-start">
           <CheckCircle className="w-6 h-6 text-green-500 mr-4 flex-shrink-0" />
-          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Instant WordPress Integration</span>
+          <span className="font-light" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Fast, Clean, Structured Output</span>
         </li>
       </ul>
 
