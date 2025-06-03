@@ -5,6 +5,9 @@ import Profile from '../components/LoggedinComponents/profile';
 import ChatComponent from '../components/LoggedinComponents/AiChatDefault';
 import EditorComponent from '../components/LoggedinComponents/Intial.editer'
 import WebScrapper from '../components/LoggedinComponents/customtool/scrap';
+import DOCgen from '../components/LoggedinComponents/customtool/DocGen';
+import EssayAI from '../components/LoggedinComponents/customtool/essayai';
+
 
 function Dashboard() {
   const location = useLocation();
@@ -23,6 +26,8 @@ function Dashboard() {
     {location.pathname === '/Chat-AI' && <ChatComponent />}
     {location.pathname === '/Blog-Writer' && <EditorComponent />}
     {location.pathname === '/Web-Scrapper' && <WebScrapper />}
+    {location.pathname === '/DOC-AI' && <DOCgen />}
+    {location.pathname === '/Essay-AI' && <EssayAI />}
   </div>
 </div>
 

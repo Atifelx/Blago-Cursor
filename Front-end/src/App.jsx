@@ -50,6 +50,8 @@ const App = () => {
         <Route path="/Web-Scrapper" element={<Dashboard />} />
         <Route path="/Chat-AI" element={<Dashboard />} />
         <Route path="/Blog-Writer" element={<Dashboard />} />
+        <Route path="/DOC-AI" element={<Dashboard />} />
+        <Route path="/Essay-AI" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/dashboard" />} /> Redirect all other routes to /dashboard
       </>
      )}

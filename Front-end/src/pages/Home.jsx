@@ -5,7 +5,7 @@
 
 
 import EditorComponent from '../components/LoggedinComponents/Intial.editer';
-import testdemoSvg from '../assets/blago_vid/livepreviewgif.gif';
+import testdemoSvg from '../assets/blago_vid/livepreview2.gif';
 import smartRewriterZoom from '../assets/blago_vid/rewritezoom.gif';
 import smartRewriterDOC from '../assets/blago_vid/smartRewriterDOC.gif';
 import smartPublished from '../assets/blago_vid/publishedW.gif';
@@ -365,7 +365,7 @@ function Home() {
   <img 
     src={testdemoSvg} 
     alt="Smart Text Rewriter Demo" 
-    className="w-96 h-auto rounded-2xl  shadow-sm"
+    className="w-96 h-auto rounded-xl  shadow-sm"
   />
 </div>
 

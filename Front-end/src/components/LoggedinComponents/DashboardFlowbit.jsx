@@ -69,8 +69,31 @@ function DashboardFlowbit() {
         className="text-sm"
         active={location.pathname === '/Blog-Writer'}
       >
-        Blog Writer
+        AI Editer
       </Sidebar.Item>
+
+      <Sidebar.Item 
+        as={Link} 
+        to="/DOC-AI" 
+        icon={HiClipboardList} 
+        className="text-sm"
+        active={location.pathname === '/DOC-AI'}
+      >
+        Doc-AI
+      </Sidebar.Item>
+
+
+
+      <Sidebar.Item 
+        as={Link} 
+        to="/Essay-AI" 
+        icon={HiClipboardList} 
+        className="text-sm"
+        active={location.pathname === '/DOC-AI'}
+      >
+        Essay-AI
+      </Sidebar.Item>
+
       
     </Sidebar.ItemGroup>
   </Sidebar.Items>
