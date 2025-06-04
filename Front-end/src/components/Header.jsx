@@ -336,7 +336,7 @@ export default function Header() {
                 />
 
                 {isOpen && (
-                  <div className="absolute right-0 z-50 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1">
+                  <div className="absolute right-0 z-50 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1">
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="text-sm font-thin text-neutral-500">@{currentUser?.user?.username}</p>
                       <p className="text-sm font-thin text-neutral-600 truncate">{currentUser?.user?.email}</p>
