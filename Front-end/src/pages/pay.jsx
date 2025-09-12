@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, AlertCircle, Loader, Bot, Zap, Users, Star, Clock, Shield } from 'lucide-react';
 
@@ -7,6 +8,8 @@ const BlagoAISubscription = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [subscriptionData, setSubscriptionData] = useState(null);
   const [orderData, setOrderData] = useState(null);
+  const [userSubscription, setUserSubscription] = useState(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(true);
 
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
   const PAYPAL_CONFIG = {
@@ -18,7 +21,36 @@ const BlagoAISubscription = () => {
   // Get user from localStorage or context
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  // Load PayPal SDK
+  // Fetch user subscription status
+  const fetchUserSubscription = async () => {
+    try {
+      setLoadingSubscription(true);
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setLoadingSubscription(false);
+        return;
+      }
+
+      const response = await fetch(`${apiBase}/subscription-status`, {
+        method: 'GET',
+        credentials: 'include', // Include cookies
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserSubscription(data);
+      }
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+    } finally {
+      setLoadingSubscription(false);
+    }
+  };
+
+  // Load PayPal SDK and fetch subscription status
   useEffect(() => {
     const loadPayPalSDK = () => {
       if (window.paypal) {
@@ -35,6 +67,7 @@ const BlagoAISubscription = () => {
     };
 
     loadPayPalSDK();
+    fetchUserSubscription();
 
     return () => {
       const existingScript = document.querySelector(`script[src*="paypal.com/sdk/js"]`);
@@ -66,6 +99,7 @@ const BlagoAISubscription = () => {
           shape: 'rect',
           label: 'paypal'
         },
+        // Prevent opening in new tab
         createOrder: async () => {
           const resp = await fetch(`${apiBase}/paypal/create-order`, {
             method: 'POST',
@@ -95,6 +129,8 @@ const BlagoAISubscription = () => {
               currency: capture?.amount?.currency_code,
             });
             setPaymentStatus('success');
+            // Refresh subscription status after successful payment
+            setTimeout(() => fetchUserSubscription(), 1000);
           } catch (e) {
             setPaymentStatus('error');
             setErrorMessage(e.message);
@@ -115,6 +151,32 @@ const BlagoAISubscription = () => {
     setErrorMessage('');
     setSubscriptionData(null);
     setOrderData(null);
+  };
+
+  const cancelSubscription = async () => {
+    if (!confirm('Are you sure you want to cancel your subscription? You will lose access to premium features.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiBase}/cancel-subscription`, {
+        method: 'POST',
+        credentials: 'include', // Include cookies
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        alert('Subscription cancelled successfully');
+        fetchUserSubscription(); // Refresh subscription status
+      } else {
+        alert('Failed to cancel subscription');
+      }
+    } catch (error) {
+      console.error('Error cancelling subscription:', error);
+      alert('Error cancelling subscription');
+    }
   };
 
   // Processing screen
@@ -203,6 +265,85 @@ const BlagoAISubscription = () => {
               >
                 Back to Dashboard
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show subscription status if user has active subscription
+  if (userSubscription && (userSubscription.subscriptionStatus === 'paid' || userSubscription.subscriptionStatus === 'trial')) {
+    const expiryDate = userSubscription.subscriptionStatus === 'paid'
+      ? userSubscription.paidUntil
+      : userSubscription.trialEndDate;
+
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Subscription Active</h1>
+              <p className="text-lg text-gray-600">Your Blago Pro subscription is currently active</p>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Subscription Details</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Status:</span>
+                      <span className="font-medium text-green-600 capitalize">{userSubscription.subscriptionStatus}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Plan:</span>
+                      <span className="font-medium">Blago Pro</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Days Remaining:</span>
+                      <span className="font-medium">{userSubscription.daysRemaining} days</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Expiry Information</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Expires:</span>
+                      <span className="font-medium">{new Date(expiryDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Time:</span>
+                      <span className="font-medium">{new Date(expiryDate).toLocaleTimeString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => window.location.href = '/dashboard'}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium"
+              >
+                Go to Dashboard
+              </button>
+              <button
+                onClick={cancelSubscription}
+                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all duration-200 font-medium"
+              >
+                Cancel Subscription
+              </button>
+            </div>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-500">
+                Need to renew? Your subscription will automatically expire on {new Date(expiryDate).toLocaleDateString()}.
+              </p>
             </div>
           </div>
         </div>

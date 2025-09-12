@@ -1,12 +1,15 @@
 import User from "../module/user.model.js";
 import { errorHandler } from "../utils/error.js";
+import jwt from 'jsonwebtoken';
 
-// GET /api/subscription-status?email=...
+// GET /api/subscription-status (uses JWT token)
 export const getSubscriptionStatus = async (req, res, next) => {
   try {
-    const { email } = req.query;
-    if (!email) return next(errorHandler(400, 'email is required'));
-    const user = await User.findOne({ email });
+    const token = req.cookies.access_token;
+    if (!token) return next(errorHandler(401, 'Access token required'));
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
     if (!user) return next(errorHandler(404, 'user not found'));
 
     const now = new Date();
@@ -61,6 +64,30 @@ export const confirmPayment = async (req, res, next) => {
       message: 'Payment recorded',
       paidUntil: user.paidUntil,
       subscriptionStatus: user.subscriptionStatus,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/cancel-subscription (uses JWT token)
+export const cancelSubscription = async (req, res, next) => {
+  try {
+    const token = req.cookies.access_token;
+    if (!token) return next(errorHandler(401, 'Access token required'));
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) return next(errorHandler(404, 'user not found'));
+
+    // Set subscription to expired
+    user.subscriptionStatus = 'expired';
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Subscription cancelled successfully',
+      subscriptionStatus: 'expired',
     });
   } catch (err) {
     next(err);
