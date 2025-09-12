@@ -1941,7 +1941,7 @@ Write this to be 100% unique and humanized with natural language patterns, varie
             <div className="mb-4 p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-lg border border-emerald-300">
                 <h2 className="text-xl font-semibold text-black mb-2">🤖 AI Document Processor</h2>
                 <p className="text-sm text-gray-900">
-                    Upload any document (up to 50MB) with <strong>enhanced PDF text extraction</strong>. 
+                    Upload any document (up to 50MB) with <strong>Enhanced text extraction</strong>. 
                     I'll intelligently chunk large files, read and understand the content, then rewrite it in active voice as an engaging narrator. 
                     Perfect for creating tutorials, guides, summaries, and articles from your documents.
                 </p>

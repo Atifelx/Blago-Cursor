@@ -743,6 +743,15 @@ function Home() {
             Join thousands of content creators, marketers, and writers who trust our AI-powered platform to create authentic, engaging content that passes all detection tests.
           </p>
           
+
+
+
+
+
+
+
+
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <Link
               to="/signup"

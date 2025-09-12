@@ -29,7 +29,10 @@ export const signup = async (req, res, next) => {
         email,
         password: hashedPassword || undefined, // set to undefined if no password
         photoUrl: req.body.photoUrl || "User-URL_for_profile", // Handle photo URL for Google Auth
-        source: 'Blago'
+        source: 'Blago',
+        subscriptionStatus: 'trial',
+        trialStartDate: new Date(),
+        trialEndDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
     });
 
 
@@ -76,6 +79,24 @@ export const signin = async (req, res, next) => {
 
 
 
+        // Derive current subscription state
+        const now = new Date();
+        let subscriptionStatus = validUser.subscriptionStatus;
+        if (validUser.paidUntil && validUser.paidUntil > now) {
+            subscriptionStatus = 'paid';
+        } else if (now <= (validUser.trialEndDate || now)) {
+            subscriptionStatus = 'trial';
+        } else {
+            subscriptionStatus = 'expired';
+        }
+
+        const daysRemaining = (() => {
+            const target = subscriptionStatus === 'paid' ? validUser.paidUntil : validUser.trialEndDate;
+            if (!target) return 0;
+            const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+            return Math.max(0, diff);
+        })();
+
         const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res
@@ -91,6 +112,10 @@ export const signin = async (req, res, next) => {
                     email: validUser.email,
                     createdAt:validUser.createdAt,
                     photoUrl:validUser.photoUrl,
+                    subscriptionStatus,
+                    trialEndDate: validUser.trialEndDate,
+                    paidUntil: validUser.paidUntil,
+                    daysRemaining,
                     // Include other user properties as needed
                 }
 
@@ -160,22 +185,37 @@ export const verifyemail = async (req, res, next) => {
 
 
 
-        res
-            .status(200)
- 
-            .json({ 
-                success: true,
-                message: 'verify email successful' ,
+        const now = new Date();
+        let subscriptionStatus = validUser.subscriptionStatus;
+        if (validUser.paidUntil && validUser.paidUntil > now) {
+            subscriptionStatus = 'paid';
+        } else if (now <= (validUser.trialEndDate || now)) {
+            subscriptionStatus = 'trial';
+        } else {
+            subscriptionStatus = 'expired';
+        }
+        const daysRemaining = (() => {
+            const target = subscriptionStatus === 'paid' ? validUser.paidUntil : validUser.trialEndDate;
+            if (!target) return 0;
+            const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+            return Math.max(0, diff);
+        })();
 
-                user: {
-                    id: validUser._id,
-                    username : validUser.username ,
-                    email: validUser.email,
-                    createdAt:validUser.createdAt,
-                    photoUrl:validUser.photoUrl,
-                    // Include other user properties as needed
-                }
-            });
+        res.status(200).json({ 
+            success: true,
+            message: 'verify email successful' ,
+            user: {
+                id: validUser._id,
+                username : validUser.username ,
+                email: validUser.email,
+                createdAt:validUser.createdAt,
+                photoUrl:validUser.photoUrl,
+                subscriptionStatus,
+                trialEndDate: validUser.trialEndDate,
+                paidUntil: validUser.paidUntil,
+                daysRemaining,
+            }
+        });
 
 
     } catch (error) {
@@ -195,6 +235,10 @@ export const Gsignup = async (req, res, next) => {
             password: '12345678', // Ensure the password is stored securely
             photoUrl,
             source: 'google',
+            // initialize trial on google sign up as well
+            subscriptionStatus: 'trial',
+            trialStartDate: new Date(),
+            trialEndDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
         });
 
         await newUser.save();

@@ -11,7 +11,8 @@ If you encounter any text that appears unstructured, nonsensical, or gibberish (
 Input text: ${selectedText}`;
 
     try {
-        const res = await fetch('http://localhost:3000/api/Rewrite', {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+        const res = await fetch(`${baseUrl}/Rewrite`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ input: prompt }),

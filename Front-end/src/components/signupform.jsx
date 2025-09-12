@@ -1,16 +1,16 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { signinStart, signinSuccess, signinFailure ,signout,errorClear} from '../app/user/userSlice';
+import { signinStart, signinSuccess, signinFailure, signout, errorClear } from '../app/user/userSlice';
 import OAuth from "../components/OAuth.jsx";
 import { Link } from 'react-router-dom';
 
-const apiUrlS = import.meta.env.VITE_API_BASE_URL;
+const apiUrlS = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const SignupForm = () => {
   //const [errorMessage, setErrorMessage] = useState(null); 
-// const [loading, setLoading] = useState(false); 
+  // const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -47,17 +47,17 @@ const SignupForm = () => {
 
 
     dispatch(signinStart());
-  
+
 
 
 
     try {
-    
 
 
-const response = await fetch(`${apiUrlS }/signup`, {
 
-   
+      const response = await fetch(`${apiUrlS}/signup`, {
+
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -77,19 +77,19 @@ const response = await fetch(`${apiUrlS }/signup`, {
           dispatch(signinFailure({ message: 'You have an account with US, Please Signin!' }));
           navigate("/signin");
         }
-        
+
         return;
       } else {
-       // dispatch(signinSuccess(result));
+        // dispatch(signinSuccess(result));
 
-       dispatch(signout);
+        dispatch(signout);
         // navigate("/signin");
 
         setTimeout(() => {
-         // dispatch(signout);
-         dispatch(signinSuccess());
+          // dispatch(signout);
+          dispatch(signinSuccess());
           navigate("/signin");
-      }, 1000); // 5000 ms = 5 seconds
+        }, 1000); // 5000 ms = 5 seconds
 
 
 
@@ -99,16 +99,16 @@ const response = await fetch(`${apiUrlS }/signup`, {
 
 
 
-  
 
 
 
 
-   
+
+
     } catch (error) {
-     
+
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
-    } 
+    }
   };
 
 
@@ -120,19 +120,19 @@ const response = await fetch(`${apiUrlS }/signup`, {
 
   return (
     <form className="mx-w-full max-w-sm p-6 bg-white rounded-sm shadow-sm" onSubmit={handleSubmit}>
- <div className="mb-5">
-  <label htmlFor="username" className="mr-4 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Username</label>
-  <input
-    type="text"
-    id="username"
-    value={formData.username}
-    onChange={handleChange}
-    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-    placeholder="Your username"
-    autoComplete="username" // Ensure this matches the suggestion
-    required
-  />
-</div>
+      <div className="mb-5">
+        <label htmlFor="username" className="mr-4 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Username</label>
+        <input
+          type="text"
+          id="username"
+          value={formData.username}
+          onChange={handleChange}
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="Your username"
+          autoComplete="username" // Ensure this matches the suggestion
+          required
+        />
+      </div>
 
       <div className="mb-5">
         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
@@ -142,9 +142,9 @@ const response = await fetch(`${apiUrlS }/signup`, {
           value={formData.email}
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="name@youremail.com" 
-          autoComplete="email" 
-          required 
+          placeholder="name@youremail.com"
+          autoComplete="email"
+          required
         />
       </div>
       <div className="mb-5">
@@ -156,8 +156,8 @@ const response = await fetch(`${apiUrlS }/signup`, {
           value={formData.password}
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-          required 
-          autoComplete="current-password" 
+          required
+          autoComplete="current-password"
         />
       </div>
 
@@ -174,17 +174,17 @@ const response = await fetch(`${apiUrlS }/signup`, {
         ) : 'SignUp'}
       </button>
 
-    <OAuth/>
+      <OAuth />
 
       <label htmlFor="signin" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white mt-5">
         Have an account?
         <Link to="/signin" className="text-blue-500 hover:underline">
-        <span> Sign In</span>
-</Link>
+          <span> Sign In</span>
+        </Link>
 
-        
+
       </label>
-      
+
       {error && (
         <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 mt-5" role="alert">
           {error.message}

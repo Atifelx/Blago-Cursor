@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Spinner } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { signinStart, signinSuccess, signinFailure , GuserExist,errorClear} from '../app/user/userSlice';
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
+import { signinStart, signinSuccess, signinFailure, GuserExist, errorClear } from '../app/user/userSlice';
+const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 import { Link } from 'react-router-dom';
 import OAuth from "../components/OAuth.jsx";
 
@@ -12,7 +12,7 @@ const SigninForm = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const currentUser = useSelector((state) => state.user.currentUser);
   const error = useSelector((state) => state.user.error);
   const loading = useSelector((state) => state.user.loading);
@@ -34,7 +34,7 @@ const SigninForm = () => {
     e.preventDefault();
 
     dispatch(errorClear());
-    
+
     if (!formData.email || !formData.password) {
       dispatch(signinFailure({ message: 'Please fill all the fields.' }));
       return;
@@ -57,21 +57,21 @@ const SigninForm = () => {
 
       const result = await response.json();
 
-       if (!response.ok) {
+      if (!response.ok) {
         dispatch(signinFailure({ message: result.message || 'Wrong credentials. Please try again.' }));
         return;
-        
+
       } else {
 
-      dispatch(signinSuccess(result));// Update redux state
+        dispatch(signinSuccess(result));// Update redux state
 
 
-navigate('/dashboard');
+        navigate('/dashboard');
 
-setFormData({ email: '', password: '' }); // Clear form data after submission
-dispatch(errorClear());
+        setFormData({ email: '', password: '' }); // Clear form data after submission
+        dispatch(errorClear());
 
-   }
+      }
     } catch (error) {
       dispatch(signinFailure({ message: error.message || 'An unexpected error occurred.' }));
     }
@@ -130,19 +130,19 @@ dispatch(errorClear());
 
       <div className="mt-5 text-center">
         <p className="text-sm font-medium text-gray-500 mr-2">
-          Don't have an account? 
+          Don't have an account?
           <Link to="/signup" className="text-blue-400 hover:underline text-sm ml-2">Sign Up</Link>
 
         </p>
         <p className="text-sm font-medium text-gray-500 mr-2">
-          Forgot password? 
+          Forgot password?
           <Link to="/resetpassword" className="text-blue-400 hover:underline text-sm ml-2 ">Reset</Link>
 
         </p>
 
 
       </div>
-      <OAuth className="justify-center"/>
+      <OAuth className="justify-center" />
       {error && (
         <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 mt-5" role="alert">
           {error.message}

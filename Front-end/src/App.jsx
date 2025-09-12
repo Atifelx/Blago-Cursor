@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route , Navigate} from 'react-router-dom';
-import { useSelector } from 'react-redux'; 
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 
@@ -18,6 +18,9 @@ import Createpassword from './pages/createpassword.jsx';
 import Resetpassword from './pages/resetPassword';
 import Profile from './components/LoggedinComponents/profile.jsx'
 
+
+
+
 const App = () => {
 
 
@@ -27,38 +30,46 @@ const App = () => {
 
 
   return (
-<Router>
-  <Header />
-  <Routes>
+    <Router>
+      <Header />
+      <Routes>
 
-     
-  {!currentUser && ( 
-      <>
-        <Route path="/" element={<Home />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/resetpassword" element={<Resetpassword />} />
-        <Route path="*" element={<Navigate to="/signin" />} /> 
-      </>
-  
-  )}  
 
-     {currentUser && ( 
-      <>
-      <Route path= "/createpassword" element={<Createpassword />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/Web-Scrapper" element={<Dashboard />} />
-        <Route path="/Chat-AI" element={<Dashboard />} />
-        <Route path="/Blog-Writer" element={<Dashboard />} />
-        <Route path="/DOC-AI" element={<Dashboard />} />
-        <Route path="/Essay-AI" element={<Dashboard />} />
-        <Route path="*" element={<Navigate to="/dashboard" />} /> Redirect all other routes to /dashboard
-      </>
-     )}
+        {!currentUser && (
+          <>
+            <Route path="/" element={<Home />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/resetpassword" element={<Resetpassword />} />
+            <Route path="*" element={<Navigate to="/signin" />} />
 
-  </Routes>
-  {/* <Footer /> */}
-</Router>
+          </>
+
+        )}
+
+        {currentUser && (
+          <>
+            <Route path="/createpassword" element={<Createpassword />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/Web-Scrapper" element={<Dashboard />} />
+            <Route path="/Chat-AI" element={<Dashboard />} />
+            <Route path="/Blog-Writer" element={<Dashboard />} />
+            <Route path="/DOC-AI" element={<Dashboard />} />
+            <Route path="/Essay-AI" element={<Dashboard />} />
+            {/* Removed stale My-Account route */}
+
+            <Route path="*" element={<Navigate to="/dashboard" />} /> Redirect all other routes to /dashboard
+
+
+            <Route path="/Pay" element={<Dashboard />} />
+          </>
+
+
+        )}
+
+      </Routes>
+      {/* <Footer /> */}
+    </Router>
 
   );
 };

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux'; 
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import DashboardFlowbit from '../components/LoggedinComponents/DashboardFlowbit';
 import Profile from '../components/LoggedinComponents/profile';
@@ -7,6 +7,12 @@ import EditorComponent from '../components/LoggedinComponents/Intial.editer'
 import WebScrapper from '../components/LoggedinComponents/customtool/scrap';
 import DOCgen from '../components/LoggedinComponents/customtool/DocGen';
 import EssayAI from '../components/LoggedinComponents/customtool/essayai';
+// Removed stale Subcriptions component
+
+import Pay from './pay';
+
+
+
 
 
 function Dashboard() {
@@ -14,22 +20,27 @@ function Dashboard() {
   const currentUser = useSelector(state => state.user.currentUser);
 
   return (
- 
 
-<div className="flex flex-row sm:w-auto">  {/* Main container of dashboard */}
-  <div>
-    <DashboardFlowbit />
-  </div> 
 
-  <div className="flex-grow"> 
-    {location.pathname === '/profile' && <Profile />}
-    {location.pathname === '/Chat-AI' && <ChatComponent />}
-    {location.pathname === '/Blog-Writer' && <EditorComponent />}
-    {location.pathname === '/Web-Scrapper' && <WebScrapper />}
-    {location.pathname === '/DOC-AI' && <DOCgen />}
-    {location.pathname === '/Essay-AI' && <EssayAI />}
-  </div>
-</div>
+    <div className="flex flex-row sm:w-auto">  {/* Main container of dashboard */}
+      <div>
+        <DashboardFlowbit />
+      </div>
+
+      <div className="flex-grow">
+        {location.pathname === '/profile' && <Profile />}
+        {location.pathname === '/Chat-AI' && <ChatComponent />}
+        {location.pathname === '/Blog-Writer' && <EditorComponent />}
+        {location.pathname === '/Web-Scrapper' && <WebScrapper />}
+        {location.pathname === '/DOC-AI' && <DOCgen />}
+        {location.pathname === '/Essay-AI' && <EssayAI />}
+        {/* Removed stale My-Account route content */}
+        {location.pathname === '/Pay' && <Pay />}
+
+
+
+      </div>
+    </div>
 
 
 

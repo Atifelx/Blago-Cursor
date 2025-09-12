@@ -4029,14 +4029,14 @@ ${content}`;
 
             {/* Enhanced Progress Indicators */}
             {(scraping || scrapingProgress > 0) && (
-                <div className="space-y-3 p-4 bg-emerald-50 rounded-xl border border-blue-200">
+                <div className="space-y-3 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-emerald-800">Enhanced Scraping Progress</span>
+                        <span className="text-sm font-semibold text-emerald-900">Enhanced Scraping Progress</span>
                         <span className="text-sm font-bold text-emerald-800">{scrapingProgress}%</span>
                     </div>
                     <div className="w-full bg-blue-200 rounded-full h-4 shadow-inner">
                         <div 
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-4 rounded-full transition-all duration-500 relative overflow-hidden shadow-sm"
+                            className="bg-gradient-to-r from-emerald-600 to-emerald-700 h-4 rounded-full transition-all duration-500 relative overflow-hidden shadow-sm"
                             style={{ width: `${scrapingProgress}%` }}
                         >
                             <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>

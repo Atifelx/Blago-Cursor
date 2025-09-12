@@ -10,7 +10,7 @@ import cors from 'cors';
 dotenv.config();
 
 const app = express()
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 
 app.use(express.json());
@@ -23,9 +23,10 @@ const allowedOrigins = [
   'https://blago.fun',
   'http://localhost:3000',
   'http://localhost:4173',
- 'https://blago-backend.vercel.app',
- 'http://localhost:5173'
- 
+  'https://blago-backend.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:5174'
+
 ];
 
 app.use(cors({
@@ -37,7 +38,7 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT','DELETE', 'PATCH'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true,
 }));
 
@@ -53,42 +54,42 @@ mongoose.connect(process.env.MONGOURI)
   .then(() => console.log('MongoDB connected!'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-  
-  app.get('/', (req, res) => {
-    res.send('Welcome to Blago, its blago under the Hood! visit:blago.fun to access the app!')
-  })
+
+app.get('/', (req, res) => {
+  res.send('Welcome to Blago, its blago under the Hood! visit:blago.fun to access the app!')
+})
 
 
-  app.get('/test', (req, res) => {
-    res.send('This is texting URL for Blago Backend!')
-  })
+app.get('/test', (req, res) => {
+  res.send('This is texting URL for Blago Backend!')
+})
 
 
- 
-  app.use('/api', authRoutes);
-  app.use('/api', AIRoutes);
 
-  app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');    /// setting for ignoring console error 
-    next();
+app.use('/api', authRoutes);
+app.use('/api', AIRoutes);
+
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');    /// setting for ignoring console error 
+  next();
+});
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500; // Set status code from error or default to 500
+  const message = err.message || "Internal Server Error"; // Set message from error or default message
+
+
+  res.status(statusCode).json({ // Send JSON response
+    success: false,
+    statusCode,
+    message,
+
   });
-
-  app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500; // Set status code from error or default to 500
-    const message = err.message || "Internal Server Error"; // Set message from error or default message
-   
-
-    res.status(statusCode).json({ // Send JSON response
-        success: false,
-        statusCode,
-        message,
-      
-    });
 });
 
 
 
 
-app.listen(PORT ,() => {
+app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

@@ -265,7 +265,7 @@ export default function Header() {
   const currentUser = useSelector(state => state.user.currentUser);
 
   return (
-    <header className="w-full relative bg-gradient-to-b from-blue-50 to-purple-50">
+    <header className="w-full relative bg-gradient-to-b from-gray-50 to-emerald-50">
       <div className="w-full px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-16 w-full">
           {/* Logo - Fixed to left with minimal margin */}
