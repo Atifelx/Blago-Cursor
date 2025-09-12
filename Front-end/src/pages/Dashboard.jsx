@@ -19,9 +19,9 @@ function Dashboard() {
   const currentUser = useSelector(state => state.user.currentUser);
 
   // Check if user has active subscription
-  const hasActiveSubscription = currentUser?.user && 
-    (currentUser.user.subscriptionStatus === 'paid' || 
-     currentUser.user.subscriptionStatus === 'trial');
+  const hasActiveSubscription = currentUser?.user &&
+    (currentUser.user.subscriptionStatus === 'paid' ||
+      currentUser.user.subscriptionStatus === 'trial');
 
   // For Pay route, show subscription status if user has active subscription, otherwise show payment form
   const renderPayPage = () => {

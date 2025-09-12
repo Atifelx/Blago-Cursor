@@ -162,10 +162,10 @@ const BlagoAISubscription = () => {
                 lastPaymentDate: new Date().toISOString(),
                 daysRemaining: 30
               }));
-              
+
               // Also refresh from API to ensure data consistency
               fetchUserSubscription();
-              
+
               // Auto-transition to subscription status after 3 seconds
               setTimeout(() => {
                 setPaymentStatus('idle');
@@ -344,7 +344,7 @@ const BlagoAISubscription = () => {
             {/* Left Side - Pro User Status */}
             <div className="bg-white rounded-xl shadow-lg p-8">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full mx-auto mb-4 flex items-center justify-center">
                   <span className="text-white text-2xl font-bold">PRO</span>
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Pro User</h1>
@@ -482,7 +482,7 @@ const BlagoAISubscription = () => {
             </div>
 
             {/* Feature Card */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6 mb-6">
+            <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-6 mb-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Blago Pro</h3>
               <p className="text-gray-600 mb-4">Unlocks unlimited AI writing tools, advanced features, and premium support</p>
               <div className="text-sm text-gray-500">$29.00 / month after</div>

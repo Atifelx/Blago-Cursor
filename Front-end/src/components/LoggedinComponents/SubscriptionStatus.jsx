@@ -25,6 +25,10 @@ const SubscriptionStatus = () => {
   const isPaid = user.subscriptionStatus === 'paid';
   const isTrial = user.subscriptionStatus === 'trial';
   const isExpired = user.subscriptionStatus === 'expired' || user.subscriptionStatus === 'unpaid';
+  
+  // Determine user type for branding
+  const userType = isPaid ? 'Pro User' : isTrial ? 'Trial User' : 'Expired User';
+  const userTypeColor = isPaid ? 'from-emerald-500 to-emerald-600' : isTrial ? 'from-blue-500 to-blue-600' : 'from-gray-500 to-gray-600';
 
   const expiryDate = isPaid ? user.paidUntil : user.trialEndDate;
   const daysRemaining = user.daysRemaining || 0;
@@ -46,20 +50,31 @@ const SubscriptionStatus = () => {
     try {
       const token = localStorage.getItem('access_token');
       const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
-      const response = await fetch(`${apiBase}/cancel-subscription`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      
+      // Call both endpoints to ensure complete cancellation
+      const [subscriptionResponse, paypalResponse] = await Promise.all([
+        fetch(`${apiBase}/cancel-subscription`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }),
+        fetch(`${apiBase}/paypal/cancel-subscription`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: user.email })
+        })
+      ]);
 
-      if (response.ok) {
-        alert('Subscription cancelled successfully');
+      if (subscriptionResponse.ok && paypalResponse.ok) {
+        alert('Subscription cancelled successfully. Your access will expire immediately.');
         // Refresh the page to update the subscription status
         window.location.reload();
       } else {
-        alert('Failed to cancel subscription');
+        alert('Failed to cancel subscription. Please try again.');
       }
     } catch (error) {
       console.error('Error cancelling subscription:', error);
@@ -72,7 +87,7 @@ const SubscriptionStatus = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mb-4">
+          <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${userTypeColor} rounded-full mb-4`}>
             <Star className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Blago AI</h1>
@@ -81,20 +96,24 @@ const SubscriptionStatus = () => {
 
         {/* Main Content */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Pro User Badge */}
-          <div className="bg-gradient-to-r from-purple-500 to-blue-500 px-8 py-6">
+          {/* User Type Badge */}
+          <div className={`bg-gradient-to-r ${userTypeColor} px-8 py-6`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
                   <Zap className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-white">Pro User</h2>
-                  <p className="text-purple-100">Premium Access Active</p>
+                  <h2 className="text-2xl font-bold text-white">{userType}</h2>
+                  <p className="text-white/80">
+                    {isPaid ? 'Premium Access Active' : isTrial ? 'Trial Access Active' : 'Access Expired'}
+                  </p>
                 </div>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                <span className="text-white font-semibold">PRO</span>
+                <span className="text-white font-semibold">
+                  {isPaid ? 'PRO' : isTrial ? 'TRIAL' : 'EXPIRED'}
+                </span>
               </div>
             </div>
           </div>
@@ -177,13 +196,15 @@ const SubscriptionStatus = () => {
 
                 {/* Action Buttons */}
                 <div className="space-y-4">
-                  <button
-                    onClick={() => navigate('/Pay')}
-                    className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all duration-200 flex items-center justify-center space-x-2"
-                  >
-                    <CreditCard className="w-5 h-5" />
-                    <span>Make Advanced Payment</span>
-                  </button>
+                  {!isPaid && (
+                    <button
+                      onClick={() => navigate('/Pay')}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 flex items-center justify-center space-x-2"
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      <span>Upgrade to Pro</span>
+                    </button>
+                  )}
                   
                   <button
                     onClick={() => navigate('/dashboard')}
@@ -192,6 +213,16 @@ const SubscriptionStatus = () => {
                     <Users className="w-5 h-5" />
                     <span>Go to Dashboard</span>
                   </button>
+
+                  {isPaid && (
+                    <button
+                      onClick={() => navigate('/Pay')}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 flex items-center justify-center space-x-2"
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      <span>Make Advanced Payment</span>
+                    </button>
+                  )}
 
                   {isPaid && (
                     <button

@@ -79,4 +79,24 @@ export const captureOrder = async (req, res, next) => {
   }
 };
 
+// POST /api/paypal/cancel-subscription { email }
+export const cancelPayPalSubscription = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return next(errorHandler(400, 'email required'));
+
+    // Find user and cancel their subscription
+    const user = await User.findOne({ email });
+    if (user) {
+      user.subscriptionStatus = 'expired';
+      user.paidUntil = new Date(); // Set to current date to expire immediately
+      await user.save();
+    }
+
+    res.json({ success: true, message: 'Subscription cancelled successfully' });
+  } catch (err) {
+    next(errorHandler(500, err.message));
+  }
+};
+
 
