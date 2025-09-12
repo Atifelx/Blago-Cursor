@@ -42,6 +42,12 @@ signinFailure:(state,action)=>{
       state.loading = false;
       state.error = null;
     },
+
+    updateUserSubscription: (state, action) => {
+      if (state.currentUser && state.currentUser.user) {
+        state.currentUser.user = { ...state.currentUser.user, ...action.payload };
+      }
+    },
     
 
 
@@ -70,6 +76,7 @@ export const {
   signinSuccess, 
   signinFailure, 
   signout, 
+  updateUserSubscription,
   GuserExist, 
   FetchData ,
   ClearData,

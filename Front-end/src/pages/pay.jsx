@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, AlertCircle, Loader, Bot, Zap, Users, Star, Clock, Shield } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateUserSubscription } from '../app/user/userSlice';
 
 const BlagoAISubscription = () => {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -10,6 +12,10 @@ const BlagoAISubscription = () => {
   const [orderData, setOrderData] = useState(null);
   const [userSubscription, setUserSubscription] = useState(null);
   const [loadingSubscription, setLoadingSubscription] = useState(true);
+
+  // Get current user from Redux state and dispatch
+  const currentUser = useSelector(state => state.user.currentUser);
+  const dispatch = useDispatch();
 
   const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
   const PAYPAL_CONFIG = {
@@ -57,7 +63,7 @@ const BlagoAISubscription = () => {
     }
   };
 
-  // Load PayPal SDK and fetch subscription status
+  // Load PayPal SDK and set subscription status from current user
   useEffect(() => {
     const loadPayPalSDK = () => {
       if (window.paypal) {
@@ -74,7 +80,16 @@ const BlagoAISubscription = () => {
     };
 
     loadPayPalSDK();
-    fetchUserSubscription();
+
+    // Use current user data instead of making API call
+    if (currentUser && currentUser.user) {
+      console.log('Using current user data:', currentUser.user);
+      setUserSubscription(currentUser.user);
+      setLoadingSubscription(false);
+    } else {
+      console.log('No current user found, fetching subscription...');
+      fetchUserSubscription();
+    }
 
     return () => {
       const existingScript = document.querySelector(`script[src*="paypal.com/sdk/js"]`);
@@ -82,7 +97,7 @@ const BlagoAISubscription = () => {
         existingScript.parentNode.removeChild(existingScript);
       }
     };
-  }, []);
+  }, [currentUser]);
 
   // Initialize PayPal buttons when SDK loads
   useEffect(() => {
@@ -120,7 +135,9 @@ const BlagoAISubscription = () => {
         onApprove: async ({ orderID }) => {
           try {
             setPaymentStatus('processing');
-            const email = (window.__blagoUser && window.__blagoUser.email) || undefined;
+            // Get email from current user data
+            const email = currentUser?.user?.email || undefined;
+            console.log('Capturing payment for email:', email);
             const resp = await fetch(`${apiBase}/paypal/capture-order`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -136,9 +153,19 @@ const BlagoAISubscription = () => {
               currency: capture?.amount?.currency_code,
             });
             setPaymentStatus('success');
-            // Refresh subscription status after successful payment
+            // Update Redux state with new subscription data
             setTimeout(() => {
+              // Update user subscription in Redux state
+              dispatch(updateUserSubscription({
+                subscriptionStatus: 'paid',
+                paidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                lastPaymentDate: new Date().toISOString(),
+                daysRemaining: 30
+              }));
+              
+              // Also refresh from API to ensure data consistency
               fetchUserSubscription();
+              
               // Auto-transition to subscription status after 3 seconds
               setTimeout(() => {
                 setPaymentStatus('idle');

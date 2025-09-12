@@ -7,8 +7,7 @@ import EditorComponent from '../components/LoggedinComponents/Intial.editer'
 import WebScrapper from '../components/LoggedinComponents/customtool/scrap';
 import DOCgen from '../components/LoggedinComponents/customtool/DocGen';
 import EssayAI from '../components/LoggedinComponents/customtool/essayai';
-// Removed stale Subcriptions component
-
+import SubscriptionStatus from '../components/LoggedinComponents/SubscriptionStatus';
 import Pay from './pay';
 
 
@@ -19,9 +18,20 @@ function Dashboard() {
   const location = useLocation();
   const currentUser = useSelector(state => state.user.currentUser);
 
+  // Check if user has active subscription
+  const hasActiveSubscription = currentUser?.user && 
+    (currentUser.user.subscriptionStatus === 'paid' || 
+     currentUser.user.subscriptionStatus === 'trial');
+
+  // For Pay route, show subscription status if user has active subscription, otherwise show payment form
+  const renderPayPage = () => {
+    if (location.pathname === '/Pay') {
+      return hasActiveSubscription ? <SubscriptionStatus /> : <Pay />;
+    }
+    return null;
+  };
+
   return (
-
-
     <div className="flex flex-row sm:w-auto">  {/* Main container of dashboard */}
       <div>
         <DashboardFlowbit />
@@ -34,16 +44,9 @@ function Dashboard() {
         {location.pathname === '/Web-Scrapper' && <WebScrapper />}
         {location.pathname === '/DOC-AI' && <DOCgen />}
         {location.pathname === '/Essay-AI' && <EssayAI />}
-        {/* Removed stale My-Account route content */}
-        {location.pathname === '/Pay' && <Pay />}
-
-
-
+        {renderPayPage()}
       </div>
     </div>
-
-
-
   );
 }
 
