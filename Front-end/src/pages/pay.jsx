@@ -27,21 +27,28 @@ const BlagoAISubscription = () => {
       setLoadingSubscription(true);
       const token = localStorage.getItem('access_token');
       if (!token) {
+        console.log('No access token found');
         setLoadingSubscription(false);
         return;
       }
 
+      console.log('Fetching subscription status...');
       const response = await fetch(`${apiBase}/subscription-status`, {
         method: 'GET',
-        credentials: 'include', // Include cookies
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
+      console.log('Subscription status response:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('Subscription data:', data);
         setUserSubscription(data);
+      } else {
+        const errorData = await response.json();
+        console.error('Subscription fetch error:', errorData);
       }
     } catch (error) {
       console.error('Error fetching subscription:', error);
@@ -165,10 +172,11 @@ const BlagoAISubscription = () => {
     }
 
     try {
+      const token = localStorage.getItem('access_token');
       const response = await fetch(`${apiBase}/cancel-subscription`, {
         method: 'POST',
-        credentials: 'include', // Include cookies
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -278,17 +286,34 @@ const BlagoAISubscription = () => {
     );
   }
 
+  // Show loading state while fetching subscription
+  if (loadingSubscription) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="text-center py-8">
+              <Loader className="w-12 h-12 animate-spin mx-auto mb-6 text-blue-500" />
+              <h3 className="text-2xl font-bold mb-4 text-blue-600">Loading Subscription Status</h3>
+              <p className="text-gray-600">Please wait while we fetch your subscription details...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Show subscription status if user has active subscription
   if (userSubscription && (userSubscription.subscriptionStatus === 'paid' || userSubscription.subscriptionStatus === 'trial')) {
-    const expiryDate = userSubscription.subscriptionStatus === 'paid' 
-      ? userSubscription.paidUntil 
+    const expiryDate = userSubscription.subscriptionStatus === 'paid'
+      ? userSubscription.paidUntil
       : userSubscription.trialEndDate;
-    
+
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
+
             {/* Left Side - Pro User Status */}
             <div className="bg-white rounded-xl shadow-lg p-8">
               <div className="text-center mb-8">
@@ -352,9 +377,9 @@ const BlagoAISubscription = () => {
                   </div>
                   <span className="text-lg font-semibold text-gray-900">Blago Pro</span>
                 </div>
-                
+
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">Next Payment Cycle</h3>
-                
+
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
@@ -383,14 +408,14 @@ const BlagoAISubscription = () => {
                   >
                     Make Advanced Payment
                   </button>
-                  
+
                   <button
                     onClick={() => window.location.href = '/dashboard'}
                     className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-all duration-200 font-medium"
                   >
                     Go to Dashboard
                   </button>
-                  
+
                   <button
                     onClick={cancelSubscription}
                     className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-all duration-200 font-medium"

@@ -5,7 +5,11 @@ import jwt from 'jsonwebtoken';
 // GET /api/subscription-status (uses JWT token)
 export const getSubscriptionStatus = async (req, res, next) => {
   try {
-    const token = req.cookies.access_token;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.startsWith('Bearer ') 
+      ? authHeader.slice(7) 
+      : req.cookies.access_token;
+    
     if (!token) return next(errorHandler(401, 'Access token required'));
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -73,7 +77,11 @@ export const confirmPayment = async (req, res, next) => {
 // POST /api/cancel-subscription (uses JWT token)
 export const cancelSubscription = async (req, res, next) => {
   try {
-    const token = req.cookies.access_token;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.startsWith('Bearer ') 
+      ? authHeader.slice(7) 
+      : req.cookies.access_token;
+    
     if (!token) return next(errorHandler(401, 'Access token required'));
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
