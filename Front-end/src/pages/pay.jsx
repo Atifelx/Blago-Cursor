@@ -130,7 +130,13 @@ const BlagoAISubscription = () => {
             });
             setPaymentStatus('success');
             // Refresh subscription status after successful payment
-            setTimeout(() => fetchUserSubscription(), 1000);
+            setTimeout(() => {
+              fetchUserSubscription();
+              // Auto-transition to subscription status after 3 seconds
+              setTimeout(() => {
+                setPaymentStatus('idle');
+              }, 3000);
+            }, 1000);
           } catch (e) {
             setPaymentStatus('error');
             setErrorMessage(e.message);
@@ -274,76 +280,131 @@ const BlagoAISubscription = () => {
 
   // Show subscription status if user has active subscription
   if (userSubscription && (userSubscription.subscriptionStatus === 'paid' || userSubscription.subscriptionStatus === 'trial')) {
-    const expiryDate = userSubscription.subscriptionStatus === 'paid'
-      ? userSubscription.paidUntil
+    const expiryDate = userSubscription.subscriptionStatus === 'paid' 
+      ? userSubscription.paidUntil 
       : userSubscription.trialEndDate;
-
+    
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <CheckCircle className="w-8 h-8 text-white" />
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            {/* Left Side - Pro User Status */}
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <div className="text-center mb-8">
+                <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-white text-2xl font-bold">PRO</span>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Pro User</h1>
+                <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Active Subscription
+                </div>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Subscription Active</h1>
-              <p className="text-lg text-gray-600">Your Blago Pro subscription is currently active</p>
-            </div>
 
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Subscription Details</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
+              {/* Subscription Status Card */}
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-6 mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Subscription Status</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Status:</span>
+                    <span className="font-medium text-green-600 capitalize">{userSubscription.subscriptionStatus}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Plan:</span>
+                    <span className="font-medium">Blago Pro</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Days Remaining:</span>
+                    <span className="font-bold text-blue-600 text-lg">{userSubscription.daysRemaining} days</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Transaction Details */}
+              {orderData && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Transaction Details</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Transaction ID:</span>
+                      <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">{orderData.orderID}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Amount:</span>
+                      <span className="font-medium">${orderData.amount} {orderData.currency}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-600">Status:</span>
-                      <span className="font-medium text-green-600 capitalize">{userSubscription.subscriptionStatus}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Plan:</span>
-                      <span className="font-medium">Blago Pro</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Days Remaining:</span>
-                      <span className="font-medium">{userSubscription.daysRemaining} days</span>
+                      <span className="font-medium text-green-600">{orderData.status}</span>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Expiry Information</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Expires:</span>
+              )}
+            </div>
+
+            {/* Right Side - Payment Cycle & Actions */}
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-white text-sm font-bold">B</span>
+                  </div>
+                  <span className="text-lg font-semibold text-gray-900">Blago Pro</span>
+                </div>
+                
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Next Payment Cycle</h3>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Next Billing Date:</span>
                       <span className="font-medium">{new Date(expiryDate).toLocaleDateString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Time:</span>
-                      <span className="font-medium">{new Date(expiryDate).toLocaleTimeString()}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Amount:</span>
+                      <span className="font-medium">$29.00 USD</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Cycle:</span>
+                      <span className="font-medium">Monthly</span>
                     </div>
                   </div>
                 </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-4">
+                  <button
+                    onClick={() => {
+                      setPaymentStatus('idle');
+                      setOrderData(null);
+                    }}
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium"
+                  >
+                    Make Advanced Payment
+                  </button>
+                  
+                  <button
+                    onClick={() => window.location.href = '/dashboard'}
+                    className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-all duration-200 font-medium"
+                  >
+                    Go to Dashboard
+                  </button>
+                  
+                  <button
+                    onClick={cancelSubscription}
+                    className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-all duration-200 font-medium"
+                  >
+                    Cancel Subscription
+                  </button>
+                </div>
+
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-gray-500">
+                    Your subscription will automatically renew on {new Date(expiryDate).toLocaleDateString()}.
+                  </p>
+                </div>
               </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => window.location.href = '/dashboard'}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium"
-              >
-                Go to Dashboard
-              </button>
-              <button
-                onClick={cancelSubscription}
-                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all duration-200 font-medium"
-              >
-                Cancel Subscription
-              </button>
-            </div>
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-500">
-                Need to renew? Your subscription will automatically expire on {new Date(expiryDate).toLocaleDateString()}.
-              </p>
             </div>
           </div>
         </div>
