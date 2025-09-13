@@ -58,7 +58,7 @@ const Scrap = ({ onContentGenerated }) => {
         }
 
         const normalizedUrl = normalizeUrl(url.trim());
-        
+
         if (!isValidUrl(normalizedUrl)) {
             setError('Please enter a valid URL (e.g., https://example.com)');
             return;
@@ -85,7 +85,7 @@ const Scrap = ({ onContentGenerated }) => {
             if (response.data.success) {
                 const { content, metadata, wordCount } = response.data;
                 
-                setCurrentStep(`Successfully scraped ${wordCount.toLocaleString()} words`);
+            setCurrentStep(`Successfully scraped ${wordCount.toLocaleString()} words`);
                 setScrapedContent(content);
                 
                 // Auto-rewrite if enabled
@@ -151,17 +151,8 @@ ${content}
 
 Please rewrite this content to be completely unique while preserving all the essential information.`;
 
-            const response = await axios.post(`${apiBaseUrl}/openai/chat`, {
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You are an expert content writer who specializes in creating unique, human-like content that passes all AI detection tools.'
-                    },
-                    {
-                        role: 'user',
-                        content: rewritePrompt
-                    }
-                ]
+            const response = await axios.post(`${apiBaseUrl}/askai`, {
+                input: rewritePrompt
             }, {
                 timeout: 120000, // 2 minute timeout for AI processing
                 headers: {
@@ -169,24 +160,23 @@ Please rewrite this content to be completely unique while preserving all the ess
                 }
             });
 
-            if (response.data.success) {
-                const rewrittenText = response.data.content || response.data.message;
-                setRewrittenContent(rewrittenText);
-                setCurrentStep('Content successfully rewritten and humanized');
-                
-                // Call the callback if provided
-                if (onContentGenerated && typeof onContentGenerated === 'function') {
-                    onContentGenerated(rewrittenText);
-                }
-            } else {
-                throw new Error('Failed to rewrite content');
+            // The API returns the content directly as a string
+            const rewrittenText = response.data;
+            setRewrittenContent(rewrittenText);
+            setCurrentStep('Content successfully rewritten and humanized');
+            
+            // Call the callback if provided
+            if (onContentGenerated && typeof onContentGenerated === 'function') {
+                onContentGenerated(rewrittenText);
             }
 
         } catch (error) {
             console.error('Rewrite error:', error);
             
-            if (error.response?.data?.message) {
-                setError(`Rewriting failed: ${error.response.data.message}`);
+            if (error.response?.data?.error) {
+                setError(`Rewriting failed: ${error.response.data.error}`);
+            } else if (error.response?.data?.details) {
+                setError(`Rewriting failed: ${error.response.data.details}`);
             } else if (error.code === 'ECONNABORTED') {
                 setError('AI processing timeout - Please try again');
             } else {
@@ -205,29 +195,29 @@ Please rewrite this content to be completely unique while preserving all the ess
             <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Web Content Scraper</h2>
                 <p className="text-gray-600">Extract and rewrite content from any website</p>
-            </div>
+                        </div>
 
             {/* URL Input Section */}
             <div className="space-y-4">
                 <div className="flex gap-3">
-                    <input
+                        <input
                         type="url"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
                         placeholder="Enter website URL (e.g., https://example.com)"
                         className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
                         disabled={scraping}
-                        onKeyPress={(e) => e.key === 'Enter' && !scraping && handleScrapeUrl()}
-                    />
-                    <button
-                        onClick={handleScrapeUrl}
-                        disabled={scraping || !url.trim()}
+                            onKeyPress={(e) => e.key === 'Enter' && !scraping && handleScrapeUrl()}
+                        />
+                        <button
+                            onClick={handleScrapeUrl}
+                            disabled={scraping || !url.trim()}
                         className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap"
-                    >
-                        {scraping ? 'Scraping...' : 'Scrape'}
-                    </button>
+                        >
+                            {scraping ? 'Scraping...' : 'Scrape'}
+                        </button>
                 </div>
-                
+
                 {/* Auto-rewrite toggle */}
                 <div className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
                     <input
@@ -244,7 +234,7 @@ Please rewrite this content to be completely unique while preserving all the ess
             </div>
 
             {/* Status Display */}
-            {currentStep && (
+                    {currentStep && (
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="flex items-center">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
@@ -305,7 +295,7 @@ Please rewrite this content to be completely unique while preserving all the ess
                 <div className="space-y-4 border border-green-200 rounded-lg p-6 bg-gradient-to-br from-white to-green-50">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                         <h3 className="text-lg font-bold text-gray-800 flex items-center">
-                            AI Rewritten Content
+                            AI Rewritten Content 
                             <span className="ml-3 text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
                                 100% Unique & Humanized
                             </span>
