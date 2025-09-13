@@ -180,8 +180,7 @@ const SubscriptionStatus = () => {
                     <h4 className="font-semibold text-blue-800 mb-2">Billing Information</h4>
                     <p className="text-sm text-blue-700">
                       <strong>No recurring charges:</strong> You paid once and get full access for {daysRemaining} days. 
-                      Your subscription will automatically expire on {formatDate(expiryDate)}. 
-                      You can extend your access anytime by making an additional payment.
+                      Your subscription will automatically expire on {formatDate(expiryDate)}.
                     </p>
                   </div>
                 )}
