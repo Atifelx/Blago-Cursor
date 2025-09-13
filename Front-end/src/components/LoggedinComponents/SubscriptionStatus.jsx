@@ -70,7 +70,7 @@ const SubscriptionStatus = () => {
                     {isPaid ? 'Premium Access Active' : isTrial ? 'Trial Access Active' : 'Access Expired'}
                   </p>
                   {isPaid && (
-                    <p className="text-white/70 text-sm mt-1">
+                    <p className="text-white/90 text-base font-medium mt-2 px-3 py-1 bg-white/20 rounded-full backdrop-blur-sm">
                       One-time payment • Manual renewal • No auto-billing
                     </p>
                   )}
