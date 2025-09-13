@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { CheckCircle, Calendar, CreditCard, Star, Zap, Users, Clock, Shield } from 'lucide-react';
+import { CheckCircle, CreditCard, Star, Zap, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const SubscriptionStatus = () => {
@@ -42,45 +42,6 @@ const SubscriptionStatus = () => {
     });
   };
 
-  const cancelSubscription = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription? You will lose access to premium features.')) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('access_token');
-      const apiBase = import.meta.env.VITE_API_BASE_URL || '/api';
-      
-      // Call both endpoints to ensure complete cancellation
-      const [subscriptionResponse, paypalResponse] = await Promise.all([
-        fetch(`${apiBase}/cancel-subscription`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }),
-        fetch(`${apiBase}/paypal/cancel-subscription`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email: user.email })
-        })
-      ]);
-
-      if (subscriptionResponse.ok && paypalResponse.ok) {
-        alert('Subscription cancelled successfully. Your access will expire immediately.');
-        // Refresh the page to update the subscription status
-        window.location.reload();
-      } else {
-        alert('Failed to cancel subscription. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error cancelling subscription:', error);
-      alert('Error cancelling subscription');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -88,7 +49,7 @@ const SubscriptionStatus = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${userTypeColor} rounded-full mb-4`}>
-            <Star className="w-8 h-8 text-white" />
+            <img src="/fevicon.svg" alt="Blago AI" className="w-10 h-10" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Blago AI</h1>
           <p className="text-xl text-gray-600">Your Subscription Status</p>
@@ -108,6 +69,11 @@ const SubscriptionStatus = () => {
                   <p className="text-white/80">
                     {isPaid ? 'Premium Access Active' : isTrial ? 'Trial Access Active' : 'Access Expired'}
                   </p>
+                  {isPaid && (
+                    <p className="text-white/70 text-sm mt-1">
+                      One-time payment • Manual renewal • No auto-billing
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
@@ -205,35 +171,29 @@ const SubscriptionStatus = () => {
                       <span>Upgrade to Pro</span>
                     </button>
                   )}
-                  
-                  <button
-                    onClick={() => navigate('/dashboard')}
-                    className="w-full bg-gray-100 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:bg-gray-200 transition-all duration-200 flex items-center justify-center space-x-2"
-                  >
-                    <Users className="w-5 h-5" />
-                    <span>Go to Dashboard</span>
-                  </button>
 
                   {isPaid && (
                     <button
                       onClick={() => navigate('/Pay')}
-                      className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 flex items-center justify-center space-x-2"
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center space-x-2"
                     >
                       <CreditCard className="w-5 h-5" />
-                      <span>Make Advanced Payment</span>
-                    </button>
-                  )}
-
-                  {isPaid && (
-                    <button
-                      onClick={cancelSubscription}
-                      className="w-full bg-red-50 text-red-600 font-semibold py-3 px-6 rounded-xl hover:bg-red-100 transition-all duration-200 flex items-center justify-center space-x-2"
-                    >
-                      <Clock className="w-5 h-5" />
-                      <span>Cancel Subscription</span>
+                      <span>Extend Access (+15 days)</span>
                     </button>
                   )}
                 </div>
+
+                {/* Billing Info for Pro Users */}
+                {isPaid && (
+                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">Billing Information</h4>
+                    <p className="text-sm text-blue-700">
+                      <strong>No recurring charges:</strong> You paid once and get full access for {daysRemaining} days. 
+                      Your subscription will automatically expire on {formatDate(expiryDate)}. 
+                      You can extend your access anytime by making an additional payment.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

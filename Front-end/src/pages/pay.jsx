@@ -476,7 +476,7 @@ const BlagoAISubscription = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-white text-2xl font-bold">B</span>
+            <img src="/fevicon.svg" alt="Blago AI" className="w-10 h-10" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Blago AI</h1>
           <p className="text-xl text-gray-600">
@@ -501,7 +501,8 @@ const BlagoAISubscription = () => {
                 ) : (
                   <div className="space-y-2">
                     <div className="text-4xl font-bold text-green-600">$29.00</div>
-                    <p className="text-lg text-gray-600">per month • Cancel anytime</p>
+                    <p className="text-lg text-gray-600">one-time payment • 30 days access</p>
+                    <p className="text-sm text-blue-600 font-medium">No recurring charges • Manual renewal</p>
                   </div>
                 )}
               </div>
@@ -539,20 +540,29 @@ const BlagoAISubscription = () => {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Plan:</span>
-                    <span className="font-medium">Blago Pro Monthly</span>
+                    <span className="font-medium">Blago Pro Access</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Price:</span>
-                    <span className="font-medium">$29.00/month</span>
+                    <span className="text-gray-600">Access Duration:</span>
+                    <span className="font-medium">30 days</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Billing:</span>
-                    <span className="font-medium">Monthly</span>
+                    <span className="text-gray-600">Billing Type:</span>
+                    <span className="font-medium">One-time payment</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Auto-renewal:</span>
+                    <span className="font-medium text-red-600">Disabled</span>
                   </div>
                   <div className="flex justify-between border-t pt-3">
                     <span className="text-gray-600">Total:</span>
                     <span className="font-bold text-lg">$29.00</span>
                   </div>
+                </div>
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-xs text-blue-700">
+                    <strong>Advanced Payment:</strong> Extend your access by 15 additional days (45 days total) with any additional payment.
+                  </p>
                 </div>
               </div>
             </div>

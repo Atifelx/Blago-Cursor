@@ -54,9 +54,10 @@ export const confirmPayment = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (!user) return next(errorHandler(404, 'user not found'));
 
-    // Extend paidUntil by 30 days from now (or from existing paidUntil if in future)
+    // Extend paidUntil by 45 days from now (or from existing paidUntil if in future)
+    // This gives 15 extra days for advanced payments
     const base = user.paidUntil && user.paidUntil > new Date() ? user.paidUntil : new Date();
-    const nextPaidUntil = new Date(base.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const nextPaidUntil = new Date(base.getTime() + 45 * 24 * 60 * 60 * 1000);
 
     user.subscriptionStatus = 'paid';
     user.lastPaymentDate = new Date();
