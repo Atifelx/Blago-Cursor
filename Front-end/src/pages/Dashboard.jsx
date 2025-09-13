@@ -8,6 +8,7 @@ import WebScrapper from '../components/LoggedinComponents/customtool/scrap';
 import DOCgen from '../components/LoggedinComponents/customtool/DocGen';
 import EssayAI from '../components/LoggedinComponents/customtool/essayai';
 import SubscriptionStatus from '../components/LoggedinComponents/SubscriptionStatus';
+import PaymentRestriction from '../components/LoggedinComponents/PaymentRestriction';
 import Pay from './pay';
 
 
@@ -23,6 +24,11 @@ function Dashboard() {
     (currentUser.user.subscriptionStatus === 'paid' ||
       currentUser.user.subscriptionStatus === 'trial');
 
+  // Check if user has expired subscription
+  const hasExpiredSubscription = currentUser?.user &&
+    (currentUser.user.subscriptionStatus === 'expired' ||
+      currentUser.user.subscriptionStatus === 'unpaid');
+
   // For Pay route, show subscription status if user has active subscription, otherwise show payment form
   const renderPayPage = () => {
     if (location.pathname === '/Pay') {
@@ -32,7 +38,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="flex flex-row sm:w-auto">  {/* Main container of dashboard */}
+    <div className="flex flex-row sm:w-auto relative">  {/* Main container of dashboard */}
       <div>
         <DashboardFlowbit />
       </div>
@@ -46,6 +52,11 @@ function Dashboard() {
         {location.pathname === '/Essay-AI' && <EssayAI />}
         {renderPayPage()}
       </div>
+
+      {/* Payment Restriction Overlay - only show for expired users on non-payment pages */}
+      {hasExpiredSubscription && location.pathname !== '/Pay' && (
+        <PaymentRestriction user={currentUser?.user} />
+      )}
     </div>
   );
 }

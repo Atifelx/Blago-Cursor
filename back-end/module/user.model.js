@@ -4,7 +4,7 @@ import { Schema, model } from 'mongoose';
 
 // Define the schema
 const userSchema = new Schema({
-  username: { type: String, required: true },
+  username: { type: String, required: false }, // Changed to false for email verification flow
   email: { type: String, required: true, unique: true },
   password: { type: String, required: false ,default:"12345678" },
   createdAt: { type: Date, default: Date.now },
@@ -23,6 +23,11 @@ const userSchema = new Schema({
   paidUntil: { type: Date },
   lastPaymentDate: { type: Date },
   plan: { type: String, default: 'pro-monthly' },
+  
+  // Email verification fields
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationCode: { type: String },
+  emailVerificationExpires: { type: Date },
 
 });
 

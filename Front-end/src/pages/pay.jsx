@@ -72,7 +72,7 @@ const BlagoAISubscription = () => {
       }
 
       const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CONFIG.clientId}&components=buttons&enable-funding=card&disable-funding=paylater,venmo`;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CONFIG.clientId}&components=buttons&enable-funding=card,venmo&disable-funding=paylater&intent=capture`;
       script.async = true;
       script.onload = () => setIsSDKLoaded(true);
       script.onerror = () => setErrorMessage('Failed to load PayPal SDK');
@@ -119,7 +119,9 @@ const BlagoAISubscription = () => {
           layout: 'vertical',
           color: 'blue',
           shape: 'rect',
-          label: 'paypal'
+          label: 'paypal',
+          height: 50,
+          tagline: false
         },
         // Prevent opening in new tab
         createOrder: async () => {
@@ -464,88 +466,125 @@ const BlagoAISubscription = () => {
     );
   }
 
+  // Determine if user has expired trial
+  const isExpiredTrial = userSubscription && userSubscription.subscriptionStatus === 'expired';
+
   // Main subscription page
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <span className="text-white text-2xl font-bold">B</span>
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Blago AI</h1>
+          <p className="text-xl text-gray-600">
+            {isExpiredTrial ? 'Continue Using Blago AI' : 'Upgrade to Blago Pro'}
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Side - Plan Details */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div className="p-8">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full mb-4">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Blago Pro</h2>
+                {isExpiredTrial ? (
+                  <div className="space-y-2">
+                    <div className="text-3xl font-bold text-red-600">Trial Expired</div>
+                    <p className="text-lg text-gray-600">Continue using Blago AI with Pro features</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="text-4xl font-bold text-green-600">$29.00</div>
+                    <p className="text-lg text-gray-600">per month • Cancel anytime</p>
+                  </div>
+                )}
+              </div>
 
-          {/* Left Side - Subscription Details */}
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-white text-2xl font-bold">B</span>
+              {/* Features List */}
+              <div className="space-y-4 mb-8">
+                <h3 className="font-semibold text-gray-900 mb-4">What's included:</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Unlimited AI Writing</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Advanced Document Generation</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Web Scraping Tools</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Priority Support</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">No usage limits</span>
+                  </div>
+                </div>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Try Blago Pro</h1>
-              <div className="text-4xl font-bold text-green-600 mb-2">14 days free</div>
-              <p className="text-lg text-gray-600">Then $29.00 per month starting after trial</p>
-            </div>
 
-            {/* Feature Card */}
-            <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg p-6 mb-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Blago Pro</h3>
-              <p className="text-gray-600 mb-4">Unlocks unlimited AI writing tools, advanced features, and premium support</p>
-              <div className="text-sm text-gray-500">$29.00 / month after</div>
-            </div>
-
-            {/* Annual Billing Toggle */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg mb-6">
-              <div>
-                <div className="font-medium text-gray-900">Save $58 with annual billing</div>
-                <div className="text-sm text-gray-500">$24.00/month</div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer" />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
-            </div>
-
-            {/* Summary */}
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal:</span>
-                <span className="font-medium">$29.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Tax:</span>
-                <span className="text-gray-500">(Enter address to calculate)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Total after trial:</span>
-                <span className="font-medium">$29.00</span>
-              </div>
-              <div className="flex justify-between border-t pt-3">
-                <span className="text-gray-600">Total due today:</span>
-                <span className="font-bold text-green-600">$0.00</span>
+              {/* Billing Info */}
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h4 className="font-semibold text-gray-900 mb-4">Billing Information</h4>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Plan:</span>
+                    <span className="font-medium">Blago Pro Monthly</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Price:</span>
+                    <span className="font-medium">$29.00/month</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Billing:</span>
+                    <span className="font-medium">Monthly</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-3">
+                    <span className="text-gray-600">Total:</span>
+                    <span className="font-bold text-lg">$29.00</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Side - Payment Form */}
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="mb-6">
-              <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-white text-sm font-bold">B</span>
+          {/* Right Side - Payment */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div className="p-8">
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Complete your purchase</h3>
+                <p className="text-gray-600">Secure payment powered by PayPal</p>
+              </div>
+
+              {/* User Email Display */}
+              {currentUser?.user?.email && (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">
+                        {currentUser.user.email.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Signed in as</p>
+                      <p className="text-sm text-gray-600">{currentUser.user.email}</p>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-lg font-semibold text-gray-900">Blago</span>
-              </div>
-
-              {/* Email */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <input
-                  type="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="your@email.com"
-                  defaultValue={user?.email || ''}
-                />
-              </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Enter payment details</h3>
+              )}
 
               {/* PayPal Payment Section */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="text-center">
                   <div className="mb-6">
                     <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -553,31 +592,36 @@ const BlagoAISubscription = () => {
                         <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.51-.978c-.57-.7-1.39-1.1-2.46-1.1H8.5c-.524 0-.968.382-1.05.9L5.32 19.337h4.606l1.12-7.106c.082-.518.526-.9 1.05-.9h2.19c4.298 0 7.664-1.747 8.647-6.797.03-.149.054-.294.077-.437.292-1.867-.002-3.137-1.012-4.287z" />
                       </svg>
                     </div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Secure Payment with PayPal</h4>
-                    <p className="text-gray-600 mb-4">Complete your payment securely with PayPal. You can pay with your PayPal balance, bank account, or credit card.</p>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Pay with PayPal</h4>
+                    <p className="text-gray-600 text-sm">
+                      {isExpiredTrial
+                        ? 'Continue using Blago AI with secure payment'
+                        : 'Complete your subscription with PayPal Express Checkout'
+                      }
+                    </p>
                   </div>
 
-                  {/* PayPal Button */}
-                  <div id="paypal-button-container" className="mb-4"></div>
+                  {/* PayPal Button Container */}
+                  <div id="paypal-button-container" className="mb-6"></div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-center justify-center space-x-2 text-sm text-blue-700">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                      </svg>
-                      <span>Your payment information is secure and encrypted</span>
-                    </div>
+                  {/* Security Badge */}
+                  <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                    <Shield className="w-4 h-4" />
+                    <span>Your payment is secure and encrypted</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-500 text-center">
-                  By continuing, you agree to save your payment method with Blago.
-                </p>
+                {/* Terms */}
+                <div className="text-center">
+                  <p className="text-xs text-gray-500">
+                    By continuing, you agree to our Terms of Service and Privacy Policy.
+                    You can cancel your subscription anytime.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
