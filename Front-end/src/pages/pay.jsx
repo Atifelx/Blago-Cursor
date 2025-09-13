@@ -475,8 +475,8 @@ const BlagoAISubscription = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <img src="/fevicon.svg" alt="Blago AI" className="w-10 h-10" />
+          <div className="mx-auto mb-4 flex items-center justify-center">
+            <img src="/fevicon.svg" alt="Blago AI" className="w-16 h-16" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Blago AI</h1>
           <p className="text-xl text-gray-600">
@@ -558,11 +558,6 @@ const BlagoAISubscription = () => {
                     <span className="text-gray-600">Total:</span>
                     <span className="font-bold text-lg">$29.00</span>
                   </div>
-                </div>
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-xs text-blue-700">
-                    <strong>Advanced Payment:</strong> Extend your access by 15 additional days (45 days total) with any additional payment.
-                  </p>
                 </div>
               </div>
             </div>

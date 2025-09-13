@@ -48,8 +48,8 @@ const SubscriptionStatus = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${userTypeColor} rounded-full mb-4`}>
-            <img src="/fevicon.svg" alt="Blago AI" className="w-10 h-10" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img src="/fevicon.svg" alt="Blago AI" className="w-16 h-16" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Blago AI</h1>
           <p className="text-xl text-gray-600">Your Subscription Status</p>
@@ -172,15 +172,6 @@ const SubscriptionStatus = () => {
                     </button>
                   )}
 
-                  {isPaid && (
-                    <button
-                      onClick={() => navigate('/Pay')}
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center space-x-2"
-                    >
-                      <CreditCard className="w-5 h-5" />
-                      <span>Extend Access (+15 days)</span>
-                    </button>
-                  )}
                 </div>
 
                 {/* Billing Info for Pro Users */}
