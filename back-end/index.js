@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.route.js';
 import AIRoutes from './routes/openAiChat.js';
+import scraperRoutes from './routes/scraper.route.js';
 import cors from 'cors';
 
 
@@ -68,6 +69,7 @@ app.get('/test', (req, res) => {
 
 app.use('/api', authRoutes);
 app.use('/api', AIRoutes);
+app.use('/api/scraper', scraperRoutes);
 
 app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');    /// setting for ignoring console error 
