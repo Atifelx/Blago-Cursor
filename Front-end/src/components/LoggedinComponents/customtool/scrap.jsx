@@ -8,6 +8,7 @@ const Scrap = ({ onContentGenerated }) => {
     const [rewrittenContent, setRewrittenContent] = useState('');
     const [scraping, setScraping] = useState(false);
     const [rewriting, setRewriting] = useState(false);
+    const [rewritingProgress, setRewritingProgress] = useState(0);
     const [error, setError] = useState('');
     const [currentStep, setCurrentStep] = useState('');
     const [autoRewrite, setAutoRewrite] = useState(true);
@@ -85,14 +86,19 @@ const Scrap = ({ onContentGenerated }) => {
             if (response.data.success) {
                 const { content, metadata, wordCount } = response.data;
                 
-            setCurrentStep(`Successfully scraped ${wordCount.toLocaleString()} words`);
+                setCurrentStep(`Successfully scraped ${wordCount.toLocaleString()} words`);
                 setScrapedContent(content);
+                
+                // Clear scraping status after 2 seconds
+                setTimeout(() => {
+                    setCurrentStep('');
+                }, 2000);
                 
                 // Auto-rewrite if enabled
                 if (autoRewrite && content.trim()) {
                     setTimeout(() => {
                         handleRewriteContent(content);
-                    }, 1000);
+                    }, 2000);
                 }
             } else {
                 throw new Error('Failed to scrape content');
@@ -130,10 +136,23 @@ const Scrap = ({ onContentGenerated }) => {
         }
 
         setRewriting(true);
+        setRewritingProgress(0);
         setError('');
 
         try {
-            setCurrentStep('Creating unique content with AI...');
+            setCurrentStep('Initializing AI rewriting...');
+            setRewritingProgress(10);
+            
+            // Simulate progress updates
+            setTimeout(() => {
+                setCurrentStep('Analyzing content structure...');
+                setRewritingProgress(25);
+            }, 500);
+            
+            setTimeout(() => {
+                setCurrentStep('Creating unique content with AI...');
+                setRewritingProgress(50);
+            }, 1000);
             
             const rewritePrompt = `Transform the following scraped web content into 100% unique, humanized content that is completely undetectable by AI detection tools. 
 
@@ -151,6 +170,11 @@ ${content}
 
 Please rewrite this content to be completely unique while preserving all the essential information.`;
 
+            setTimeout(() => {
+                setCurrentStep('Processing with Gemini AI...');
+                setRewritingProgress(75);
+            }, 2000);
+
             const response = await axios.post(`${apiBaseUrl}/askai`, {
                 input: rewritePrompt
             }, {
@@ -160,15 +184,25 @@ Please rewrite this content to be completely unique while preserving all the ess
                 }
             });
 
+            setRewritingProgress(90);
+            setCurrentStep('Finalizing content...');
+
             // The API returns the content directly as a string
             const rewrittenText = response.data;
             setRewrittenContent(rewrittenText);
+            setRewritingProgress(100);
             setCurrentStep('Content successfully rewritten and humanized');
             
             // Call the callback if provided
             if (onContentGenerated && typeof onContentGenerated === 'function') {
                 onContentGenerated(rewrittenText);
             }
+
+            // Clear the status message after 3 seconds
+            setTimeout(() => {
+                setCurrentStep('');
+                setRewritingProgress(0);
+            }, 3000);
 
         } catch (error) {
             console.error('Rewrite error:', error);
@@ -184,6 +218,7 @@ Please rewrite this content to be completely unique while preserving all the ess
             }
             
             setCurrentStep('');
+            setRewritingProgress(0);
         } finally {
             setRewriting(false);
         }
@@ -233,12 +268,43 @@ Please rewrite this content to be completely unique while preserving all the ess
                 </div>
             </div>
 
-            {/* Status Display */}
-                    {currentStep && (
+            {/* Scraping Progress */}
+            {scraping && (
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="flex items-center">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
                         <span className="text-sm text-blue-700 font-medium">{currentStep}</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Rewriting Progress */}
+            {rewriting && (
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-semibold text-green-700">AI Rewriting Progress</span>
+                        <span className="text-sm font-bold text-green-700">{rewritingProgress}%</span>
+                    </div>
+                    <div className="w-full bg-green-200 rounded-full h-3 shadow-inner">
+                        <div 
+                            className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500 relative overflow-hidden shadow-sm"
+                            style={{ width: `${rewritingProgress}%` }}
+                        >
+                            <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                        </div>
+                    </div>
+                    {currentStep && (
+                        <p className="text-sm text-green-600 font-medium mt-2">{currentStep}</p>
+                    )}
+                </div>
+            )}
+
+            {/* Completed Status */}
+            {!scraping && !rewriting && currentStep && (
+                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <div className="flex items-center">
+                        <div className="w-4 h-4 bg-emerald-500 rounded-full mr-3"></div>
+                        <span className="text-sm text-emerald-700 font-medium">{currentStep}</span>
                     </div>
                 </div>
             )}
