@@ -7,6 +7,7 @@ import EditorComponent from '../components/LoggedinComponents/Intial.editer'
 import WebScrapper from '../components/LoggedinComponents/customtool/scrap';
 import DOCgen from '../components/LoggedinComponents/customtool/DocGen';
 import EssayAI from '../components/LoggedinComponents/customtool/essayai';
+import CreateBooksAI from '../components/LoggedinComponents/customtool/CreateBooksAI';
 import SubscriptionStatus from '../components/LoggedinComponents/SubscriptionStatus';
 import PaymentRestriction from '../components/LoggedinComponents/PaymentRestriction';
 import Pay from './pay';
@@ -48,6 +49,7 @@ function Dashboard() {
         {location.pathname === '/Chat-AI' && <ChatComponent />}
         {location.pathname === '/Blog-Writer' && <EditorComponent />}
         {location.pathname === '/Web-Scrapper' && <WebScrapper />}
+        {location.pathname === '/Create-Books-AI' && <CreateBooksAI />}
         {location.pathname === '/DOC-AI' && <DOCgen />}
         {location.pathname === '/Essay-AI' && <EssayAI />}
         {renderPayPage()}

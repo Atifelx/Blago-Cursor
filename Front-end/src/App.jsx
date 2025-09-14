@@ -54,6 +54,7 @@ const App = () => {
             <Route path="/Web-Scrapper" element={<Dashboard />} />
             <Route path="/Chat-AI" element={<Dashboard />} />
             <Route path="/Blog-Writer" element={<Dashboard />} />
+            <Route path="/Create-Books-AI" element={<Dashboard />} />
             <Route path="/DOC-AI" element={<Dashboard />} />
             <Route path="/Essay-AI" element={<Dashboard />} />
             {/* Removed stale My-Account route */}

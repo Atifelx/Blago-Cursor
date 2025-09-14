@@ -10,6 +10,7 @@ import { MdManageAccounts, MdOutlinePayment } from "react-icons/md";
 import { MdArticle } from "react-icons/md";
 import { IoDocumentAttach } from "react-icons/io5";
 import { Lock } from "lucide-react";
+import { FaBook } from "react-icons/fa";
 
 
 function DashboardFlowbit() {
@@ -42,11 +43,10 @@ function DashboardFlowbit() {
         as={Link}
         to={to}
         icon={icon}
-        className={`text-sm font-medium transition-all duration-200 rounded-lg ${
-          active 
-            ? 'bg-slate-200 text-slate-800 shadow-sm' 
-            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
-        }`}
+        className={`text-sm font-medium transition-all duration-200 rounded-lg ${active
+          ? 'bg-slate-200 text-slate-800 shadow-sm'
+          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
+          }`}
         active={active}
       >
         {children}
@@ -72,6 +72,7 @@ function DashboardFlowbit() {
               {renderSidebarItem("/Chat-AI", FaBrain, "Blog-AI", location.pathname === '/Chat-AI')}
               {renderSidebarItem("/Web-Scrapper", FaPersonDigging, "Web Scrapping", location.pathname === '/Web-Scrapper')}
               {renderSidebarItem("/Blog-Writer", HiClipboardList, "AI Editor", location.pathname === '/Blog-Writer')}
+              {renderSidebarItem("/Create-Books-AI", FaBook, "Create Books AI", location.pathname === '/Create-Books-AI')}
               {renderSidebarItem("/DOC-AI", IoDocumentAttach, "Doc-AI", location.pathname === '/DOC-AI')}
               {renderSidebarItem("/Essay-AI", MdArticle, "Essay-AI", location.pathname === '/Essay-AI')}
               {renderSidebarItem("/Pay", MdManageAccounts, "Pay", location.pathname === '/Pay')}
