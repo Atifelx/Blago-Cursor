@@ -11,7 +11,7 @@ import CodeTool from '@editorjs/code';
 import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
 import InlineCode from '@editorjs/inline-code';
-import ConsoleTool from './consoletool';
+import CreateBooksConsoleTool from './CreateBooksConsoleTool';
 import { converttoToEditor } from '../../../util/userApi.js';
 
 const CreateBooksAI = () => {
@@ -76,6 +76,7 @@ const CreateBooksAI = () => {
     const [selectedChapter, setSelectedChapter] = useState(0);
     const [showEbookView, setShowEbookView] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [isAIWriteProcessing, setIsAIWriteProcessing] = useState(false);
 
     // Memory management states
     const [showMemoryClearConfirm, setShowMemoryClearConfirm] = useState(false);
@@ -125,6 +126,25 @@ const CreateBooksAI = () => {
                 console.error('Error loading saved data:', error);
             }
         }
+    }, []);
+
+    // Listen for AIWrite events to prevent editor refresh
+    useEffect(() => {
+        const handleAIWriteStart = () => {
+            setIsAIWriteProcessing(true);
+        };
+
+        const handleAIWriteComplete = () => {
+            setIsAIWriteProcessing(false);
+        };
+
+        window.addEventListener('aiwrite-start', handleAIWriteStart);
+        window.addEventListener('aiwrite-complete', handleAIWriteComplete);
+
+        return () => {
+            window.removeEventListener('aiwrite-start', handleAIWriteStart);
+            window.removeEventListener('aiwrite-complete', handleAIWriteComplete);
+        };
     }, []);
 
     // Save data to localStorage whenever important state changes
@@ -284,7 +304,7 @@ const CreateBooksAI = () => {
                         delimiter: Delimiter,
                         inlineCode: InlineCode,
                         code: CodeTool,
-                        AIWrite: ConsoleTool,
+                        AIWrite: CreateBooksConsoleTool,
                     },
                     data: editorData,
                     readOnly: isReadOnly,
@@ -292,32 +312,39 @@ const CreateBooksAI = () => {
                         console.log(`EditorJS ${isReadOnly ? 'read-only' : 'editable'} is ready`);
                     },
                     onChange: isReadOnly ? undefined : () => {
-                        // Save changes to chapter content - store EditorJS blocks directly
-                        editorInstance.current.save().then((outputData) => {
-                            const updatedChapters = [...ebookChapters];
+                        // Skip onChange during AIWrite processing to prevent refresh
+                        if (isAIWriteProcessing) return;
+                        
+                        // Use a debounced approach to avoid frequent re-renders
+                        if (editorInstance.current) {
+                            setTimeout(() => {
+                                editorInstance.current.save().then((outputData) => {
+                                    const updatedChapters = [...ebookChapters];
 
-                            // Store the EditorJS blocks directly
-                            updatedChapters[selectedChapter].editorBlocks = outputData.blocks;
+                                    // Store the EditorJS blocks directly
+                                    updatedChapters[selectedChapter].editorBlocks = outputData.blocks;
 
-                            // Also create a text version for word count
-                            const textContent = outputData.blocks
-                                .map(block => {
-                                    if (block.type === 'paragraph') return block.data.text;
-                                    if (block.type === 'header') return block.data.text;
-                                    if (block.type === 'list') {
-                                        return block.data.items.map(item => item).join(' ');
-                                    }
-                                    if (block.type === 'quote') return block.data.text;
-                                    return '';
-                                })
-                                .filter(Boolean)
-                                .join(' ');
+                                    // Also create a text version for word count
+                                    const textContent = outputData.blocks
+                                        .map(block => {
+                                            if (block.type === 'paragraph') return block.data.text;
+                                            if (block.type === 'header') return block.data.text;
+                                            if (block.type === 'list') {
+                                                return block.data.items.map(item => item).join(' ');
+                                            }
+                                            if (block.type === 'quote') return block.data.text;
+                                            return '';
+                                        })
+                                        .filter(Boolean)
+                                        .join(' ');
 
-                            updatedChapters[selectedChapter].wordCount = textContent.split(' ').length;
-                            setEbookChapters(updatedChapters);
-                        }).catch((error) => {
-                            console.log('Saving failed: ', error);
-                        });
+                                    updatedChapters[selectedChapter].wordCount = textContent.split(' ').length;
+                                    setEbookChapters(updatedChapters);
+                                }).catch((error) => {
+                                    console.log('Saving failed: ', error);
+                                });
+                            }, 100);
+                        }
                     },
                 });
             } catch (error) {
