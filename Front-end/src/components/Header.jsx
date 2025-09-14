@@ -265,13 +265,13 @@ export default function Header() {
   const currentUser = useSelector(state => state.user.currentUser);
 
   return (
-    <header className="w-full relative bg-gradient-to-b from-gray-50 to-emerald-50">
+    <header className="w-full relative bg-gradient-to-b from-slate-50 to-gray-100 border-b border-gray-200/60">
       <div className="w-full px-2 sm:px-4 lg:px-6">
         <div className="flex justify-between items-center h-16 w-full">
           {/* Logo - Fixed to left with minimal margin */}
           <div className="flex-shrink-0 ml-1">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-semibold text-emerald-600">Blago</span>
+              <span className="text-2xl font-semibold bg-gradient-to-r from-slate-700 to-gray-800 bg-clip-text text-transparent">Blago</span>
             </Link>
           </div>
 
@@ -281,13 +281,13 @@ export default function Header() {
               <>
                 <Link 
                   to="/" 
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  className="text-slate-600 hover:text-slate-800 px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-slate-100 rounded-md"
                 >
                   Home
                 </Link>
                 <Link 
                   to="/signup" 
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  className="text-slate-600 hover:text-slate-800 px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-slate-100 rounded-md"
                 >
                   Sign Up
                 </Link>
@@ -302,7 +302,7 @@ export default function Header() {
                 <Link to="/signin">
                   <Button 
                     size="sm"
-                    className="bg-white border border-gray-300 text-neutral-700 hover:bg-gray-50 hover:border-gray-400 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="bg-slate-700 border border-slate-600 text-white hover:bg-slate-800 hover:border-slate-700 focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 shadow-sm"
                   >
                     Sign In
                   </Button>
@@ -312,7 +312,7 @@ export default function Header() {
                 <div className="md:hidden">
                   <button
                     type="button"
-                    className="text-gray-700 hover:text-neutral-600 focus:outline-none focus:text-gray-900 transition-colors duration-200 p-1"
+                    className="text-slate-600 hover:text-slate-800 focus:outline-none focus:text-slate-900 transition-colors duration-200 p-1"
                     onClick={() => setIsOpen(!isOpen)}
                   >
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -332,18 +332,18 @@ export default function Header() {
                   size="sm"
                   alt="User avatar" 
                   onClick={toggleDropdown} 
-                  className="cursor-pointer hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition-all duration-200"
+                  className="cursor-pointer hover:ring-2 hover:ring-slate-400 hover:ring-offset-2 transition-all duration-200"
                 />
 
                 {isOpen && (
-                  <div className="absolute right-0 z-50 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-thin text-neutral-500">@{currentUser?.user?.username}</p>
-                      <p className="text-sm font-thin text-neutral-600 truncate">{currentUser?.user?.email}</p>
+                  <div className="absolute right-0 z-50 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-xl py-1">
+                    <div className="px-4 py-3 border-b border-slate-100">
+                      <p className="text-sm font-medium text-slate-700">@{currentUser?.user?.username}</p>
+                      <p className="text-sm text-slate-500 truncate">{currentUser?.user?.email}</p>
                     </div>
                     <button
                       onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                      className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors duration-200"
                     >
                       Sign Out
                     </button>
@@ -357,17 +357,17 @@ export default function Header() {
         {/* Mobile Navigation */}
         {!currentUser && isOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white bg-opacity-50 rounded-lg mt-2 mx-1">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-white/80 backdrop-blur-sm rounded-lg mt-2 mx-1 border border-slate-200/50">
               <Link 
                 to="/" 
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors duration-200"
+                className="block px-3 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-base font-medium transition-colors duration-200 rounded-md"
                 onClick={() => setIsOpen(false)}
               >
                 Home
               </Link>
               <Link 
                 to="/signup" 
-                className="block px-3 py-2 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors duration-200"
+                className="block px-3 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-base font-medium transition-colors duration-200 rounded-md"
                 onClick={() => setIsOpen(false)}
               >
                 Sign Up

@@ -27,10 +27,10 @@ function DashboardFlowbit() {
 
     if (isDisabled) {
       return (
-        <div className="flex items-center px-2 py-2 text-gray-400 cursor-not-allowed">
+        <div className="flex items-center px-3 py-2.5 text-slate-400 cursor-not-allowed rounded-lg">
           <div className="flex items-center">
             {React.createElement(icon, { className: "w-5 h-5 mr-3" })}
-            <span className="text-sm">{children}</span>
+            <span className="text-sm font-medium">{children}</span>
             <Lock className="w-3 h-3 ml-2" />
           </div>
         </div>
@@ -42,7 +42,11 @@ function DashboardFlowbit() {
         as={Link}
         to={to}
         icon={icon}
-        className="text-sm"
+        className={`text-sm font-medium transition-all duration-200 rounded-lg ${
+          active 
+            ? 'bg-slate-200 text-slate-800 shadow-sm' 
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
+        }`}
         active={active}
       >
         {children}
@@ -57,46 +61,24 @@ function DashboardFlowbit() {
 
 
   return (
-
-
     <div className="flex flex-1 flex-col">
-
-
-
       <div>
         <Sidebar
           aria-label="Blago-sidebar"
-          className={`md:block ${isOpen ? 'block' : 'hidden'} transition-all h-screen`} // Toggle sidebar visibility
+          className={`md:block ${isOpen ? 'block' : 'hidden'} transition-all h-screen bg-gradient-to-b from-slate-50 to-gray-100 border-r border-slate-200/60`}
         >
           <Sidebar.Items>
-            <Sidebar.ItemGroup>
-
-
+            <Sidebar.ItemGroup className="space-y-1 p-2">
               {renderSidebarItem("/Chat-AI", FaBrain, "Blog-AI", location.pathname === '/Chat-AI')}
-
               {renderSidebarItem("/Web-Scrapper", FaPersonDigging, "Web Scrapping", location.pathname === '/Web-Scrapper')}
-
-              {renderSidebarItem("/Blog-Writer", HiClipboardList, "AI Editer", location.pathname === '/Blog-Writer')}
-
+              {renderSidebarItem("/Blog-Writer", HiClipboardList, "AI Editor", location.pathname === '/Blog-Writer')}
               {renderSidebarItem("/DOC-AI", IoDocumentAttach, "Doc-AI", location.pathname === '/DOC-AI')}
-
               {renderSidebarItem("/Essay-AI", MdArticle, "Essay-AI", location.pathname === '/Essay-AI')}
-
-
-              {/* Removed stale Subcriptions menu item */}
-
-
-
               {renderSidebarItem("/Pay", MdManageAccounts, "Pay", location.pathname === '/Pay')}
-
-
-
             </Sidebar.ItemGroup>
           </Sidebar.Items>
         </Sidebar>
       </div>
-
-
     </div>
 
 

@@ -38,12 +38,12 @@ function Dashboard() {
   };
 
   return (
-    <div className="flex flex-row sm:w-auto relative">  {/* Main container of dashboard */}
+    <div className="flex flex-row sm:w-auto relative bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen">  {/* Main container of dashboard */}
       <div>
         <DashboardFlowbit />
       </div>
 
-      <div className="flex-grow">
+      <div className="flex-grow bg-white/50 backdrop-blur-sm">
         {location.pathname === '/profile' && <Profile />}
         {location.pathname === '/Chat-AI' && <ChatComponent />}
         {location.pathname === '/Blog-Writer' && <EditorComponent />}
