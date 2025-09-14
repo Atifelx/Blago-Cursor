@@ -284,7 +284,7 @@ const CreateBooksAI = () => {
                         delimiter: Delimiter,
                         inlineCode: InlineCode,
                         code: CodeTool,
-                        AIWrite: isReadOnly ? null : ConsoleTool,
+                        AIWrite: ConsoleTool,
                     },
                     data: editorData,
                     readOnly: isReadOnly,
@@ -927,29 +927,6 @@ Write this chapter as if you're an experienced author who deeply understands ${t
 
             // Save to Redux state
             const totalWordCount = generatedChapters.reduce((sum, chapter) => sum + chapter.wordCount, 0);
-            const ebookData = {
-                title: `${topic} - Complete Guide`,
-                outline: ebookOutline,
-                chapters: generatedChapters,
-                metadata: {
-                    wordCount: totalWordCount,
-                    pageCount: Math.round(totalWordCount / 250),
-                    topic,
-                    targetAudience,
-                    endGoal,
-                    toneStyle,
-                    referenceUrl,
-                    wordCount,
-                    pageCount,
-                    numChapters,
-                    aiGenerateChapters,
-                    includeSummary,
-                    includeDiscussionQuestions,
-                    includeResources,
-                    includeAuthorBio,
-                    generationComplete: true
-                }
-            };
 
             setEbookChapters(generatedChapters);
             setEbookData({
