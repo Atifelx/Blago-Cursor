@@ -21,7 +21,7 @@ const CreateBooksAI = () => {
     // Redux hooks
     const dispatch = useDispatch();
     const editorData = useSelector(selectFetchData);
-    
+
     // Form inputs - Basic Information
     const [topic, setTopic] = useState('');
     const [targetAudience, setTargetAudience] = useState('');
