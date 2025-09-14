@@ -4,6 +4,17 @@ import { loadData } from '../../../app/user/userDataSlice';
 import axios from 'axios';
 import { Copy, Check, BookOpen, FileText, Download, Edit3, Save, Trash2, Wand2, FileText as WordIcon } from 'lucide-react';
 import { marked } from 'marked';
+import EditorJS from '@editorjs/editorjs';
+import Header from '@editorjs/header';
+import List from '@editorjs/list';
+import Paragraph from '@editorjs/paragraph';
+import Table from '@editorjs/table';
+import CodeTool from '@editorjs/code';
+import Quote from '@editorjs/quote';
+import Delimiter from '@editorjs/delimiter';
+import InlineCode from '@editorjs/inline-code';
+import AIWriteTool from './AIWriteTool';
+import { converttoToEditor } from '../../../util/userApi.js';
 
 const CreateBooksAI = () => {
     // Form inputs
@@ -51,17 +62,112 @@ const CreateBooksAI = () => {
     const [selectedChapter, setSelectedChapter] = useState(0);
     const [showEbookView, setShowEbookView] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    
-    // AI Rewrite states
-    const [selectedText, setSelectedText] = useState('');
-    const [isRewriting, setIsRewriting] = useState(false);
-    const [rewritePosition, setRewritePosition] = useState({ start: 0, end: 0 });
-    const [showRewriteTooltip, setShowRewriteTooltip] = useState(false);
-    
+
+
     const contentRef = useRef(null);
+    const editorInstance = useRef(null);
 
     const dispatch = useDispatch();
     const apiUrlA = import.meta.env.VITE_API_BASE_URL;
+
+    // Initialize EditorJS with proper error handling
+    const initializeEditor = (editorData = { blocks: [] }, isReadOnly = false) => {
+        // Clean up existing instance
+        if (editorInstance.current) {
+            try {
+                editorInstance.current.destroy();
+            } catch (error) {
+                console.log('Error destroying previous editor:', error);
+            }
+            editorInstance.current = null;
+        }
+
+        // Wait for DOM to be ready
+        setTimeout(() => {
+            const holderId = isReadOnly ? 'ebook-reader' : 'ebook-editor';
+            const holderElement = document.getElementById(holderId);
+
+            if (!holderElement) {
+                console.error(`Holder element with ID "${holderId}" not found`);
+                return;
+            }
+
+            try {
+                editorInstance.current = new EditorJS({
+                    holder: holderId,
+                    tools: {
+                        header: {
+                            class: Header,
+                            inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
+                            config: {
+                                placeholder: 'Enter a header',
+                                levels: [2, 3, 4],
+                                defaultLevel: 3,
+                            },
+                        },
+                        list: {
+                            class: List,
+                            config: {
+                                inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
+                            },
+                        },
+                        paragraph: {
+                            class: Paragraph,
+                            inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
+                            config: {
+                                preserveBlank: true,
+                            },
+                        },
+                        table: {
+                            class: Table,
+                        },
+                        quote: {
+                            class: Quote,
+                        },
+                        delimiter: Delimiter,
+                        inlineCode: InlineCode,
+                        AIWrite: isReadOnly ? null : AIWriteTool,
+                        code: CodeTool,
+                    },
+                    data: editorData,
+                    readOnly: isReadOnly,
+                    onReady: () => {
+                        console.log(`EditorJS ${isReadOnly ? 'read-only' : 'editable'} is ready`);
+                    },
+                    onChange: isReadOnly ? undefined : () => {
+                        // Save changes to chapter content - store EditorJS blocks directly
+                        editorInstance.current.save().then((outputData) => {
+                            const updatedChapters = [...ebookChapters];
+
+                            // Store the EditorJS blocks directly
+                            updatedChapters[selectedChapter].editorBlocks = outputData.blocks;
+
+                            // Also create a text version for word count
+                            const textContent = outputData.blocks
+                                .map(block => {
+                                    if (block.type === 'paragraph') return block.data.text;
+                                    if (block.type === 'header') return block.data.text;
+                                    if (block.type === 'list') {
+                                        return block.data.items.map(item => item).join(' ');
+                                    }
+                                    if (block.type === 'quote') return block.data.text;
+                                    return '';
+                                })
+                                .filter(Boolean)
+                                .join(' ');
+
+                            updatedChapters[selectedChapter].wordCount = textContent.split(' ').length;
+                            setEbookChapters(updatedChapters);
+                        }).catch((error) => {
+                            console.log('Saving failed: ', error);
+                        });
+                    },
+                });
+            } catch (error) {
+                console.error('Error initializing EditorJS:', error);
+            }
+        }, 100); // Small delay to ensure DOM is ready
+    };
 
     // Configure marked for better rendering
     marked.setOptions({
@@ -76,87 +182,98 @@ const CreateBooksAI = () => {
         const style = document.createElement('style');
         style.textContent = `
             .ebook-page-content {
-                font-family: 'Times New Roman', 'Georgia', serif;
-                font-size: 16px;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                font-size: 17px;
                 line-height: 1.6;
-                color: #333;
-                text-align: justify;
+                color: #1d1d1f;
+                text-align: left;
                 max-width: 800px;
                 margin: 0 auto;
                 padding: 40px;
                 background: white;
-                box-shadow: 0 0 20px rgba(0,0,0,0.1);
-                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-radius: 12px;
                 position: relative;
+                font-weight: 400;
+                letter-spacing: -0.01em;
             }
             
             .ebook-page-content h1 {
-                font-size: 28px;
-                font-weight: bold;
+                font-size: 32px;
+                font-weight: 600;
                 text-align: center;
-                margin-bottom: 30px;
-                color: #2c3e50;
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+                margin-bottom: 32px;
+                color: #1d1d1f;
+                letter-spacing: -0.02em;
+                line-height: 1.2;
             }
             
             .ebook-page-content h2 {
-                font-size: 22px;
-                font-weight: bold;
-                margin-top: 30px;
-                margin-bottom: 15px;
-                color: #34495e;
+                font-size: 24px;
+                font-weight: 600;
+                margin-top: 32px;
+                margin-bottom: 16px;
+                color: #1d1d1f;
+                letter-spacing: -0.01em;
+                line-height: 1.3;
             }
             
             .ebook-page-content h3 {
-                font-size: 18px;
-                font-weight: bold;
-                margin-top: 25px;
+                font-size: 20px;
+                font-weight: 600;
+                margin-top: 24px;
                 margin-bottom: 12px;
-                color: #34495e;
+                color: #1d1d1f;
+                letter-spacing: -0.01em;
+                line-height: 1.4;
             }
             
             .ebook-page-content p {
-                margin-bottom: 16px;
-                text-indent: 1.5em;
-                text-align: justify;
+                margin-bottom: 20px;
+                text-indent: 0;
+                text-align: left;
+                font-weight: 400;
             }
             
             .ebook-page-content p:first-child {
                 text-indent: 0;
+                margin-top: 0;
             }
             
             .ebook-page-content p:first-child::first-letter {
-                float: left;
-                font-size: 4em;
-                line-height: 0.8;
-                margin-right: 8px;
-                margin-top: 4px;
-                font-weight: bold;
-                color: #2c3e50;
+                float: none;
+                font-size: inherit;
+                line-height: inherit;
+                margin: 0;
+                font-weight: normal;
+                color: inherit;
             }
             
             .ebook-page-content ul, .ebook-page-content ol {
-                margin: 16px 0;
-                padding-left: 30px;
+                margin: 20px 0;
+                padding-left: 24px;
             }
             
             .ebook-page-content li {
-                margin-bottom: 8px;
+                margin-bottom: 12px;
                 text-align: left;
+                line-height: 1.6;
             }
             
             .ebook-page-content blockquote {
-                margin: 20px 0;
-                padding: 15px 20px;
-                border-left: 4px solid #3498db;
+                margin: 24px 0;
+                padding: 20px 24px;
+                border-left: 4px solid #007AFF;
                 background: #f8f9fa;
                 font-style: italic;
                 text-align: left;
+                border-radius: 0 8px 8px 0;
+                color: #1d1d1f;
             }
             
             .ebook-page-content strong {
-                font-weight: bold;
-                color: #2c3e50;
+                font-weight: 600;
+                color: #1d1d1f;
             }
             
             .ebook-page-content em {
@@ -202,106 +319,235 @@ const CreateBooksAI = () => {
                 font-weight: normal;
                 color: inherit;
             }
+            
+            /* EditorJS Styles */
+            .codex-editor {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            }
+            
+            .codex-editor__redactor {
+                padding: 20px;
+            }
+            
+            .ce-block__content {
+                max-width: none;
+            }
+            
+            .ce-paragraph {
+                font-size: 17px;
+                line-height: 1.6;
+                color: #1d1d1f;
+                margin-bottom: 20px;
+            }
+            
+            .ce-header {
+                font-weight: 600;
+                color: #1d1d1f;
+                letter-spacing: -0.01em;
+                margin-bottom: 16px;
+            }
+            
+            .ce-header[data-level="1"] {
+                font-size: 32px;
+                line-height: 1.2;
+                letter-spacing: -0.02em;
+                text-align: center;
+                margin-bottom: 32px;
+            }
+            
+            .ce-header[data-level="2"] {
+                font-size: 24px;
+                line-height: 1.3;
+                margin-top: 32px;
+            }
+            
+            .ce-header[data-level="3"] {
+                font-size: 20px;
+                line-height: 1.4;
+                margin-top: 24px;
+            }
+            
+            .ce-quote {
+                margin: 24px 0;
+                padding: 20px 24px;
+                border-left: 4px solid #007AFF;
+                background: #f8f9fa;
+                font-style: italic;
+                border-radius: 0 8px 8px 0;
+                color: #1d1d1f;
+            }
+            
+            .ce-list {
+                margin: 20px 0;
+                padding-left: 24px;
+            }
+            
+            .ce-list__item {
+                margin-bottom: 12px;
+                line-height: 1.6;
+            }
+            
+            .ce-delimiter {
+                margin: 30px 0;
+            }
+            
+            .ce-delimiter::before {
+                content: '';
+                display: block;
+                width: 100px;
+                height: 2px;
+                background: #e0e0e0;
+                margin: 0 auto;
+            }
+            
+            /* Read-only mode styling */
+            .ebook-page-content .codex-editor {
+                background: white;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                border-radius: 12px;
+                padding: 40px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            
+            .ebook-page-content .codex-editor__redactor {
+                padding: 0;
+            }
+            
+            /* Bold and italic styling */
+            .ce-paragraph strong, .ce-header strong {
+                font-weight: 600;
+            }
+            
+            .ce-paragraph em, .ce-header em {
+                font-style: italic;
+            }
+            
+            /* Fix EditorJS + cursor positioning */
+            .ce-block__content {
+                position: relative;
+            }
+            
+            .ce-toolbar__plus {
+                position: absolute;
+                left: -35px;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 2;
+            }
+            
+            .ce-toolbar__plus:hover {
+                background: rgba(0, 0, 0, 0.1);
+                border-radius: 4px;
+            }
+            
+            /* Minimal spacing for block content - only for + button */
+            .ce-block {
+                margin-left: 40px;
+            }
+            
+            /* Fix for first block */
+            .ce-block:first-child {
+                margin-left: 40px;
+            }
+            
+            /* Fix inline toolbar positioning - let EditorJS handle positioning naturally */
+            .ce-inline-toolbar {
+                background: white !important;
+                border: 1px solid #e0e0e0 !important;
+                border-radius: 6px !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+                padding: 4px !important;
+                z-index: 1000 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 4px !important;
+                pointer-events: auto !important;
+            }
+            
+            .ce-inline-toolbar__button {
+                width: 24px !important;
+                height: 24px !important;
+                border: none !important;
+                background: transparent !important;
+                border-radius: 4px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                transition: background-color 0.2s !important;
+            }
+            
+            .ce-inline-toolbar__button:hover {
+                background: rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            .ce-inline-toolbar__button svg {
+                width: 14px !important;
+                height: 14px !important;
+            }
+            
+            /* Proper content spacing */
+            .ce-block__content {
+                padding-left: 10px !important;
+                padding-right: 30px !important;
+            }
+            
+            /* Better editor container */
+            .codex-editor__redactor {
+                max-width: none !important;
+                padding: 20px 30px !important;
+            }
+            
+            /* Read-only mode with proper margins */
+            .ebook-page-content .codex-editor {
+                max-width: 800px !important;
+                padding: 40px 50px !important;
+                margin: 0 auto !important;
+            }
         `;
         document.head.appendChild(style);
-        
+
         return () => {
             document.head.removeChild(style);
         };
     }, []);
 
-    // Render markdown to HTML
+
+    // Render markdown to HTML - handle both markdown and HTML content
     const renderMarkdown = (text) => {
         if (!text) return '';
+
+        // Check if text already contains HTML tags
+        if (text.includes('<') && text.includes('>')) {
+            // Already HTML, return as is
+            return text;
+        }
+
+        // Convert markdown to HTML
         return marked(text);
     };
 
-    // AI Rewrite functionality
-    const handleTextSelection = () => {
-        const selection = window.getSelection();
-        const selectedText = selection.toString().trim();
-        
-        if (selectedText && selectedText.length > 0) {
-            setSelectedText(selectedText);
-            setShowRewriteTooltip(true);
-            
-            // Get selection position
-            const range = selection.getRangeAt(0);
-            const rect = range.getBoundingClientRect();
-            setRewritePosition({
-                start: range.startOffset,
-                end: range.endOffset,
-                top: rect.top,
-                left: rect.left
-            });
-        } else {
-            setShowRewriteTooltip(false);
-        }
-    };
-
-    // Close tooltip when clicking outside
+    // Cleanup EditorJS on unmount
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (showRewriteTooltip && !event.target.closest('.ebook-page-content')) {
-                setShowRewriteTooltip(false);
-                setSelectedText('');
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [showRewriteTooltip]);
-
-    const handleAIRewrite = async () => {
-        if (!selectedText) return;
-
-        setIsRewriting(true);
-        setShowRewriteTooltip(false);
-
-        try {
-            const prompt = `You are an advanced text rephraser with a knack for making things sound natural.
-            1. For a single word, return a synonym or fix it if it's incorrect.
-            2. Rewrite the text to sound like it was written by a real human. Use simpler, everyday vocabulary while keeping the original tone and writing style. Change the wording completely, but don't change the meaning. Make sure the result feels natural, clear, and 100% human-like.
-            3. Additionally, apply a humanizer tool to make the text sound even more relatable and genuine.
-            Under no circumstances should you ask any questions, seek clarification, or make any assumptions. You must **only return the corrected text** as a result—nothing more, nothing less. Keep it real and straightforward, no exceptions.
-        
-            Input: ${selectedText}`;
-
-            const response = await axios.post(`${apiUrlA}/rewrite`, {
-                input: prompt,
-                action: "Rewrite text to sound more human and natural"
-            }, {
-                timeout: 30000,
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            const rewrittenText = response.data.modifiedText || selectedText;
-            
-            // Replace the selected text in the contentEditable div
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                range.deleteContents();
-                range.insertNode(document.createTextNode(rewrittenText));
-                selection.removeAllRanges();
-                
-                // Update the chapter content
-                const updatedChapters = [...ebookChapters];
-                updatedChapters[selectedChapter].content = contentRef.current?.textContent || '';
-                updatedChapters[selectedChapter].wordCount = updatedChapters[selectedChapter].content.split(' ').length;
-                setEbookChapters(updatedChapters);
+            if (editorInstance.current) {
+                editorInstance.current.destroy();
             }
+        };
+    }, []);
 
-            setSelectedText('');
-        } catch (error) {
-            console.error('AI Rewrite error:', error);
-            setError(`AI rewrite failed: ${error.message}`);
-        } finally {
-            setIsRewriting(false);
+    // Initialize editor when chapter is selected
+    useEffect(() => {
+        if (selectedChapter >= 0 && ebookChapters[selectedChapter]) {
+            const chapter = ebookChapters[selectedChapter];
+            const editorData = chapter.editorBlocks ? { blocks: chapter.editorBlocks } : { blocks: [] };
+
+            // Use the unified initialization function
+            initializeEditor(editorData, !isEditMode);
         }
-    };
+    }, [selectedChapter, isEditMode, ebookChapters]);
+
 
     // Word count options
     const wordCountOptions = [
@@ -463,10 +709,14 @@ Please write the complete chapter content.`;
                     headers: { 'Content-Type': 'application/json' }
                 });
 
+                // Convert AI response to EditorJS blocks using the same function as Intial.editer.jsx
+                const editorData = converttoToEditor({ editorData: response.data });
+
                 generatedChapters.push({
                     chapterNumber: i + 1,
                     title: chapters[i].title,
                     content: response.data,
+                    editorBlocks: editorData.blocks,
                     wordCount: response.data.split(' ').length
                 });
 
@@ -604,9 +854,21 @@ Please write the complete chapter content.`;
     const exportEbook = () => {
         let ebookText = `${ebookData.title}\n\n`;
         ebookText += `Table of Contents:\n${ebookOutline}\n\n`;
-        
+
         ebookChapters.forEach((chapter, index) => {
-            ebookText += `\n${chapter.title}\n\n${chapter.content}\n\n`;
+            const content = chapter.editorBlocks
+                ? chapter.editorBlocks.map(block => {
+                    if (block.type === 'paragraph') return block.data.text;
+                    if (block.type === 'header') return `${'#'.repeat(block.data.level || 2)} ${block.data.text}`;
+                    if (block.type === 'list') {
+                        return block.data.items.map(item => `- ${item}`).join('\n');
+                    }
+                    if (block.type === 'quote') return `> ${block.data.text}`;
+                    return '';
+                }).filter(Boolean).join('\n\n')
+                : chapter.content;
+
+            ebookText += `\n${chapter.title}\n\n${content}\n\n`;
         });
 
         const blob = new Blob([ebookText], { type: 'text/plain' });
@@ -679,16 +941,38 @@ Please write the complete chapter content.`;
                 <div>${renderMarkdown(ebookOutline)}</div>
             </div>
         `;
-        
+
         ebookChapters.forEach((chapter, index) => {
+            const content = chapter.editorBlocks
+                ? chapter.editorBlocks.map(block => {
+                    switch (block.type) {
+                        case 'paragraph':
+                            return `<p>${block.data.text}</p>`;
+                        case 'header':
+                            const level = block.data.level || 2;
+                            return `<h${level}>${block.data.text}</h${level}>`;
+                        case 'list':
+                            const listType = block.data.style === 'ordered' ? 'ol' : 'ul';
+                            const listItems = block.data.items.map(item => `<li>${item}</li>`).join('');
+                            return `<${listType}>${listItems}</${listType}>`;
+                        case 'quote':
+                            return `<blockquote>${block.data.text}</blockquote>`;
+                        case 'delimiter':
+                            return '<hr>';
+                        default:
+                            return '';
+                    }
+                }).join('')
+                : renderMarkdown(chapter.content);
+
             htmlContent += `
                 <div class="chapter">
                     <h1>${chapter.title}</h1>
-                    <div>${renderMarkdown(chapter.content)}</div>
+                    <div>${content}</div>
                 </div>
             `;
         });
-        
+
         htmlContent += `
         </body>
         </html>
@@ -725,11 +1009,10 @@ Please write the complete chapter content.`;
                                     setShowEbookView(true);
                                     setIsEditMode(false);
                                 }}
-                                className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${
-                                    showEbookView && !isEditMode 
-                                        ? 'bg-blue-100 text-blue-700' 
-                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                                }`}
+                                className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${showEbookView && !isEditMode
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                                    }`}
                             >
                                 Ebook View
                             </button>
@@ -738,11 +1021,10 @@ Please write the complete chapter content.`;
                                     setShowEbookView(true);
                                     setIsEditMode(true);
                                 }}
-                                className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${
-                                    showEbookView && isEditMode 
-                                        ? 'bg-blue-100 text-blue-700' 
-                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                                }`}
+                                className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${showEbookView && isEditMode
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                                    }`}
                             >
                                 Edit Mode
                             </button>
@@ -773,21 +1055,19 @@ Please write the complete chapter content.`;
                         <div className="p-4">
                             <h3 className="text-lg font-semibold text-slate-800 mb-4">Table of Contents</h3>
                             <div className="space-y-2">
-                                <div 
-                                    className={`p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
-                                        selectedChapter === -1 ? 'bg-slate-200 text-slate-800' : 'hover:bg-slate-100 text-slate-600'
-                                    }`}
+                                <div
+                                    className={`p-3 rounded-lg cursor-pointer transition-colors duration-200 ${selectedChapter === -1 ? 'bg-slate-200 text-slate-800' : 'hover:bg-slate-100 text-slate-600'
+                                        }`}
                                     onClick={() => setSelectedChapter(-1)}
                                 >
                                     <div className="font-medium">Outline</div>
                                     <div className="text-sm text-slate-500">Ebook structure</div>
                                 </div>
                                 {ebookChapters.map((chapter, index) => (
-                                    <div 
+                                    <div
                                         key={index}
-                                        className={`p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
-                                            selectedChapter === index ? 'bg-slate-200 text-slate-800' : 'hover:bg-slate-100 text-slate-600'
-                                        }`}
+                                        className={`p-3 rounded-lg cursor-pointer transition-colors duration-200 ${selectedChapter === index ? 'bg-slate-200 text-slate-800' : 'hover:bg-slate-100 text-slate-600'
+                                            }`}
                                         onClick={() => setSelectedChapter(index)}
                                     >
                                         <div className="font-medium">{chapter.title}</div>
@@ -922,7 +1202,7 @@ Please write the complete chapter content.`;
                                         <span className="text-sm font-bold text-slate-700">{progress}%</span>
                                     </div>
                                     <div className="w-full bg-slate-200 rounded-full h-3 shadow-inner">
-                                        <div 
+                                        <div
                                             className="bg-gradient-to-r from-slate-500 to-slate-600 h-3 rounded-full transition-all duration-500 relative overflow-hidden shadow-sm"
                                             style={{ width: `${progress}%` }}
                                         >
@@ -942,7 +1222,7 @@ Please write the complete chapter content.`;
                                             <span className="text-sm font-bold text-green-700">{Math.round(chapterProgress)}%</span>
                                         </div>
                                         <div className="w-full bg-green-200 rounded-full h-2 shadow-inner">
-                                            <div 
+                                            <div
                                                 className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
                                                 style={{ width: `${chapterProgress}%` }}
                                             ></div>
@@ -986,7 +1266,7 @@ Please write the complete chapter content.`;
                                                 placeholder="Enter ebook outline..."
                                             />
                                         ) : (
-                                            <div 
+                                            <div
                                                 className="prose prose-slate max-w-none"
                                                 dangerouslySetInnerHTML={{ __html: renderMarkdown(ebookOutline) }}
                                             />
@@ -998,60 +1278,37 @@ Please write the complete chapter content.`;
                                         <h1 className="text-3xl font-bold text-slate-800 mb-6">
                                             {ebookChapters[selectedChapter]?.title}
                                         </h1>
-                                        {isEditMode ? (
-                                            /* Edit Mode - Editable Content */
-                                            <div className="relative">
-                                                <div 
-                                                    ref={contentRef}
-                                                    className="ebook-page-content min-h-[600px] p-8 border border-slate-200 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
-                                                    contentEditable
-                                                    suppressContentEditableWarning={true}
-                                                    onInput={(e) => {
-                                                        const updatedChapters = [...ebookChapters];
-                                                        updatedChapters[selectedChapter].content = e.target.textContent;
-                                                        setEbookChapters(updatedChapters);
-                                                    }}
-                                                    onMouseUp={handleTextSelection}
-                                                    dangerouslySetInnerHTML={{ 
-                                                        __html: renderMarkdown(ebookChapters[selectedChapter]?.content || '') 
-                                                    }}
-                                                />
+                                        {/* EditorJS for both edit and read modes */}
+                                        <div className="relative">
+                                            {/* Edit Mode Editor */}
+                                            <div
+                                                id="ebook-editor"
+                                                className={`min-h-[600px] border border-slate-200 rounded-lg bg-white shadow-sm ${isEditMode ? 'block' : 'hidden'
+                                                    }`}
+                                            />
+
+                                            {/* Read Mode Editor */}
+                                            <div
+                                                id="ebook-reader"
+                                                className={`min-h-[600px] border border-slate-200 rounded-lg bg-white shadow-sm ebook-page-content ${isEditMode ? 'hidden' : 'block'
+                                                    }`}
+                                            />
+
+                                            {isEditMode && (
                                                 <div className="mt-4 flex gap-2">
                                                     <button
                                                         onClick={() => {
-                                                            const updatedChapters = [...ebookChapters];
-                                                            updatedChapters[selectedChapter].wordCount = updatedChapters[selectedChapter].content.split(' ').length;
-                                                            setEbookChapters(updatedChapters);
+                                                            // Save is handled automatically by EditorJS onChange
+                                                            console.log('Changes saved automatically');
                                                         }}
                                                         className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors duration-200"
                                                     >
                                                         <Save className="w-4 h-4 mr-1 inline" />
                                                         Save Changes
                                                     </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            const updatedChapters = [...ebookChapters];
-                                                            updatedChapters[selectedChapter].content = renderMarkdown(updatedChapters[selectedChapter].content);
-                                                            setEbookChapters(updatedChapters);
-                                                        }}
-                                                        className="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors duration-200"
-                                                    >
-                                                        <Wand2 className="w-4 h-4 mr-1 inline" />
-                                                        Format Text
-                                                    </button>
                                                 </div>
-                                            </div>
-                                        ) : (
-                                            /* Read Mode - Styled Ebook Page */
-                                            <div 
-                                                ref={contentRef}
-                                                className="ebook-page-content select-text cursor-text"
-                                                onMouseUp={handleTextSelection}
-                                                dangerouslySetInnerHTML={{ 
-                                                    __html: renderMarkdown(ebookChapters[selectedChapter]?.content || '') 
-                                                }}
-                                            />
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -1069,34 +1326,6 @@ Please write the complete chapter content.`;
                 </div>
             </div>
 
-            {/* AI Rewrite Tooltip */}
-            {showRewriteTooltip && selectedText && (
-                <div 
-                    className="fixed z-50 bg-slate-800 text-white px-3 py-2 rounded-lg shadow-lg"
-                    style={{
-                        top: rewritePosition.top - 50,
-                        left: rewritePosition.left,
-                    }}
-                >
-                    <button
-                        onClick={handleAIRewrite}
-                        disabled={isRewriting}
-                        className="flex items-center text-sm hover:bg-slate-700 px-2 py-1 rounded transition-colors duration-200"
-                    >
-                        {isRewriting ? (
-                            <>
-                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
-                                Rewriting...
-                            </>
-                        ) : (
-                            <>
-                                <Wand2 className="w-3 h-3 mr-2" />
-                                AI Rewrite
-                            </>
-                        )}
-                    </button>
-                </div>
-            )}
         </div>
     );
 };
