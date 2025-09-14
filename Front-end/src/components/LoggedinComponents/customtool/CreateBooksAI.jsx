@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { loadData } from '../../../app/user/userDataSlice';
 import axios from 'axios';
-import { Copy, Check, BookOpen, FileText, Download, Edit3, Save, Trash2 } from 'lucide-react';
+import { Copy, Check, BookOpen, FileText, Download, Edit3, Save, Trash2, Wand2, FileText as WordIcon } from 'lucide-react';
+import { marked } from 'marked';
 
 const CreateBooksAI = () => {
     // Form inputs
@@ -47,9 +48,100 @@ const CreateBooksAI = () => {
     const [showChapters, setShowChapters] = useState(false);
     const [editingChapter, setEditingChapter] = useState(null);
     const [editedContent, setEditedContent] = useState('');
+    const [selectedChapter, setSelectedChapter] = useState(0);
+    const [showEbookView, setShowEbookView] = useState(false);
+    
+    // AI Rewrite states
+    const [selectedText, setSelectedText] = useState('');
+    const [isRewriting, setIsRewriting] = useState(false);
+    const [rewritePosition, setRewritePosition] = useState({ start: 0, end: 0 });
+    const [showRewriteTooltip, setShowRewriteTooltip] = useState(false);
+    
+    const contentRef = useRef(null);
 
     const dispatch = useDispatch();
     const apiUrlA = import.meta.env.VITE_API_BASE_URL;
+
+    // Configure marked for better rendering
+    marked.setOptions({
+        breaks: true,
+        gfm: true,
+        headerIds: false,
+        mangle: false
+    });
+
+    // Render markdown to HTML
+    const renderMarkdown = (text) => {
+        if (!text) return '';
+        return marked(text);
+    };
+
+    // AI Rewrite functionality
+    const handleTextSelection = () => {
+        const selection = window.getSelection();
+        const selectedText = selection.toString().trim();
+        
+        if (selectedText && selectedText.length > 0) {
+            setSelectedText(selectedText);
+            setShowRewriteTooltip(true);
+            
+            // Get selection position
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            setRewritePosition({
+                start: range.startOffset,
+                end: range.endOffset,
+                top: rect.top,
+                left: rect.left
+            });
+        } else {
+            setShowRewriteTooltip(false);
+        }
+    };
+
+    const handleAIRewrite = async () => {
+        if (!selectedText) return;
+
+        setIsRewriting(true);
+        setShowRewriteTooltip(false);
+
+        try {
+            const prompt = `You are an advanced text rephraser with a knack for making things sound natural.
+            1. For a single word, return a synonym or fix it if it's incorrect.
+            2. Rewrite the text to sound like it was written by a real human. Use simpler, everyday vocabulary while keeping the original tone and writing style. Change the wording completely, but don't change the meaning. Make sure the result feels natural, clear, and 100% human-like.
+            3. Additionally, apply a humanizer tool to make the text sound even more relatable and genuine.
+            Under no circumstances should you ask any questions, seek clarification, or make any assumptions. You must **only return the corrected text** as a result—nothing more, nothing less. Keep it real and straightforward, no exceptions.
+        
+            Input: ${selectedText}`;
+
+            const response = await axios.post(`${apiUrlA}/rewrite`, {
+                input: prompt,
+                action: "Rewrite text to sound more human and natural"
+            }, {
+                timeout: 30000,
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const rewrittenText = response.data.modifiedText || selectedText;
+            
+            // Replace the selected text in the current chapter
+            if (editingChapter !== null) {
+                const updatedContent = editedContent.replace(selectedText, rewrittenText);
+                setEditedContent(updatedContent);
+            } else {
+                const updatedChapters = [...ebookChapters];
+                updatedChapters[selectedChapter].content = updatedChapters[selectedChapter].content.replace(selectedText, rewrittenText);
+                setEbookChapters(updatedChapters);
+            }
+
+            setSelectedText('');
+        } catch (error) {
+            console.error('AI Rewrite error:', error);
+            setError(`AI rewrite failed: ${error.message}`);
+        } finally {
+            setIsRewriting(false);
+        }
+    };
 
     // Word count options
     const wordCountOptions = [
@@ -368,306 +460,406 @@ Please write the complete chapter content.`;
         URL.revokeObjectURL(url);
     };
 
+    // Export as Microsoft Word document
+    const exportAsWord = () => {
+        // Create HTML content with proper formatting
+        let htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>${ebookData.title}</title>
+            <style>
+                body {
+                    font-family: 'Times New Roman', serif;
+                    font-size: 12pt;
+                    line-height: 1.5;
+                    margin: 1in;
+                    color: #000;
+                }
+                h1 {
+                    font-size: 18pt;
+                    font-weight: bold;
+                    text-align: center;
+                    margin-bottom: 24pt;
+                    page-break-before: always;
+                }
+                h2 {
+                    font-size: 16pt;
+                    font-weight: bold;
+                    margin-top: 18pt;
+                    margin-bottom: 12pt;
+                }
+                h3 {
+                    font-size: 14pt;
+                    font-weight: bold;
+                    margin-top: 12pt;
+                    margin-bottom: 6pt;
+                }
+                p {
+                    margin-bottom: 6pt;
+                    text-align: justify;
+                }
+                .toc {
+                    page-break-after: always;
+                }
+                .chapter {
+                    page-break-before: always;
+                }
+                @page {
+                    margin: 1in;
+                    size: 8.5in 11in;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>${ebookData.title}</h1>
+            <div class="toc">
+                <h2>Table of Contents</h2>
+                <div>${renderMarkdown(ebookOutline)}</div>
+            </div>
+        `;
+        
+        ebookChapters.forEach((chapter, index) => {
+            htmlContent += `
+                <div class="chapter">
+                    <h1>${chapter.title}</h1>
+                    <div>${renderMarkdown(chapter.content)}</div>
+                </div>
+            `;
+        });
+        
+        htmlContent += `
+        </body>
+        </html>
+        `;
+
+        // Create blob and download
+        const blob = new Blob([htmlContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${topic.replace(/[^a-zA-Z0-9]/g, '_')}_ebook.doc`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     return (
-        <div className="space-y-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+        <div className="h-screen bg-slate-50">
             {/* Header */}
-            <div className="text-center mb-6">
-                <div className="flex items-center justify-center mb-4">
-                    <BookOpen className="w-8 h-8 text-slate-700 mr-3" />
-                    <h2 className="text-3xl font-bold text-slate-800">Create Books AI</h2>
-                </div>
-                <p className="text-slate-600">Generate comprehensive ebooks with AI-powered content creation</p>
-            </div>
-
-            {/* Input Form */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Left Column - Basic Info */}
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Ebook Topic *
-                        </label>
-                        <input
-                            type="text"
-                            value={topic}
-                            onChange={(e) => setTopic(e.target.value)}
-                            placeholder="e.g., Digital Marketing Strategies"
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                            disabled={loading}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Reference URL (Optional)
-                        </label>
-                        <input
-                            type="url"
-                            value={referenceUrl}
-                            onChange={(e) => setReferenceUrl(e.target.value)}
-                            placeholder="https://example.com/article"
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                            disabled={loading}
-                        />
-                        <p className="text-xs text-slate-500 mt-1">AI will analyze this content for reference</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Discussion Points
-                        </label>
-                        <textarea
-                            value={discussionPoints}
-                            onChange={(e) => setDiscussionPoints(e.target.value)}
-                            placeholder="What specific aspects should be covered? Key points to discuss..."
-                            rows={3}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200 resize-none"
-                            disabled={loading}
-                        />
-                    </div>
-                </div>
-
-                {/* Right Column - Advanced Settings */}
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Conclusion Focus
-                        </label>
-                        <textarea
-                            value={conclusion}
-                            onChange={(e) => setConclusion(e.target.value)}
-                            placeholder="What should readers take away? Key conclusions..."
-                            rows={3}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200 resize-none"
-                            disabled={loading}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Target Length
-                        </label>
-                        <select
-                            value={wordCount}
-                            onChange={(e) => {
-                                setWordCount(parseInt(e.target.value));
-                                setPageCount(Math.round(parseInt(e.target.value) / 250));
-                            }}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                            disabled={loading}
-                        >
-                            {wordCountOptions.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                        <h4 className="font-semibold text-slate-700 mb-2">Ebook Specifications</h4>
-                        <div className="text-sm text-slate-600 space-y-1">
-                            <p>• Target Word Count: {wordCount.toLocaleString()} words</p>
-                            <p>• Estimated Pages: ~{pageCount} pages</p>
-                            <p>• Chapters: ~{Math.max(3, Math.round(wordCount / 2000))} chapters</p>
-                            <p>• Processing: Chunked AI generation</p>
+            <div className="bg-white border-b border-slate-200 px-6 py-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                        <BookOpen className="w-8 h-8 text-slate-700 mr-3" />
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800">Create Books AI</h2>
+                            <p className="text-slate-600 text-sm">Generate comprehensive ebooks with AI-powered content creation</p>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            {/* Generate Button */}
-            <div className="text-center">
-                <button
-                    onClick={generateEbook}
-                    disabled={loading || !topic.trim()}
-                    className="px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center mx-auto"
-                >
-                    {loading ? (
-                        <>
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                            Generating Ebook...
-                        </>
-                    ) : (
-                        <>
-                            <BookOpen className="w-5 h-5 mr-3" />
-                            Generate Ebook
-                        </>
-                    )}
-                </button>
-            </div>
-
-            {/* Progress Display */}
-            {loading && (
-                <div className="space-y-4">
-                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                        <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-semibold text-slate-700">Generation Progress</span>
-                            <span className="text-sm font-bold text-slate-700">{progress}%</span>
-                        </div>
-                        <div className="w-full bg-slate-200 rounded-full h-3 shadow-inner">
-                            <div 
-                                className="bg-gradient-to-r from-slate-500 to-slate-600 h-3 rounded-full transition-all duration-500 relative overflow-hidden shadow-sm"
-                                style={{ width: `${progress}%` }}
-                            >
-                                <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
-                            </div>
-                        </div>
-                        {currentStep && (
-                            <p className="text-sm text-slate-600 font-medium mt-2">{currentStep}</p>
-                        )}
-                    </div>
-
-                    {/* Chapter Progress */}
-                    {isGeneratingChapter && (
-                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-semibold text-green-700">Chapter Generation</span>
-                                <span className="text-sm font-bold text-green-700">{Math.round(chapterProgress)}%</span>
-                            </div>
-                            <div className="w-full bg-green-200 rounded-full h-2 shadow-inner">
-                                <div 
-                                    className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
-                                    style={{ width: `${chapterProgress}%` }}
-                                ></div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Error Display */}
-            {error && (
-                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                    <div className="flex items-start">
-                        <div className="flex-shrink-0">
-                            <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                        </div>
-                        <div className="ml-3">
-                            <p className="text-sm text-red-700 font-medium">{error}</p>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Ebook Outline */}
-            {showOutline && ebookOutline && (
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-xl font-bold text-slate-800 flex items-center">
-                            <FileText className="w-6 h-6 mr-2" />
-                            Ebook Outline
-                        </h3>
-                        <button
-                            onClick={() => copyToClipboard(ebookOutline)}
-                            className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-sm transition-colors duration-200"
-                        >
-                            <Copy className="w-4 h-4 mr-1 inline" />
-                            Copy
-                        </button>
-                    </div>
-                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 max-h-96 overflow-y-auto">
-                        <pre className="text-sm text-slate-700 whitespace-pre-wrap font-mono">{ebookOutline}</pre>
-                    </div>
-                </div>
-            )}
-
-            {/* Ebook Chapters */}
-            {showChapters && ebookChapters.length > 0 && (
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-xl font-bold text-slate-800 flex items-center">
-                            <BookOpen className="w-6 h-6 mr-2" />
-                            Generated Chapters ({ebookChapters.length})
-                        </h3>
+                    {ebookChapters.length > 0 && (
                         <div className="flex gap-2">
                             <button
+                                onClick={() => setShowEbookView(!showEbookView)}
+                                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm transition-colors duration-200"
+                            >
+                                {showEbookView ? 'Edit Mode' : 'Ebook View'}
+                            </button>
+                            <button
                                 onClick={exportEbook}
-                                className="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 rounded-md text-sm transition-colors duration-200"
+                                className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors duration-200"
                             >
                                 <Download className="w-4 h-4 mr-1 inline" />
-                                Export
+                                Export TXT
+                            </button>
+                            <button
+                                onClick={exportAsWord}
+                                className="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors duration-200"
+                            >
+                                <WordIcon className="w-4 h-4 mr-1 inline" />
+                                Export Word
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex h-full">
+                {/* Left Sidebar - Navigation */}
+                {showEbookView && ebookChapters.length > 0 ? (
+                    <div className="w-80 bg-white border-r border-slate-200 overflow-y-auto">
+                        <div className="p-4">
+                            <h3 className="text-lg font-semibold text-slate-800 mb-4">Table of Contents</h3>
+                            <div className="space-y-2">
+                                <div 
+                                    className={`p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
+                                        selectedChapter === -1 ? 'bg-slate-200 text-slate-800' : 'hover:bg-slate-100 text-slate-600'
+                                    }`}
+                                    onClick={() => setSelectedChapter(-1)}
+                                >
+                                    <div className="font-medium">Outline</div>
+                                    <div className="text-sm text-slate-500">Ebook structure</div>
+                                </div>
+                                {ebookChapters.map((chapter, index) => (
+                                    <div 
+                                        key={index}
+                                        className={`p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
+                                            selectedChapter === index ? 'bg-slate-200 text-slate-800' : 'hover:bg-slate-100 text-slate-600'
+                                        }`}
+                                        onClick={() => setSelectedChapter(index)}
+                                    >
+                                        <div className="font-medium">{chapter.title}</div>
+                                        <div className="text-sm text-slate-500">{chapter.wordCount} words</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    /* Form Section */
+                    <div className="w-96 bg-white border-r border-slate-200 overflow-y-auto p-6">
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Ebook Topic *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={topic}
+                                    onChange={(e) => setTopic(e.target.value)}
+                                    placeholder="e.g., Digital Marketing Strategies"
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Reference URL (Optional)
+                                </label>
+                                <input
+                                    type="url"
+                                    value={referenceUrl}
+                                    onChange={(e) => setReferenceUrl(e.target.value)}
+                                    placeholder="https://example.com/article"
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
+                                    disabled={loading}
+                                />
+                                <p className="text-xs text-slate-500 mt-1">AI will analyze this content for reference</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Discussion Points
+                                </label>
+                                <textarea
+                                    value={discussionPoints}
+                                    onChange={(e) => setDiscussionPoints(e.target.value)}
+                                    placeholder="What specific aspects should be covered? Key points to discuss..."
+                                    rows={3}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200 resize-none"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Conclusion Focus
+                                </label>
+                                <textarea
+                                    value={conclusion}
+                                    onChange={(e) => setConclusion(e.target.value)}
+                                    placeholder="What should readers take away? Key conclusions..."
+                                    rows={3}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200 resize-none"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Target Length
+                                </label>
+                                <select
+                                    value={wordCount}
+                                    onChange={(e) => {
+                                        setWordCount(parseInt(e.target.value));
+                                        setPageCount(Math.round(parseInt(e.target.value) / 250));
+                                    }}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
+                                    disabled={loading}
+                                >
+                                    {wordCountOptions.map(option => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 className="font-semibold text-slate-700 mb-2">Ebook Specifications</h4>
+                                <div className="text-sm text-slate-600 space-y-1">
+                                    <p>• Target Word Count: {wordCount.toLocaleString()} words</p>
+                                    <p>• Estimated Pages: ~{pageCount} pages</p>
+                                    <p>• Chapters: ~{Math.max(3, Math.round(wordCount / 2000))} chapters</p>
+                                    <p>• Processing: Chunked AI generation</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={generateEbook}
+                                disabled={loading || !topic.trim()}
+                                className="w-full px-6 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center"
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                                        Generating Ebook...
+                                    </>
+                                ) : (
+                                    <>
+                                        <BookOpen className="w-5 h-5 mr-3" />
+                                        Generate Ebook
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>
+                )}
 
-                    <div className="space-y-4">
-                        {ebookChapters.map((chapter, index) => (
-                            <div key={index} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h4 className="font-semibold text-slate-800">{chapter.title}</h4>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                                            {chapter.wordCount} words
-                                        </span>
-                                        <button
-                                            onClick={() => startEditingChapter(index)}
-                                            className="p-1 text-slate-500 hover:text-slate-700 transition-colors duration-200"
-                                        >
-                                            <Edit3 className="w-4 h-4" />
-                                        </button>
+                {/* Right Content Area */}
+                <div className="flex-1 flex flex-col">
+                    {/* Progress Display */}
+                    {loading && (
+                        <div className="bg-white border-b border-slate-200 p-4">
+                            <div className="space-y-4">
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-sm font-semibold text-slate-700">Generation Progress</span>
+                                        <span className="text-sm font-bold text-slate-700">{progress}%</span>
                                     </div>
-                                </div>
-
-                                {editingChapter === index ? (
-                                    <div className="space-y-3">
-                                        <textarea
-                                            value={editedContent}
-                                            onChange={(e) => setEditedContent(e.target.value)}
-                                            rows={8}
-                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200 resize-none text-sm"
-                                        />
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={saveEditedChapter}
-                                                className="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 rounded-md text-sm transition-colors duration-200"
-                                            >
-                                                <Save className="w-4 h-4 mr-1 inline" />
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={cancelEditing}
-                                                className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-sm transition-colors duration-200"
-                                            >
-                                                Cancel
-                                            </button>
+                                    <div className="w-full bg-slate-200 rounded-full h-3 shadow-inner">
+                                        <div 
+                                            className="bg-gradient-to-r from-slate-500 to-slate-600 h-3 rounded-full transition-all duration-500 relative overflow-hidden shadow-sm"
+                                            style={{ width: `${progress}%` }}
+                                        >
+                                            <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
                                         </div>
                                     </div>
-                                ) : (
-                                    <div className="text-sm text-slate-700 max-h-48 overflow-y-auto">
-                                        <pre className="whitespace-pre-wrap font-sans">{chapter.content}</pre>
+                                    {currentStep && (
+                                        <p className="text-sm text-slate-600 font-medium mt-2">{currentStep}</p>
+                                    )}
+                                </div>
+
+                                {/* Chapter Progress */}
+                                {isGeneratingChapter && (
+                                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-sm font-semibold text-green-700">Chapter Generation</span>
+                                            <span className="text-sm font-bold text-green-700">{Math.round(chapterProgress)}%</span>
+                                        </div>
+                                        <div className="w-full bg-green-200 rounded-full h-2 shadow-inner">
+                                            <div 
+                                                className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-500"
+                                                style={{ width: `${chapterProgress}%` }}
+                                            ></div>
+                                        </div>
                                     </div>
                                 )}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
 
-                    {/* Ebook Summary */}
-                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                        <h4 className="font-semibold text-slate-700 mb-2">Ebook Summary</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-slate-600">
-                            <div>
-                                <p className="font-medium">Total Chapters</p>
-                                <p className="text-lg font-bold text-slate-800">{ebookChapters.length}</p>
-                            </div>
-                            <div>
-                                <p className="font-medium">Total Words</p>
-                                <p className="text-lg font-bold text-slate-800">
-                                    {ebookChapters.reduce((sum, chapter) => sum + chapter.wordCount, 0).toLocaleString()}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="font-medium">Estimated Pages</p>
-                                <p className="text-lg font-bold text-slate-800">
-                                    ~{Math.round(ebookChapters.reduce((sum, chapter) => sum + chapter.wordCount, 0) / 250)}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="font-medium">Topic</p>
-                                <p className="text-lg font-bold text-slate-800 truncate">{topic}</p>
+                    {/* Error Display */}
+                    {error && (
+                        <div className="bg-white border-b border-slate-200 p-4">
+                            <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                                <div className="flex items-start">
+                                    <div className="flex-shrink-0">
+                                        <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                                    </div>
+                                    <div className="ml-3">
+                                        <p className="text-sm text-red-700 font-medium">{error}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    )}
+
+                    {/* Content Display */}
+                    <div className="flex-1 overflow-y-auto bg-white">
+                        {showEbookView && ebookChapters.length > 0 ? (
+                            /* Ebook Reading View */
+                            <div className="max-w-4xl mx-auto p-8">
+                                {selectedChapter === -1 ? (
+                                    /* Outline View */
+                                    <div>
+                                        <h1 className="text-3xl font-bold text-slate-800 mb-6">Ebook Outline</h1>
+                                        <div 
+                                            className="prose prose-slate max-w-none"
+                                            dangerouslySetInnerHTML={{ __html: renderMarkdown(ebookOutline) }}
+                                        />
+                                    </div>
+                                ) : (
+                                    /* Chapter View */
+                                    <div>
+                                        <h1 className="text-3xl font-bold text-slate-800 mb-6">
+                                            {ebookChapters[selectedChapter]?.title}
+                                        </h1>
+                                        <div 
+                                            ref={contentRef}
+                                            className="prose prose-slate max-w-none select-text"
+                                            onMouseUp={handleTextSelection}
+                                            dangerouslySetInnerHTML={{ 
+                                                __html: renderMarkdown(ebookChapters[selectedChapter]?.content || '') 
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            /* Default View */
+                            <div className="flex items-center justify-center h-full">
+                                <div className="text-center">
+                                    <BookOpen className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold text-slate-600 mb-2">Ready to Create Your Ebook</h3>
+                                    <p className="text-slate-500">Fill out the form on the left to get started</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
+                </div>
+            </div>
+
+            {/* AI Rewrite Tooltip */}
+            {showRewriteTooltip && selectedText && (
+                <div 
+                    className="fixed z-50 bg-slate-800 text-white px-3 py-2 rounded-lg shadow-lg"
+                    style={{
+                        top: rewritePosition.top - 50,
+                        left: rewritePosition.left,
+                    }}
+                >
+                    <button
+                        onClick={handleAIRewrite}
+                        disabled={isRewriting}
+                        className="flex items-center text-sm hover:bg-slate-700 px-2 py-1 rounded transition-colors duration-200"
+                    >
+                        {isRewriting ? (
+                            <>
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
+                                Rewriting...
+                            </>
+                        ) : (
+                            <>
+                                <Wand2 className="w-3 h-3 mr-2" />
+                                AI Rewrite
+                            </>
+                        )}
+                    </button>
                 </div>
             )}
         </div>
