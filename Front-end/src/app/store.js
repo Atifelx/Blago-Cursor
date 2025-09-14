@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from '../app/user/userSlice';
 import userArticleReducer from './user/userDataSlice';
+import ebookMemoryReducer from './user/ebookMemorySlice';
 import storage from 'redux-persist/lib/storage'; // Use localStorage for web
 import { persistStore, persistReducer } from 'redux-persist';
 import { combineReducers } from 'redux'; // Import combineReducers to combine multiple reducers
@@ -21,7 +22,14 @@ const userArticlePersistConfig = {
   storage, // Save article blocks in the same storage (localStorage)
 };
 
+// Separate persist config for ebook memory data
+const ebookMemoryPersistConfig = {
+  key: 'ebookMemory',
+  storage, // Save ebook memory in localStorage
+};
+
 const persistedUserArticleReducer = persistReducer(userArticlePersistConfig, userArticleReducer);
+const persistedEbookMemoryReducer = persistReducer(ebookMemoryPersistConfig, ebookMemoryReducer);
 // Create a persisted reducer for the user slice
 const persistedUserReducer = persistReducer(persistConfig, userReducer);
 
@@ -29,7 +37,8 @@ const persistedUserReducer = persistReducer(persistConfig, userReducer);
 // Combine all your reducers into a rootReducer
 const rootReducer = combineReducers({
   user: persistedUserReducer, // Persisted user reducer
-  userArticle:persistedUserArticleReducer, // Add userArticleReducer here
+  userArticle: persistedUserArticleReducer, // Add userArticleReducer here
+  ebookMemory: persistedEbookMemoryReducer, // Add ebookMemory reducer here
   // Add other reducers here if you have any
 });
 
