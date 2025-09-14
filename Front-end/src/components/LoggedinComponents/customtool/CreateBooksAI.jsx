@@ -11,10 +11,17 @@ import CodeTool from '@editorjs/code';
 import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
 import InlineCode from '@editorjs/inline-code';
-import CreateBooksConsoleTool from './CreateBooksConsoleTool';
+import ConsoleTool from './consoletool';
 import { converttoToEditor } from '../../../util/userApi.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { FetchData, ClearData } from '../../../app/user/userSlice';
+import { selectFetchData } from '../../../app/user/userSlice';
 
 const CreateBooksAI = () => {
+    // Redux hooks
+    const dispatch = useDispatch();
+    const editorData = useSelector(selectFetchData);
+    
     // Form inputs - Basic Information
     const [topic, setTopic] = useState('');
     const [targetAudience, setTargetAudience] = useState('');
@@ -76,7 +83,6 @@ const CreateBooksAI = () => {
     const [selectedChapter, setSelectedChapter] = useState(0);
     const [showEbookView, setShowEbookView] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [isAIWriteProcessing, setIsAIWriteProcessing] = useState(false);
 
     // Memory management states
     const [showMemoryClearConfirm, setShowMemoryClearConfirm] = useState(false);
@@ -128,24 +134,6 @@ const CreateBooksAI = () => {
         }
     }, []);
 
-    // Listen for AIWrite events to prevent editor refresh
-    useEffect(() => {
-        const handleAIWriteStart = () => {
-            setIsAIWriteProcessing(true);
-        };
-
-        const handleAIWriteComplete = () => {
-            setIsAIWriteProcessing(false);
-        };
-
-        window.addEventListener('aiwrite-start', handleAIWriteStart);
-        window.addEventListener('aiwrite-complete', handleAIWriteComplete);
-
-        return () => {
-            window.removeEventListener('aiwrite-start', handleAIWriteStart);
-            window.removeEventListener('aiwrite-complete', handleAIWriteComplete);
-        };
-    }, []);
 
     // Save data to localStorage whenever important state changes
     useEffect(() => {
@@ -248,7 +236,7 @@ const CreateBooksAI = () => {
     };
 
     // Initialize EditorJS with proper error handling
-    const initializeEditor = (editorData = { blocks: [] }, isReadOnly = false) => {
+    const initializeEditor = (data = { blocks: [] }, isReadOnly = false) => {
         // Clean up existing instance
         if (editorInstance.current) {
             try {
@@ -304,47 +292,20 @@ const CreateBooksAI = () => {
                         delimiter: Delimiter,
                         inlineCode: InlineCode,
                         code: CodeTool,
-                        AIWrite: CreateBooksConsoleTool,
+                        AIWrite: ConsoleTool,
                     },
-                    data: editorData,
+                    data: data || { blocks: [] },
                     readOnly: isReadOnly,
                     onReady: () => {
                         console.log(`EditorJS ${isReadOnly ? 'read-only' : 'editable'} is ready`);
                     },
                     onChange: isReadOnly ? undefined : () => {
-                        // Skip onChange during AIWrite processing to prevent refresh
-                        if (isAIWriteProcessing) return;
-                        
-                        // Use a debounced approach to avoid frequent re-renders
-                        if (editorInstance.current) {
-                            setTimeout(() => {
-                                editorInstance.current.save().then((outputData) => {
-                                    const updatedChapters = [...ebookChapters];
-
-                                    // Store the EditorJS blocks directly
-                                    updatedChapters[selectedChapter].editorBlocks = outputData.blocks;
-
-                                    // Also create a text version for word count
-                                    const textContent = outputData.blocks
-                                        .map(block => {
-                                            if (block.type === 'paragraph') return block.data.text;
-                                            if (block.type === 'header') return block.data.text;
-                                            if (block.type === 'list') {
-                                                return block.data.items.map(item => item).join(' ');
-                                            }
-                                            if (block.type === 'quote') return block.data.text;
-                                            return '';
-                                        })
-                                        .filter(Boolean)
-                                        .join(' ');
-
-                                    updatedChapters[selectedChapter].wordCount = textContent.split(' ').length;
-                                    setEbookChapters(updatedChapters);
-                                }).catch((error) => {
-                                    console.log('Saving failed: ', error);
-                                });
-                            }, 100);
-                        }
+                        // Use Redux dispatch exactly like the working version
+                        editorInstance.current.save().then((outputData) => {
+                            dispatch(FetchData(outputData));
+                        }).catch((error) => {
+                            console.log('Saving failed: ', error);
+                        });
                     },
                 });
             } catch (error) {
