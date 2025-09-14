@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { loadData } from '../../../app/user/userDataSlice';
 import axios from 'axios';
 import { Copy, Check, BookOpen, FileText, Download, Edit3, Save, Trash2, Wand2, FileText as WordIcon } from 'lucide-react';
 import { marked } from 'marked';
@@ -82,7 +80,6 @@ const CreateBooksAI = () => {
     // Memory management states
     const [showMemoryClearConfirm, setShowMemoryClearConfirm] = useState(false);
 
-    const dispatch = useDispatch();
 
     // Tone and style options
     const toneOptions = [
@@ -784,67 +781,6 @@ const CreateBooksAI = () => {
         }
     };
 
-    // Step 1.5: Deep Thinking Analysis Phase
-    const performDeepAnalysis = async () => {
-        setCurrentStep('Performing deep analysis of all inputs...');
-        setProgress(25);
-
-        try {
-            const deepAnalysisPrompt = `DEEP THINKING ANALYSIS - Analyze all provided information comprehensively:
-
-USER INPUTS TO ANALYZE:
-1. MAIN TOPIC: ${basicInfo.topic}
-2. TARGET AUDIENCE: ${basicInfo.targetAudience}
-3. END GOAL: ${basicInfo.endGoal}
-4. TONE & STYLE: ${basicInfo.toneStyle}
-5. NUMBER OF CHAPTERS: ${chapterConfig.numChapters}
-6. WORD COUNT TARGET: ${basicInfo.wordCount} words
-7. REFERENCE CONTENT: ${processingStates.scrapedContent ? processingStates.scrapedContent.substring(0, 3000) : 'No reference content provided'}
-
-CHAPTER DETAILS PROVIDED:
-${chapterDetails.map((chapter, index) => `
-Chapter ${index + 1}:
-- Title: ${chapter.title}
-- Story Idea: ${chapter.storyIdea}
-- Main Lesson: ${chapter.mainLesson}
-- Practical Examples: ${chapter.practicalExamples}
-- Action Steps: ${chapter.actionSteps}
-- Key Takeaway: ${chapter.keyTakeaway}
-`).join('\n')}
-
-ADDITIONAL SECTIONS REQUESTED:
-- Summary Chapter: ${chapterConfig.includeSummary ? 'Yes' : 'No'}
-- Discussion Questions: ${chapterConfig.includeDiscussionQuestions ? 'Yes' : 'No'}
-- Resources Section: ${chapterConfig.includeResources ? 'Yes' : 'No'}
-- Author Bio: ${chapterConfig.includeAuthorBio ? 'Yes' : 'No'}
-
-DEEP ANALYSIS REQUIREMENTS:
-1. Understand the core objective: How does "${basicInfo.endGoal}" relate to "${basicInfo.topic}" for "${basicInfo.targetAudience}"?
-2. Analyze the relevance: Which chapter details are most important for achieving the end goal?
-3. Identify the logical flow: How should the chapters be ordered to create maximum impact?
-4. Determine content depth: How much detail is needed in each chapter based on the target audience?
-5. Assess reference material: How can the scraped content enhance the original chapter ideas?
-6. Plan the narrative arc: How should the story/concept progress from beginning to end?
-7. Consider practical application: How will readers actually use this information?
-
-Provide a comprehensive analysis that will guide the content generation process. Focus on understanding the user's intent and creating the most valuable content structure.`;
-
-            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/askai`, {
-                input: deepAnalysisPrompt
-            }, {
-                timeout: 120000,
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            dispatch(setDeepAnalysis(response.data));
-            setProgress(35);
-            setCurrentStep('Deep analysis completed successfully');
-            return true;
-        } catch (error) {
-            setError(`Deep analysis failed: ${error.message}`);
-            return false;
-        }
-    };
 
     // Step 2: Generate ebook outline based on deep analysis
     const generateEbookOutline = async () => {
@@ -880,7 +816,7 @@ Please provide a detailed chapter-by-chapter outline.`;
                 headers: { 'Content-Type': 'application/json' }
             });
 
-            dispatch(updateProcessingStates({ ebookOutline: response.data }));
+            setEbookOutline(response.data);
             setProgress(50);
             setCurrentStep('Ebook outline generated successfully');
             return true;
@@ -1005,14 +941,20 @@ Write this chapter as if you're an experienced author who deeply understands ${b
                 }
             };
 
-            dispatch(updateGeneratedContent({
-                ebookChapters: generatedChapters,
-                ebookData,
-                totalWordCount,
-                generationComplete: true
-            }));
-
-            dispatch(loadData(ebookData));
+            setEbookChapters(generatedChapters);
+            setEbookData({
+                ...ebookData,
+                title: topic,
+                outline: ebookOutline,
+                chapters: generatedChapters,
+                metadata: {
+                    ...ebookData.metadata,
+                    wordCount: wordCount,
+                    pageCount: pageCount,
+                    topic: topic,
+                    referenceUrl: referenceUrl
+                }
+            });
             setProgress(90);
             setCurrentStep('All chapters generated successfully');
             setIsGeneratingChapter(false);
@@ -1033,14 +975,12 @@ Write this chapter as if you're an experienced author who deeply understands ${b
         try {
             const sectionsPrompt = `Create additional sections for the ebook:
 
-DEEP ANALYSIS CONTEXT:
-${deepAnalysis}
 
 BOOK CONTEXT:
-- Topic: ${basicInfo.topic}
-- Target Audience: ${basicInfo.targetAudience}
-- End Goal: ${basicInfo.endGoal}
-- Tone: ${basicInfo.toneStyle}
+- Topic: ${topic}
+- Target Audience: ${targetAudience}
+- End Goal: ${endGoal}
+- Tone: ${toneStyle}
 
 CHAPTERS SUMMARY:
 ${chapters.map(chapter => `Chapter ${chapter.chapterNumber}: ${chapter.title}`).join('\n')}
@@ -1185,7 +1125,7 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
 
     // Memory management functions
     const clearMemoryData = () => {
-        dispatch(clearMemory());
+        // Memory cleared
         setShowMemoryClearConfirm(false);
         setShowOutline(false);
         setShowChapters(false);
@@ -1210,15 +1150,15 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
     // Edit chapter content
     const startEditingChapter = (chapterIndex) => {
         setEditingChapter(chapterIndex);
-        setEditedContent(generatedContent.ebookChapters[chapterIndex].content);
+        setEditedContent(ebookChapters[chapterIndex].content);
     };
 
     const saveEditedChapter = () => {
         if (editingChapter !== null) {
-            const updatedChapters = [...generatedContent.ebookChapters];
+            const updatedChapters = [...ebookChapters];
             updatedChapters[editingChapter].content = editedContent;
             updatedChapters[editingChapter].wordCount = editedContent.split(' ').length;
-            dispatch(updateGeneratedContent({ ebookChapters: updatedChapters }));
+            setEbookChapters(updatedChapters);
             setEditingChapter(null);
             setEditedContent('');
         }
@@ -1398,48 +1338,48 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
                             Clear Memory
                         </button>
 
-                    {ebookChapters.length > 0 && (
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => {
-                                    setShowEbookView(true);
-                                    setIsEditMode(false);
-                                }}
-                                className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${showEbookView && !isEditMode
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                                    }`}
-                            >
-                                Ebook View
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowEbookView(true);
-                                    setIsEditMode(true);
-                                }}
-                                className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${showEbookView && isEditMode
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                                    }`}
-                            >
-                                Edit Mode
-                            </button>
-                            <button
-                                onClick={exportEbook}
-                                className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors duration-200"
-                            >
-                                <Download className="w-4 h-4 mr-1 inline" />
-                                Export TXT
-                            </button>
-                            <button
-                                onClick={exportAsWord}
-                                className="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors duration-200"
-                            >
-                                <WordIcon className="w-4 h-4 mr-1 inline" />
-                                Export Word
-                            </button>
-                        </div>
-                    )}
+                        {ebookChapters.length > 0 && (
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        setShowEbookView(true);
+                                        setIsEditMode(false);
+                                    }}
+                                    className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${showEbookView && !isEditMode
+                                        ? 'bg-blue-100 text-blue-700'
+                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                                        }`}
+                                >
+                                    Ebook View
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowEbookView(true);
+                                        setIsEditMode(true);
+                                    }}
+                                    className={`px-4 py-2 rounded-lg text-sm transition-colors duration-200 ${showEbookView && isEditMode
+                                        ? 'bg-blue-100 text-blue-700'
+                                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                                        }`}
+                                >
+                                    Edit Mode
+                                </button>
+                                <button
+                                    onClick={exportEbook}
+                                    className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors duration-200"
+                                >
+                                    <Download className="w-4 h-4 mr-1 inline" />
+                                    Export TXT
+                                </button>
+                                <button
+                                    onClick={exportAsWord}
+                                    className="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-sm transition-colors duration-200"
+                                >
+                                    <WordIcon className="w-4 h-4 mr-1 inline" />
+                                    Export Word
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -1544,52 +1484,52 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
                             {/* Basic Information Step */}
                             {currentFormStep === 'basic' && (
                                 <>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
                                             Main Topic / Subject *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={topic}
-                                    onChange={(e) => setTopic(e.target.value)}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={topic}
+                                            onChange={(e) => setTopic(e.target.value)}
                                             placeholder="e.g., Productivity for Students, Healthy Eating, Romance Story"
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                                    disabled={loading}
-                                />
-                            </div>
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
+                                            disabled={loading}
+                                        />
+                                    </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
                                             Target Audience *
-                                </label>
-                                <input
+                                        </label>
+                                        <input
                                             type="text"
                                             value={targetAudience}
                                             onChange={(e) => setTargetAudience(e.target.value)}
                                             placeholder="e.g., busy professionals, college students, parents, beginners"
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                                    disabled={loading}
-                                />
-                            </div>
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
+                                            disabled={loading}
+                                        />
+                                    </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
                                             End Goal / Transformation *
-                                </label>
+                                        </label>
                                         <input
                                             type="text"
                                             value={endGoal}
                                             onChange={(e) => setEndGoal(e.target.value)}
                                             placeholder="e.g., Teach time management, Entertain with romance, Help lose weight"
                                             className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                                    disabled={loading}
-                                />
-                            </div>
+                                            disabled={loading}
+                                        />
+                                    </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
                                             Tone & Style *
-                                </label>
+                                        </label>
                                         <select
                                             value={toneStyle}
                                             onChange={(e) => setToneStyle(e.target.value)}
@@ -1615,31 +1555,31 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
                                             onChange={(e) => setReferenceUrl(e.target.value)}
                                             placeholder="https://example.com/article"
                                             className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                                    disabled={loading}
-                                />
+                                            disabled={loading}
+                                        />
                                         <p className="text-xs text-slate-500 mt-1">AI will analyze this content for reference</p>
-                            </div>
+                                    </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
                                             Number of Book Pages
-                                </label>
-                                <select
-                                    value={wordCount}
-                                    onChange={(e) => {
-                                        setWordCount(parseInt(e.target.value));
-                                        setPageCount(Math.round(parseInt(e.target.value) / 250));
-                                    }}
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
-                                    disabled={loading}
-                                >
-                                    {wordCountOptions.map(option => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                                        </label>
+                                        <select
+                                            value={wordCount}
+                                            onChange={(e) => {
+                                                setWordCount(parseInt(e.target.value));
+                                                setPageCount(Math.round(parseInt(e.target.value) / 250));
+                                            }}
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200"
+                                            disabled={loading}
+                                        >
+                                            {wordCountOptions.map(option => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
 
                                     <button
                                         onClick={() => setCurrentFormStep('chapters')}
@@ -1669,7 +1609,7 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
                                         />
                                     </div>
 
-                            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                                         <div className="flex items-center justify-between mb-3">
                                             <label className="text-sm font-semibold text-slate-700">
                                                 Let AI generate chapter titles
@@ -1685,14 +1625,14 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
                                                         }`}
                                                 />
                                             </button>
-                                </div>
+                                        </div>
                                         <p className="text-xs text-slate-500">
                                             {aiGenerateChapters
                                                 ? 'AI will create chapter titles based on your inputs'
                                                 : 'You will manually enter chapter titles'
                                             }
                                         </p>
-                            </div>
+                                    </div>
 
                                     {!aiGenerateChapters && numChapters > 0 && (
                                         <div>
@@ -1954,23 +1894,23 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
                                         >
                                             Back
                                         </button>
-                            <button
-                                onClick={generateEbook}
+                                        <button
+                                            onClick={generateEbook}
                                             disabled={loading}
                                             className="flex-1 px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center"
-                            >
-                                {loading ? (
-                                    <>
+                                        >
+                                            {loading ? (
+                                                <>
                                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                                                     Generating...
-                                    </>
-                                ) : (
-                                    <>
+                                                </>
+                                            ) : (
+                                                <>
                                                     <BookOpen className="w-4 h-4 mr-2" />
-                                        Generate Ebook
-                                    </>
-                                )}
-                            </button>
+                                                    Generate Ebook
+                                                </>
+                                            )}
+                                        </button>
                                     </div>
                                 </>
                             )}
