@@ -11,7 +11,6 @@ import CodeTool from '@editorjs/code';
 import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
 import InlineCode from '@editorjs/inline-code';
-import AIWriteTool from './AIWriteTool';
 import { converttoToEditor } from '../../../util/userApi.js';
 
 const CreateBooksAI = () => {
@@ -255,7 +254,7 @@ const CreateBooksAI = () => {
                     tools: {
                         header: {
                             class: Header,
-                            inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
+                            inlineToolbar: isReadOnly ? false : ['bold', 'italic'],
                             config: {
                                 placeholder: 'Enter a header',
                                 levels: [2, 3, 4],
@@ -265,12 +264,12 @@ const CreateBooksAI = () => {
                         list: {
                             class: List,
                             config: {
-                                inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
+                                inlineToolbar: isReadOnly ? false : ['bold', 'italic'],
                             },
                         },
                         paragraph: {
                             class: Paragraph,
-                            inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
+                            inlineToolbar: isReadOnly ? false : ['bold', 'italic'],
                             config: {
                                 preserveBlank: true,
                             },
@@ -283,7 +282,6 @@ const CreateBooksAI = () => {
                         },
                         delimiter: Delimiter,
                         inlineCode: InlineCode,
-                        AIWrite: isReadOnly ? null : AIWriteTool,
                         code: CodeTool,
                     },
                     data: editorData,
@@ -953,16 +951,24 @@ Write this chapter as if you're an experienced author who deeply understands ${t
 
             setEbookChapters(generatedChapters);
             setEbookData({
-                ...ebookData,
                 title: topic,
                 outline: ebookOutline,
                 chapters: generatedChapters,
                 metadata: {
-                    ...ebookData.metadata,
-                    wordCount: wordCount,
-                    pageCount: pageCount,
+                    wordCount: totalWordCount,
+                    pageCount: Math.round(totalWordCount / 250),
                     topic: topic,
-                    referenceUrl: referenceUrl
+                    targetAudience: targetAudience,
+                    endGoal: endGoal,
+                    toneStyle: toneStyle,
+                    referenceUrl: referenceUrl,
+                    numChapters: numChapters,
+                    aiGenerateChapters: aiGenerateChapters,
+                    includeSummary: includeSummary,
+                    includeDiscussionQuestions: includeDiscussionQuestions,
+                    includeResources: includeResources,
+                    includeAuthorBio: includeAuthorBio,
+                    generationComplete: true
                 }
             });
             setProgress(90);
