@@ -11,6 +11,7 @@ import CodeTool from '@editorjs/code';
 import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
 import InlineCode from '@editorjs/inline-code';
+import ConsoleTool from './consoletool';
 import { converttoToEditor } from '../../../util/userApi.js';
 
 const CreateBooksAI = () => {
@@ -254,7 +255,7 @@ const CreateBooksAI = () => {
                     tools: {
                         header: {
                             class: Header,
-                            inlineToolbar: isReadOnly ? false : ['bold', 'italic'],
+                            inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
                             config: {
                                 placeholder: 'Enter a header',
                                 levels: [2, 3, 4],
@@ -264,12 +265,12 @@ const CreateBooksAI = () => {
                         list: {
                             class: List,
                             config: {
-                                inlineToolbar: isReadOnly ? false : ['bold', 'italic'],
+                                inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
                             },
                         },
                         paragraph: {
                             class: Paragraph,
-                            inlineToolbar: isReadOnly ? false : ['bold', 'italic'],
+                            inlineToolbar: isReadOnly ? false : ['bold', 'italic', 'AIWrite'],
                             config: {
                                 preserveBlank: true,
                             },
@@ -283,6 +284,7 @@ const CreateBooksAI = () => {
                         delimiter: Delimiter,
                         inlineCode: InlineCode,
                         code: CodeTool,
+                        AIWrite: isReadOnly ? null : ConsoleTool,
                     },
                     data: editorData,
                     readOnly: isReadOnly,
