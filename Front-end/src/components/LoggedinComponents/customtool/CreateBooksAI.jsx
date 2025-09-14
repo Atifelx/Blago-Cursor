@@ -891,9 +891,9 @@ CONTENT STRUCTURE:
 - Include practical examples and actionable advice
 - End with clear takeaways
 - Use subheadings to organize content
-- Include relevant examples for ${basicInfo.targetAudience}
+- Include relevant examples for ${targetAudience}
 
-Write this chapter as if you're an experienced author who deeply understands ${basicInfo.targetAudience} and wants to help them achieve "${basicInfo.endGoal}". Make it feel authentic, valuable, and genuinely helpful.`;
+Write this chapter as if you're an experienced author who deeply understands ${targetAudience} and wants to help them achieve "${endGoal}". Make it feel authentic, valuable, and genuinely helpful.`;
 
                 const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/askai`, {
                     input: chapterPrompt
@@ -920,7 +920,7 @@ Write this chapter as if you're an experienced author who deeply understands ${b
             }
 
             // Generate additional sections if requested
-            if (chapterConfig.includeSummary || chapterConfig.includeDiscussionQuestions || chapterConfig.includeResources || chapterConfig.includeAuthorBio) {
+            if (includeSummary || includeDiscussionQuestions || includeResources || includeAuthorBio) {
                 setCurrentStep('Generating additional sections...');
                 await generateAdditionalSections(generatedChapters);
             }
@@ -928,16 +928,26 @@ Write this chapter as if you're an experienced author who deeply understands ${b
             // Save to Redux state
             const totalWordCount = generatedChapters.reduce((sum, chapter) => sum + chapter.wordCount, 0);
             const ebookData = {
-                title: `${basicInfo.topic} - Complete Guide`,
-                outline: processingStates.ebookOutline,
+                title: `${topic} - Complete Guide`,
+                outline: ebookOutline,
                 chapters: generatedChapters,
                 metadata: {
                     wordCount: totalWordCount,
                     pageCount: Math.round(totalWordCount / 250),
-                    ...basicInfo,
-                    ...chapterConfig,
-                    deepAnalysis,
-                    analysisComplete: true
+                    topic,
+                    targetAudience,
+                    endGoal,
+                    toneStyle,
+                    referenceUrl,
+                    wordCount,
+                    pageCount,
+                    numChapters,
+                    aiGenerateChapters,
+                    includeSummary,
+                    includeDiscussionQuestions,
+                    includeResources,
+                    includeAuthorBio,
+                    generationComplete: true
                 }
             };
 
@@ -987,35 +997,35 @@ ${chapters.map(chapter => `Chapter ${chapter.chapterNumber}: ${chapter.title}`).
 
 GENERATE THE FOLLOWING SECTIONS:
 
-${chapterConfig.includeSummary ? `
+${includeSummary ? `
 1. EXECUTIVE SUMMARY
 - Summarize the entire ebook in 2-3 paragraphs
-- Highlight key takeaways for ${basicInfo.targetAudience}
+- Highlight key takeaways for ${targetAudience}
 - Focus on the main value proposition
 ` : ''}
 
-${chapterConfig.includeDiscussionQuestions ? `
+${includeDiscussionQuestions ? `
 2. DISCUSSION QUESTIONS
 - Create 8-10 thought-provoking questions
-- Questions should help ${basicInfo.targetAudience} reflect on the content
+- Questions should help ${targetAudience} reflect on the content
 - Include both practical and conceptual questions
 ` : ''}
 
-${chapterConfig.includeResources ? `
+${includeResources ? `
 3. ADDITIONAL RESOURCES
 - Suggest 5-7 relevant books, articles, or tools
 - Focus on resources that complement the ebook content
 - Include brief descriptions of why each resource is valuable
 ` : ''}
 
-${chapterConfig.includeAuthorBio ? `
+${includeAuthorBio ? `
 4. AUTHOR BIO
 - Write a brief, engaging author bio
-- Focus on credibility and expertise in ${basicInfo.topic}
-- Keep it relevant to ${basicInfo.targetAudience}
+- Focus on credibility and expertise in ${topic}
+- Keep it relevant to ${targetAudience}
 ` : ''}
 
-Write in the same ${basicInfo.toneStyle} tone as the main content.`;
+Write in the same ${toneStyle} tone as the main content.`;
 
             const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/askai`, {
                 input: sectionsPrompt
@@ -1196,7 +1206,7 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${basicInfo.topic.replace(/[^a-zA-Z0-9]/g, '_')}_ebook.txt`;
+        a.download = `${topic.replace(/[^a-zA-Z0-9]/g, '_')}_ebook.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1306,7 +1316,7 @@ Write in the same ${basicInfo.toneStyle} tone as the main content.`;
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${basicInfo.topic.replace(/[^a-zA-Z0-9]/g, '_')}_ebook.doc`;
+        a.download = `${topic.replace(/[^a-zA-Z0-9]/g, '_')}_ebook.doc`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
