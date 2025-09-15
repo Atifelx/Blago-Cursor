@@ -303,6 +303,16 @@ const CreateBooksAI = () => {
                         // Use Redux dispatch exactly like the working version
                         editorInstance.current.save().then((outputData) => {
                             dispatch(FetchData(outputData));
+
+                            // Update chapter structure in Redux for outline
+                            if (selectedChapter >= 0 && ebookChapters[selectedChapter]) {
+                                const updatedChapters = [...ebookChapters];
+                                updatedChapters[selectedChapter] = {
+                                    ...updatedChapters[selectedChapter],
+                                    editorBlocks: outputData.blocks
+                                };
+                                setEbookChapters(updatedChapters);
+                            }
                         }).catch((error) => {
                             console.log('Saving failed: ', error);
                         });
@@ -659,6 +669,47 @@ const CreateBooksAI = () => {
     }, []);
 
 
+    // Clean outline content - remove intro text, metadata, and word counts
+    const cleanOutlineContent = (text) => {
+        if (!text) return '';
+
+        const lines = text.split('\n');
+        let cleanedLines = [];
+        let foundChapters = false;
+
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+
+            // Skip introductory text
+            if (trimmedLine.toLowerCase().includes('here\'s a detailed ebook outline') ||
+                trimmedLine.toLowerCase().includes('structured to meet your requirements') ||
+                trimmedLine.toLowerCase().includes('okay, here\'s')) {
+                continue;
+            }
+
+            // Skip metadata lines (Ebook Title, Main Topic, etc.)
+            if (trimmedLine.match(/^(Ebook Title|Main Topic|Target Audience|End Goal|Tone & Style|Number of Chapters|Target Word Count|Reference Content|Overall Theme):/i)) {
+                continue;
+            }
+
+            // Start collecting from first chapter
+            if (trimmedLine.match(/^Chapter \d+:/i)) {
+                foundChapters = true;
+            }
+
+            // Only add lines after we find chapters
+            if (foundChapters) {
+                // Remove word count mentions like "(approx. 1000 words)"
+                const cleanedLine = trimmedLine.replace(/\s*\([^)]*words?[^)]*\)/gi, '');
+                cleanedLines.push(cleanedLine);
+            }
+        }
+
+        const result = cleanedLines.join('\n');
+        console.log('Cleaned outline:', result); // Debug log
+        return result;
+    };
+
     // Render markdown to HTML - handle both markdown and HTML content
     const renderMarkdown = (text) => {
         if (!text) return '';
@@ -684,14 +735,150 @@ const CreateBooksAI = () => {
 
     // Initialize editor when chapter is selected
     useEffect(() => {
-        if (selectedChapter >= 0 && ebookChapters[selectedChapter]) {
+        if (selectedChapter === -1) {
+            // Outline view - create table of contents content
+            const tocContent = createTableOfContentsContent();
+            initializeEditor(tocContent, !isEditMode);
+        } else if (selectedChapter >= 0 && ebookChapters[selectedChapter]) {
             const chapter = ebookChapters[selectedChapter];
             const editorData = chapter.editorBlocks ? { blocks: chapter.editorBlocks } : { blocks: [] };
 
             // Use the unified initialization function
             initializeEditor(editorData, !isEditMode);
         }
-    }, [selectedChapter, isEditMode, ebookChapters]);
+    }, [selectedChapter, isEditMode, ebookChapters, chapterDetails, numChapters, editorData]);
+
+    // Create table of contents content for EditorJS
+    const createTableOfContentsContent = () => {
+        const blocks = [
+            {
+                type: 'header',
+                data: {
+                    text: 'TABLE OF CONTENTS',
+                    level: 2
+                }
+            }
+        ];
+
+        // Read actual generated chapters and extract their content
+        if (ebookChapters.length > 0) {
+            ebookChapters.forEach((chapter, i) => {
+                // Get actual chapter title from the chapter
+                const chapterTitle = chapter.title || `Chapter ${i + 1}`;
+
+                blocks.push({
+                    type: 'header',
+                    data: {
+                        text: chapterTitle, // Just the title, no "Chapter X:" prefix
+                        level: 3
+                    }
+                });
+
+                // Extract subsections from EditorJS blocks
+                const subsections = [];
+
+                // Debug: Check what data we have
+                console.log('Chapter data:', {
+                    title: chapter.title,
+                    hasEditorBlocks: !!chapter.editorBlocks,
+                    editorBlocksLength: chapter.editorBlocks?.length,
+                    hasContent: !!chapter.content,
+                    contentLength: chapter.content?.length
+                });
+
+                // Read from EditorJS blocks if available
+                if (chapter.editorBlocks && chapter.editorBlocks.length > 0) {
+                    console.log('EditorJS blocks:', chapter.editorBlocks);
+                    chapter.editorBlocks.forEach(block => {
+                        console.log('Block:', block);
+                        // Extract chapter title from first header (level 1)
+                        if (block.type === 'header' && block.data && block.data.level === 1) {
+                            const headerText = block.data.text;
+                            console.log('Found chapter title:', headerText);
+                            // Update the chapter title with the actual title from EditorJS
+                            if (headerText && headerText.length > 5) {
+                                chapterTitle = headerText;
+                            }
+                        }
+                    });
+                } else if (chapter.content) {
+                    // Fallback: parse raw content for headers
+                    const content = chapter.content;
+                    const lines = content.split('\n');
+                    for (const line of lines) {
+                        const trimmedLine = line.trim();
+
+                        // Look for headers (##, ###, ####) which are the actual subsections
+                        if (trimmedLine.match(/^#{2,4}\s+(.+)/)) {
+                            const cleanText = trimmedLine.replace(/^#{2,4}\s+/, '');
+                            if (cleanText.length > 5 && !cleanText.toLowerCase().includes('chapter')) {
+                                subsections.push(cleanText);
+                            }
+                        }
+                    }
+                }
+
+                // Also check Redux data for current chapter
+                if (editorData && editorData.blocks && selectedChapter === i) {
+                    console.log('Redux editorData:', editorData);
+                    editorData.blocks.forEach(block => {
+                        console.log('Redux block:', block);
+                        // Extract chapter title from Redux data (level 1 header)
+                        if (block.type === 'header' && block.data && block.data.level === 1) {
+                            const headerText = block.data.text;
+                            console.log('Redux chapter title:', headerText);
+                            if (headerText && headerText.length > 5) {
+                                chapterTitle = headerText;
+                            }
+                        }
+                    });
+                }
+
+                // Skip subsections for now - just show chapter titles
+                // if (subsections.length > 0) {
+                //     blocks.push({
+                //         type: 'list',
+                //         data: {
+                //             style: 'unordered',
+                //             items: subsections.slice(0, 5) // Limit to 5 subsections
+                //         }
+                //     });
+                // }
+            });
+        } else {
+            // Fallback to chapterDetails if no chapters generated yet
+            for (let i = 0; i < numChapters; i++) {
+                const chapterTitle = chapterDetails[i]?.title || `Chapter ${i + 1}`;
+
+                blocks.push({
+                    type: 'header',
+                    data: {
+                        text: `Chapter ${i + 1}: ${chapterTitle}`,
+                        level: 3
+                    }
+                });
+
+                const subsections = [];
+                if (chapterDetails[i]?.storyIdea) subsections.push(chapterDetails[i].storyIdea);
+                if (chapterDetails[i]?.mainLesson) subsections.push(chapterDetails[i].mainLesson);
+                if (chapterDetails[i]?.practicalExamples) subsections.push(chapterDetails[i].practicalExamples);
+                if (chapterDetails[i]?.actionSteps) subsections.push(chapterDetails[i].actionSteps);
+                if (chapterDetails[i]?.keyTakeaway) subsections.push(chapterDetails[i].keyTakeaway);
+
+                if (subsections.length > 0) {
+                    blocks.push({
+                        type: 'list',
+                        data: {
+                            style: 'unordered',
+                            items: subsections
+                        }
+                    });
+                }
+            }
+        }
+
+        return { blocks };
+    };
 
 
     // Word count options
@@ -1434,7 +1621,7 @@ Write in the same ${toneStyle} tone as the main content.`;
                                         onClick={() => setSelectedChapter(index)}
                                     >
                                         <div className="font-medium">{chapter.title}</div>
-                                        <div className="text-sm text-slate-500">{chapter.wordCount} words</div>
+                                        <div className="text-sm text-slate-500">Chapter {index + 1}</div>
                                     </div>
                                 ))}
                             </div>
@@ -1962,26 +2149,44 @@ Write in the same ${toneStyle} tone as the main content.`;
 
                     {/* Content Display */}
                     <div className="flex-1 overflow-y-auto bg-white">
-                        {showEbookView && ebookChapters.length > 0 ? (
+                        {(showEbookView || (topic && targetAudience && endGoal && toneStyle)) ? (
                             /* Ebook Reading/Editing View */
                             <div className="max-w-4xl mx-auto p-8">
                                 {selectedChapter === -1 ? (
                                     /* Outline View */
                                     <div>
                                         <h1 className="text-3xl font-bold text-slate-800 mb-6">Ebook Outline</h1>
-                                        {isEditMode ? (
-                                            <textarea
-                                                value={ebookOutline}
-                                                onChange={(e) => setEbookOutline(e.target.value)}
-                                                className="w-full h-96 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent outline-none transition-all duration-200 resize-none font-mono text-sm"
-                                                placeholder="Enter ebook outline..."
-                                            />
-                                        ) : (
+                                        {/* Use EditorJS for outline just like chapters */}
+                                        <div className="relative">
+                                            {/* Edit Mode Editor */}
                                             <div
-                                                className="prose prose-slate max-w-none"
-                                                dangerouslySetInnerHTML={{ __html: renderMarkdown(ebookOutline) }}
+                                                id="ebook-editor"
+                                                className={`min-h-[600px] border border-slate-200 rounded-lg bg-white shadow-sm ${isEditMode ? 'block' : 'hidden'
+                                                    }`}
                                             />
-                                        )}
+
+                                            {/* Read Mode Editor */}
+                                            <div
+                                                id="ebook-reader"
+                                                className={`min-h-[600px] border border-slate-200 rounded-lg bg-white shadow-sm ebook-page-content ${isEditMode ? 'hidden' : 'block'
+                                                    }`}
+                                            />
+
+                                            {isEditMode && (
+                                                <div className="mt-4 flex gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            // Save is handled automatically by EditorJS onChange
+                                                            console.log('Changes saved automatically');
+                                                        }}
+                                                        className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-sm transition-colors duration-200"
+                                                    >
+                                                        <Save className="w-4 h-4 mr-1 inline" />
+                                                        Save Changes
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
                                     /* Chapter View */
